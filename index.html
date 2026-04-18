@@ -4,17 +4,1277 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CEO Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-  body { background: #0F1419; color: #E8EAED; font-family: -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
-  .msg { text-align: center; }
-  h1 { font-size: 24px; margin-bottom: 8px; }
-  p { color: #8B949E; font-size: 14px; }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0F1419;
+    --card: #1A1F26;
+    --border: #2A3038;
+    --text: #E8EAED;
+    --text-secondary: #8B949E;
+    --accent: #0071E3;
+    --afsh: #B8860B;
+    --illume: #5A8A2E;
+    --spade: #0071E3;
+    --logos: #9B59B6;
+    --personal: #6E6E73;
+    --cos: #E67E22;
+    --green: #2EA043;
+    --red: #DA3633;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 28px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar h1 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+  .topbar .timestamp {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .tab-bar {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    background: var(--bg);
+    position: sticky;
+    top: 53px;
+    z-index: 99;
+  }
+  .tab-btn {
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .content { padding: 24px 28px; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 113, 227, 0.08);
+  }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stat-card { text-align: left; }
+  .stat-card .label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .stat-card .value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .stat-card .value {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+  .stat-card .delta {
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .delta.up { color: var(--green); }
+  .delta.down { color: var(--red); }
+  .sparkline-container { height: 32px; }
+
+  .section-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    letter-spacing: -0.2px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .entity-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+
+  .entity-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .urgency {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .urgency.high { background: rgba(218,54,51,0.15); color: var(--red); }
+  .urgency.medium { background: rgba(230,126,34,0.15); color: var(--cos); }
+  .urgency.low { background: rgba(46,160,67,0.15); color: var(--green); }
+
+  .focus-list { list-style: none; }
+  .focus-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .focus-item:last-child { border-bottom: none; }
+  .focus-item .text { flex: 1; }
+
+  .meeting-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .meeting-item:last-child { border-bottom: none; }
+  .meeting-time {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    min-width: 56px;
+    flex-shrink: 0;
+  }
+  .meeting-title { flex: 1; }
+
+  .weather-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .weather-card .city {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+  .weather-card .temp {
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -1px;
+  }
+  .weather-card .condition {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+  .weather-icon { font-size: 28px; float: right; margin-top: -4px; }
+
+  .ticker-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .ticker-card .pair {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 2px;
+  }
+  .ticker-card .rate {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+  .ticker-card .change { font-size: 13px; font-weight: 500; margin-top: 2px; }
+
+  .commodity-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .commodity-card .name {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 2px;
+  }
+  .commodity-card .price {
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .commodity-card .unit {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .news-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .news-item:last-child { border-bottom: none; }
+  .source-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: rgba(0,113,227,0.12);
+    color: var(--accent);
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .project-card {
+    position: relative;
+    padding-left: 24px;
+  }
+  .project-card .entity-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    border-radius: 2px;
+  }
+  .project-card .project-name {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .project-card .project-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+  .status-dot.active { background: var(--green); }
+  .status-dot.blocked { background: var(--red); }
+  .status-dot.planning { background: var(--cos); }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .data-table th {
+    text-align: left;
+    padding: 8px 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  .data-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+
+  .chart-container {
+    position: relative;
+    height: 280px;
+  }
+
+  .status-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .status-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+  }
+  .status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .status-indicator.ok { background: var(--green); box-shadow: 0 0 6px rgba(46,160,67,0.4); }
+  .status-indicator.error { background: var(--red); box-shadow: 0 0 6px rgba(218,54,51,0.4); }
+
+  @media (max-width: 900px) {
+    .stat-row { grid-template-columns: repeat(3, 1fr); }
+    .two-col, .weather-row, .ticker-row, .commodity-row, .project-grid { grid-template-columns: 1fr; }
+    .status-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .stat-row { grid-template-columns: repeat(2, 1fr); }
+    .content { padding: 16px; }
+    .topbar, .tab-bar { padding-left: 16px; padding-right: 16px; }
+    .tab-btn { padding: 10px 12px; font-size: 13px; }
+  }
 </style>
 </head>
 <body>
-<div class="msg">
+
+<div class="topbar">
   <h1>CEO Dashboard</h1>
-  <p>Waiting for first S20 run to populate live data...</p>
+  <span class="timestamp" id="last-updated"></span>
 </div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="command">Command Center</button>
+  <button class="tab-btn" data-tab="comms">Communications</button>
+  <button class="tab-btn" data-tab="markets">Markets &amp; Intel</button>
+  <button class="tab-btn" data-tab="operations">Operations</button>
+  <button class="tab-btn" data-tab="health">System Health</button>
+</div>
+
+<div class="content">
+  <div class="tab-panel active" id="tab-command"></div>
+  <div class="tab-panel" id="tab-comms"></div>
+  <div class="tab-panel" id="tab-markets"></div>
+  <div class="tab-panel" id="tab-operations"></div>
+  <div class="tab-panel" id="tab-health"></div>
+</div>
+
+<script>
+// ===== S20 DATA INJECTION POINT =====
+const DASHBOARD_DATA = {
+  "updated_at": "2026-04-18T08:15:00Z",
+  "stats": {
+    "active_tasks": 127,
+    "overdue": 21,
+    "meetings": 11,
+    "errors": 37,
+    "waiting": 0,
+    "deltas": {
+      "active_tasks": 4,
+      "overdue": -3,
+      "meetings": 2,
+      "errors": 12,
+      "waiting": -2
+    },
+    "sparklines": {
+      "active_tasks": [
+        112,
+        118,
+        121,
+        119,
+        124,
+        130,
+        127
+      ],
+      "overdue": [
+        28,
+        25,
+        24,
+        22,
+        19,
+        24,
+        21
+      ],
+      "meetings": [
+        8,
+        6,
+        14,
+        9,
+        7,
+        12,
+        11
+      ],
+      "errors": [
+        5,
+        8,
+        14,
+        22,
+        18,
+        25,
+        37
+      ],
+      "waiting": [
+        4,
+        3,
+        5,
+        2,
+        3,
+        2,
+        0
+      ]
+    }
+  },
+  "focus_items": [
+    {
+      "text": "Review Illume Q2 board deck and financials",
+      "entity": "Illume",
+      "urgency": "high"
+    },
+    {
+      "text": "AFSH warehouse lease renewal signature",
+      "entity": "AFSH",
+      "urgency": "high"
+    },
+    {
+      "text": "Approve Spade sprint 14 scope",
+      "entity": "Spade",
+      "urgency": "medium"
+    },
+    {
+      "text": "Logos investor update draft due EOD",
+      "entity": "Logos",
+      "urgency": "high"
+    },
+    {
+      "text": "COS scenario error spike investigation",
+      "entity": "COS",
+      "urgency": "medium"
+    },
+    {
+      "text": "Personal tax advisor call prep",
+      "entity": "Personal",
+      "urgency": "low"
+    }
+  ],
+  "meetings": [
+    {
+      "time": "09:00",
+      "title": "AFSH Weekly Standup",
+      "entity": "AFSH"
+    },
+    {
+      "time": "09:45",
+      "title": "Illume Leadership Sync",
+      "entity": "Illume"
+    },
+    {
+      "time": "10:30",
+      "title": "Spade Product Review",
+      "entity": "Spade"
+    },
+    {
+      "time": "11:00",
+      "title": "Logos Board Prep Call",
+      "entity": "Logos"
+    },
+    {
+      "time": "12:00",
+      "title": "Lunch w/ Legal Counsel",
+      "entity": "Personal"
+    },
+    {
+      "time": "13:30",
+      "title": "AFSH Almond Contracts Review",
+      "entity": "AFSH"
+    },
+    {
+      "time": "14:00",
+      "title": "COS Architecture Session",
+      "entity": "COS"
+    },
+    {
+      "time": "15:00",
+      "title": "Illume Hiring Pipeline",
+      "entity": "Illume"
+    },
+    {
+      "time": "15:45",
+      "title": "Spade Demo Walkthrough",
+      "entity": "Spade"
+    },
+    {
+      "time": "16:30",
+      "title": "AFSH Supply Chain Update",
+      "entity": "AFSH"
+    },
+    {
+      "time": "17:00",
+      "title": "Logos LP Call",
+      "entity": "Logos"
+    }
+  ],
+  "weather": [
+    {
+      "city": "Sant Cugat",
+      "temp": 19,
+      "condition": "Partly Cloudy",
+      "icon": "26"
+    },
+    {
+      "city": "San Francisco",
+      "temp": 14,
+      "condition": "Fog",
+      "icon": "2601"
+    },
+    {
+      "city": "Zurich",
+      "temp": 11,
+      "condition": "Rain",
+      "icon": "2614"
+    }
+  ],
+  "forex": [
+    {
+      "pair": "EUR/USD",
+      "rate": 1.1342,
+      "change": 0.0018
+    },
+    {
+      "pair": "GBP/USD",
+      "rate": 1.3287,
+      "change": -0.0024
+    },
+    {
+      "pair": "USD/CHF",
+      "rate": 0.8156,
+      "change": -0.0031
+    }
+  ],
+  "commodities": [
+    {
+      "name": "Almonds",
+      "price": 3.42,
+      "unit": "USD/lb",
+      "change": 0.08
+    },
+    {
+      "name": "Olive Oil",
+      "price": 8950,
+      "unit": "EUR/ton",
+      "change": -120
+    },
+    {
+      "name": "Wheat",
+      "price": 542.5,
+      "unit": "USD/bu",
+      "change": 3.25
+    }
+  ],
+  "news": [
+    {
+      "headline": "EU proposes new agricultural subsidy framework for 2027",
+      "source": "Reuters"
+    },
+    {
+      "headline": "California almond exports hit record high in Q1 2026",
+      "source": "AgDaily"
+    },
+    {
+      "headline": "ECB signals rate pause amid slowing eurozone inflation",
+      "source": "FT"
+    },
+    {
+      "headline": "Spain tech sector draws record VC funding",
+      "source": "TechCrunch"
+    },
+    {
+      "headline": "AI-driven supply chain tools adoption surges among SMEs",
+      "source": "Bloomberg"
+    },
+    {
+      "headline": "Mediterranean drought concerns push olive oil futures higher",
+      "source": "Reuters"
+    }
+  ],
+  "projects": [
+    {
+      "name": "COS v2 Notion Rebuild",
+      "entity": "COS",
+      "status": "active",
+      "owner": "Nick"
+    },
+    {
+      "name": "Elly Tool-Use Rewrite",
+      "entity": "COS",
+      "status": "active",
+      "owner": "Nick"
+    },
+    {
+      "name": "AFSH Q2 Export Push",
+      "entity": "AFSH",
+      "status": "active",
+      "owner": "Maria"
+    },
+    {
+      "name": "Illume Series A Prep",
+      "entity": "Illume",
+      "status": "active",
+      "owner": "Jeff"
+    },
+    {
+      "name": "Spade Mobile App v2",
+      "entity": "Spade",
+      "status": "active",
+      "owner": "Spencer"
+    },
+    {
+      "name": "Logos Fund III Close",
+      "entity": "Logos",
+      "status": "blocked",
+      "owner": "Nick"
+    },
+    {
+      "name": "AFSH Warehouse Expansion",
+      "entity": "AFSH",
+      "status": "planning",
+      "owner": "Nick"
+    },
+    {
+      "name": "Illume Enterprise Pilot",
+      "entity": "Illume",
+      "status": "active",
+      "owner": "Jeff"
+    }
+  ],
+  "waiting_on": [
+    {
+      "who": "Maria (AFSH)",
+      "what": "Signed warehouse lease docs",
+      "follow_up": "2026-04-19"
+    },
+    {
+      "who": "Jeff (Illume)",
+      "what": "Q2 revenue projections",
+      "follow_up": "2026-04-18"
+    },
+    {
+      "who": "Spencer (Spade)",
+      "what": "Sprint 14 estimates",
+      "follow_up": "2026-04-20"
+    },
+    {
+      "who": "Legal Counsel",
+      "what": "Logos Fund III opinion letter",
+      "follow_up": "2026-04-22"
+    },
+    {
+      "who": "Azure Support",
+      "what": "Function App scaling tier approval",
+      "follow_up": "2026-04-21"
+    }
+  ],
+  "task_distribution": {
+    "AFSH": 34,
+    "Illume": 28,
+    "Spade": 22,
+    "Logos": 18,
+    "COS": 16,
+    "Personal": 9
+  },
+  "errors_by_scenario": {
+    "S01 Inbox Triage": 2,
+    "S03 Calendar Sync": 0,
+    "S05 Brief Builder": 8,
+    "S08 WhatsApp Relay": 3,
+    "S12 Task Sync": 1,
+    "S15 Elly Webhook": 14,
+    "S18 Notion Backup": 0,
+    "S20 CEO Dashboard": 9
+  },
+  "recent_errors": [
+    {
+      "scenario": "S15 Elly Webhook",
+      "message": "Timeout calling Anthropic API (>30s)",
+      "timestamp": "2026-04-18T07:58:12Z"
+    },
+    {
+      "scenario": "S20 CEO Dashboard",
+      "message": "Notion API 429 rate limit exceeded",
+      "timestamp": "2026-04-18T07:45:03Z"
+    },
+    {
+      "scenario": "S05 Brief Builder",
+      "message": "Failed to resolve Illume calendar events",
+      "timestamp": "2026-04-18T07:32:41Z"
+    },
+    {
+      "scenario": "S15 Elly Webhook",
+      "message": "Tool dispatch error: mail.send unauthorized",
+      "timestamp": "2026-04-18T07:15:22Z"
+    },
+    {
+      "scenario": "S08 WhatsApp Relay",
+      "message": "TimelinesAI sandbox connection refused",
+      "timestamp": "2026-04-18T06:50:09Z"
+    },
+    {
+      "scenario": "S20 CEO Dashboard",
+      "message": "Chart.js CDN timeout after 10s",
+      "timestamp": "2026-04-18T06:30:00Z"
+    }
+  ],
+  "scenario_status": {
+    "S01 Inbox Triage": "ok",
+    "S03 Calendar Sync": "ok",
+    "S05 Brief Builder": "error",
+    "S08 WhatsApp Relay": "error",
+    "S10 Slack Digest": "ok",
+    "S12 Task Sync": "ok",
+    "S15 Elly Webhook": "error",
+    "S18 Notion Backup": "ok",
+    "S20 CEO Dashboard": "error",
+    "S22 Weekly Report": "ok"
+  },
+  "comms": {
+    "accounts": [
+      {
+        "name": "Gmail",
+        "key": "gmail",
+        "unread": 23,
+        "flagged": 4
+      },
+      {
+        "name": "AFSH Outlook",
+        "key": "afsh",
+        "unread": 12,
+        "flagged": 2
+      },
+      {
+        "name": "Illume Outlook",
+        "key": "illume",
+        "unread": 8,
+        "flagged": 1
+      },
+      {
+        "name": "WhatsApp",
+        "key": "whatsapp",
+        "unread": 5,
+        "flagged": 0
+      }
+    ],
+    "total_unread": 48,
+    "recent_threads": [
+      {
+        "from": "Jeff Chen",
+        "subject": "Illume Q2 board deck - final review",
+        "account": "illume",
+        "time": "08:12",
+        "flagged": true
+      },
+      {
+        "from": "Maria Lopez",
+        "subject": "RE: Warehouse lease renewal docs",
+        "account": "afsh",
+        "time": "07:58",
+        "flagged": true
+      },
+      {
+        "from": "Spencer Hill",
+        "subject": "Sprint 14 scope + estimates ready",
+        "account": "gmail",
+        "time": "07:45",
+        "flagged": false
+      },
+      {
+        "from": "Azure Support",
+        "subject": "Case #4821 - Function App scaling",
+        "account": "gmail",
+        "time": "07:30",
+        "flagged": true
+      },
+      {
+        "from": "Legal Counsel",
+        "subject": "Logos Fund III opinion letter draft",
+        "account": "gmail",
+        "time": "07:15",
+        "flagged": true
+      },
+      {
+        "from": "Carlos (farm manager)",
+        "subject": "Almond shipment ETA update",
+        "account": "whatsapp",
+        "time": "07:02",
+        "flagged": false
+      },
+      {
+        "from": "Anthropic Billing",
+        "subject": "Invoice #2026-04 available",
+        "account": "gmail",
+        "time": "06:45",
+        "flagged": false
+      },
+      {
+        "from": "Nick Gombos (AFSH)",
+        "subject": "FW: Q2 export contract amendments",
+        "account": "afsh",
+        "time": "06:30",
+        "flagged": false
+      },
+      {
+        "from": "HR Team",
+        "subject": "New hire onboarding - Illume Barcelona",
+        "account": "illume",
+        "time": "06:15",
+        "flagged": false
+      },
+      {
+        "from": "Papa",
+        "subject": "Weekend plans?",
+        "account": "whatsapp",
+        "time": "Yesterday",
+        "flagged": false
+      }
+    ],
+    "flagged_items": [
+      {
+        "from": "Jeff Chen",
+        "subject": "Illume Q2 board deck - final review",
+        "account": "illume",
+        "action": "Review & approve by EOD"
+      },
+      {
+        "from": "Maria Lopez",
+        "subject": "Warehouse lease renewal docs",
+        "account": "afsh",
+        "action": "Signature needed"
+      },
+      {
+        "from": "Azure Support",
+        "subject": "Function App scaling tier",
+        "account": "gmail",
+        "action": "Respond with tier preference"
+      },
+      {
+        "from": "Legal Counsel",
+        "subject": "Logos Fund III opinion letter",
+        "account": "gmail",
+        "action": "Review draft, provide comments"
+      }
+    ]
+  }
+};
+// ===== END S20 DATA =====
+
+var ENTITY_COLORS = {
+  AFSH: '#B8860B', Illume: '#5A8A2E', Spade: '#0071E3',
+  Logos: '#9B59B6', Personal: '#6E6E73', COS: '#E67E22'
+};
+
+function entityColor(e) { return ENTITY_COLORS[e] || '#8B949E'; }
+
+function formatTime(iso) {
+  var d = new Date(iso);
+  return d.toLocaleString('en-US', {
+    month: 'short', day: 'numeric',
+    hour: '2-digit', minute: '2-digit', hour12: false
+  });
+}
+
+function weatherIcon(code) {
+  var map = { '26': '\u26C5', '2601': '\u2601\uFE0F', '2614': '\u2614', '2600': '\u2600\uFE0F' };
+  return map[code] || '\u2600\uFE0F';
+}
+
+// --- Tab switching ---
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// --- Set timestamp ---
+document.getElementById('last-updated').textContent = 'Updated ' + formatTime(DASHBOARD_DATA.updated_at);
+
+// --- Build Command Center ---
+(function buildCommand() {
+  var d = DASHBOARD_DATA;
+  var s = d.stats;
+  var panel = document.getElementById('tab-command');
+
+  var statKeys = [
+    { key: 'active_tasks', label: 'Active Tasks' },
+    { key: 'overdue', label: 'Overdue' },
+    { key: 'meetings', label: "Today's Meetings" },
+    { key: 'errors', label: 'Scenario Errors' },
+    { key: 'waiting', label: 'Waiting On' }
+  ];
+
+  var html = '<div class="stat-row">';
+  statKeys.forEach(function(sk) {
+    var val = s[sk.key];
+    var delta = s.deltas[sk.key];
+    var isUp = delta > 0;
+    var cls = (sk.key === 'overdue' || sk.key === 'errors')
+      ? (isUp ? 'down' : 'up')
+      : (isUp ? 'up' : 'down');
+    var arrow = isUp ? '\u25B2' : '\u25BC';
+    html += '<div class="card stat-card">' +
+      '<div class="label">' + sk.label + '</div>' +
+      '<div class="value-row">' +
+        '<span class="value">' + val + '</span>' +
+        '<span class="delta ' + cls + '">' + arrow + ' ' + Math.abs(delta) + '</span>' +
+      '</div>' +
+      '<div class="sparkline-container"><canvas id="spark-' + sk.key + '"></canvas></div>' +
+    '</div>';
+  });
+  html += '</div>';
+
+  html += '<div class="two-col">';
+
+  html += '<div class="card"><div class="section-title">Today\'s Focus</div><ul class="focus-list">';
+  d.focus_items.forEach(function(f) {
+    html += '<li class="focus-item">' +
+      '<span class="entity-dot" style="background:' + entityColor(f.entity) + '"></span>' +
+      '<span class="text">' + f.text + '</span>' +
+      '<span class="urgency ' + f.urgency + '">' + f.urgency.toUpperCase() + '</span>' +
+    '</li>';
+  });
+  html += '</ul></div>';
+
+  html += '<div class="card"><div class="section-title">Upcoming Meetings</div>';
+  d.meetings.forEach(function(m) {
+    html += '<div class="meeting-item">' +
+      '<span class="meeting-time">' + m.time + '</span>' +
+      '<span class="meeting-title">' + m.title + '</span>' +
+      '<span class="entity-badge" style="background:' + entityColor(m.entity) + '22;color:' + entityColor(m.entity) + '">' + m.entity + '</span>' +
+    '</div>';
+  });
+  html += '</div></div>';
+
+  panel.innerHTML = html;
+
+  statKeys.forEach(function(sk) {
+    var ctx = document.getElementById('spark-' + sk.key);
+    var color = (sk.key === 'overdue' || sk.key === 'errors') ? '#DA3633' : '#0071E3';
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: s.sparklines[sk.key].map(function(_, i) { return i; }),
+        datasets: [{
+          data: s.sparklines[sk.key],
+          borderColor: color,
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0.4,
+          fill: true,
+          backgroundColor: color + '18'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { enabled: false } },
+        scales: { x: { display: false }, y: { display: false } },
+        animation: false
+      }
+    });
+  });
+})();
+
+
+// --- Build Communications ---
+(function buildComms() {
+  var d = DASHBOARD_DATA;
+  var c = d.comms || {accounts:[],recent_threads:[],flagged_items:[]};
+  var panel = document.getElementById('tab-comms');
+  if (!panel) return;
+  var html = '';
+
+  var ACCOUNT_COLORS = {
+    gmail: '#EA4335', afsh: '#B8860B', illume: '#5A8A2E', whatsapp: '#25D366'
+  };
+
+  html += '<div class="comms-accounts">';
+  (c.accounts||[]).forEach(function(a) {
+    var color = ACCOUNT_COLORS[a.key] || '#8B949E';
+    html += '<div class="card comms-card">' +
+      '<div class="account-name">' + a.name + '</div>' +
+      '<div class="unread-count" style="color:' + color + '">' + a.unread + '</div>' +
+      '<div class="unread-label">unread</div>' +
+      (a.flagged > 0 ? '<div class="flagged">' + a.flagged + ' flagged</div>' : '') +
+    '</div>';
+  });
+  html += '</div>';
+
+  html += '<div class="two-col">';
+
+  html += '<div class="card"><div class="section-title">Action Required</div>';
+  if (c.flagged_items && c.flagged_items.length > 0) {
+    c.flagged_items.forEach(function(f) {
+      html += '<div class="thread-item">' +
+        '<span class="thread-account ' + f.account + '">' + f.account.toUpperCase() + '</span>' +
+        '<div class="thread-meta">' +
+          '<div class="thread-from">' + f.from + '</div>' +
+          '<div class="thread-subject">' + f.subject + '</div>' +
+        '</div>' +
+      '</div>';
+    });
+  } else {
+    html += '<div style="padding:20px 0;color:var(--text-secondary);font-size:14px">No flagged items</div>';
+  }
+  html += '</div>';
+
+  html += '<div class="card"><div class="section-title">Recent Threads</div>';
+  (c.recent_threads||[]).forEach(function(t) {
+    html += '<div class="thread-item">' +
+      '<span class="thread-account ' + t.account + '">' + t.account.toUpperCase() + '</span>' +
+      '<div class="thread-meta">' +
+        '<div class="thread-from">' + t.from + (t.flagged ? ' <span style="color:var(--red)">*</span>' : '') + '</div>' +
+        '<div class="thread-subject">' + t.subject + '</div>' +
+      '</div>' +
+    '</div>';
+  });
+  html += '</div></div>';
+
+  panel.innerHTML = html;
+})();
+
+// --- Build Markets & Intel ---
+(function buildMarkets() {
+  var d = DASHBOARD_DATA;
+  var panel = document.getElementById('tab-markets');
+  var html = '';
+
+  html += '<div class="section-title">Weather</div><div class="weather-row">';
+  d.weather.forEach(function(w) {
+    html += '<div class="card weather-card">' +
+      '<span class="weather-icon">' + weatherIcon(w.icon) + '</span>' +
+      '<div class="city">' + w.city + '</div>' +
+      '<div class="temp">' + w.temp + '&deg;C</div>' +
+      '<div class="condition">' + w.condition + '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+
+  html += '<div class="section-title">Forex</div><div class="ticker-row">';
+  d.forex.forEach(function(f) {
+    var up = f.change >= 0;
+    var cls = up ? 'up' : 'down';
+    var arrow = up ? '\u25B2' : '\u25BC';
+    html += '<div class="card ticker-card">' +
+      '<div class="pair">' + f.pair + '</div>' +
+      '<div class="rate">' + f.rate.toFixed(4) + '</div>' +
+      '<div class="change delta ' + cls + '">' + arrow + ' ' + Math.abs(f.change).toFixed(4) + '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+
+  html += '<div class="section-title">Commodities</div><div class="commodity-row">';
+  d.commodities.forEach(function(c) {
+    var up = c.change >= 0;
+    var cls = up ? 'up' : 'down';
+    var arrow = up ? '\u25B2' : '\u25BC';
+    var displayPrice = c.price > 100 ? c.price.toLocaleString() : c.price;
+    html += '<div class="card commodity-card">' +
+      '<div class="name">' + c.name + '</div>' +
+      '<div class="price">' + displayPrice + ' <span class="unit">' + c.unit + '</span></div>' +
+      '<div class="change delta ' + cls + '">' + arrow + ' ' + Math.abs(c.change) + '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+
+  html += '<div class="card"><div class="section-title">Headlines</div>';
+  d.news.forEach(function(n) {
+    html += '<div class="news-item">' +
+      '<span class="source-badge">' + n.source + '</span>' +
+      '<span>' + n.headline + '</span>' +
+    '</div>';
+  });
+  html += '</div>';
+
+  panel.innerHTML = html;
+})();
+
+// --- Build Operations ---
+(function buildOps() {
+  var d = DASHBOARD_DATA;
+  var panel = document.getElementById('tab-operations');
+  var html = '';
+
+  html += '<div class="section-title">Active Projects</div><div class="project-grid">';
+  d.projects.forEach(function(p) {
+    html += '<div class="card project-card">' +
+      '<div class="entity-bar" style="background:' + entityColor(p.entity) + '"></div>' +
+      '<div class="project-name"><span class="status-dot ' + p.status + '"></span>' + p.name + '</div>' +
+      '<div class="project-meta">' + p.entity + ' &middot; ' + p.owner + ' &middot; ' + p.status.charAt(0).toUpperCase() + p.status.slice(1) + '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+
+  html += '<div class="card" style="margin-bottom:24px"><div class="section-title">Waiting On</div>' +
+    '<table class="data-table"><thead><tr><th>Who</th><th>What</th><th>Follow-up</th></tr></thead><tbody>';
+  d.waiting_on.forEach(function(w) {
+    html += '<tr><td>' + w.who + '</td><td>' + w.what + '</td><td>' + w.follow_up + '</td></tr>';
+  });
+  html += '</tbody></table></div>';
+
+  html += '<div class="card"><div class="section-title">Task Distribution by Entity</div>' +
+    '<div class="chart-container"><canvas id="chart-tasks"></canvas></div></div>';
+
+  panel.innerHTML = html;
+
+  var entities = Object.keys(d.task_distribution);
+  var counts = Object.values(d.task_distribution);
+  new Chart(document.getElementById('chart-tasks'), {
+    type: 'bar',
+    data: {
+      labels: entities,
+      datasets: [{
+        data: counts,
+        backgroundColor: entities.map(function(e) { return entityColor(e); }),
+        borderRadius: 4,
+        barThickness: 28
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          grid: { color: '#2A3038' },
+          ticks: { color: '#8B949E', font: { size: 12 } }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { color: '#E8EAED', font: { size: 13, weight: '600' } }
+        }
+      }
+    }
+  });
+})();
+
+// --- Build System Health ---
+(function buildHealth() {
+  var d = DASHBOARD_DATA;
+  var panel = document.getElementById('tab-health');
+  var html = '';
+
+  html += '<div class="card" style="margin-bottom:24px"><div class="section-title">Errors by Scenario (Last 24h)</div>' +
+    '<div class="chart-container"><canvas id="chart-errors"></canvas></div></div>';
+
+  html += '<div class="card" style="margin-bottom:24px"><div class="section-title">Recent Errors</div>' +
+    '<table class="data-table"><thead><tr><th>Scenario</th><th>Message</th><th>Time</th></tr></thead><tbody>';
+  d.recent_errors.forEach(function(e) {
+    html += '<tr>' +
+      '<td style="white-space:nowrap">' + e.scenario + '</td>' +
+      '<td>' + e.message + '</td>' +
+      '<td style="white-space:nowrap">' + formatTime(e.timestamp) + '</td>' +
+    '</tr>';
+  });
+  html += '</tbody></table></div>';
+
+  html += '<div class="section-title">Scenario Status</div><div class="status-grid">';
+  Object.entries(d.scenario_status).forEach(function(entry) {
+    html += '<div class="status-badge">' +
+      '<span class="status-indicator ' + entry[1] + '"></span>' +
+      '<span>' + entry[0] + '</span>' +
+    '</div>';
+  });
+  html += '</div>';
+
+  panel.innerHTML = html;
+
+  var scenarios = Object.keys(d.errors_by_scenario);
+  var errCounts = Object.values(d.errors_by_scenario);
+  new Chart(document.getElementById('chart-errors'), {
+    type: 'bar',
+    data: {
+      labels: scenarios,
+      datasets: [{
+        data: errCounts,
+        backgroundColor: errCounts.map(function(c) {
+          return c > 5 ? '#DA3633' : c > 0 ? '#E67E22' : '#2EA043';
+        }),
+        borderRadius: 4,
+        barThickness: 28
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          grid: { color: '#2A3038' },
+          ticks: { color: '#8B949E', font: { size: 12 } }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { color: '#E8EAED', font: { size: 12, weight: '500' } }
+        }
+      }
+    }
+  });
+})();
+</script>
 </body>
 </html>

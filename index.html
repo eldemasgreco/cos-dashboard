@@ -3,329 +3,297 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CEO Dashboard</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<title>COS Control Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
   :root {
-    --bg: #0F1419;
-    --card: #1A1F26;
-    --border: #2A3038;
-    --text: #E8EAED;
-    --text-secondary: #8B949E;
-    --accent: #0071E3;
-    --afsh: #B8860B;
-    --illume: #5A8A2E;
-    --spade: #0071E3;
-    --logos: #9B59B6;
-    --personal: #6E6E73;
-    --cos: #E67E22;
-    --green: #2EA043;
-    --red: #DA3633;
+    --bg: #F2F4F7;
+    --card: #FFFFFF;
+    --accent: #2D5F3E;
+    --accent-light: #E8F0EC;
+    --text: #1A1A2E;
+    --text-secondary: #6B7280;
+    --border: #E5E7EB;
+    --red: #DC2626;
+    --amber: #D97706;
+    --green: #059669;
+    --blue: #2563EB;
+    --purple: #7C3AED;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-lg: 0 4px 12px rgba(0,0,0,0.08);
   }
 
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--bg);
     color: var(--text);
     line-height: 1.5;
-    min-height: 100vh;
     -webkit-font-smoothing: antialiased;
   }
 
-  .topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 28px;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg);
+  /* Sticky Header */
+  .header {
     position: sticky;
     top: 0;
     z-index: 100;
-  }
-  .topbar h1 {
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: -0.3px;
-  }
-  .topbar .timestamp {
-    font-size: 13px;
-    color: var(--text-secondary);
-  }
-
-  .tab-bar {
-    display: flex;
-    gap: 0;
-    border-bottom: 1px solid var(--border);
-    padding: 0 28px;
-    background: var(--bg);
-    position: sticky;
-    top: 53px;
-    z-index: 99;
-  }
-  .tab-btn {
-    padding: 12px 20px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    background: none;
-    border: none;
-    border-bottom: 2px solid transparent;
-    cursor: pointer;
-    transition: color 0.2s, border-color 0.2s;
-  }
-  .tab-btn:hover { color: var(--text); }
-  .tab-btn.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
-
-  .content { padding: 24px 28px; }
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
-
-  .card {
     background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 20px;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow);
   }
-  .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0, 113, 227, 0.08);
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
-
-  .stat-row {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
-    margin-bottom: 24px;
+  .header-logo {
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
   }
-  .stat-card { text-align: left; }
-  .stat-card .label {
+  .header-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .header-subtitle {
     font-size: 12px;
     color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 6px;
+    font-weight: 400;
   }
-  .stat-card .value-row {
+  .header-right {
     display: flex;
-    align-items: baseline;
-    gap: 8px;
-    margin-bottom: 8px;
+    align-items: center;
+    gap: 16px;
   }
-  .stat-card .value {
-    font-size: 28px;
-    font-weight: 600;
-    letter-spacing: -0.5px;
-  }
-  .stat-card .delta {
+  .header-time {
     font-size: 13px;
+    color: var(--text-secondary);
     font-weight: 500;
   }
-  .delta.up { color: var(--green); }
-  .delta.down { color: var(--red); }
-  .sparkline-container { height: 32px; }
-
-  .section-title {
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 14px;
-    letter-spacing: -0.2px;
-  }
-
-  .two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-
-  .entity-dot {
-    display: inline-block;
+  .status-dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    margin-right: 8px;
-    flex-shrink: 0;
+    background: var(--green);
+    display: inline-block;
+  }
+  .status-dot.error { background: var(--red); }
+  .status-dot.warning { background: var(--amber); }
+
+  /* Layout */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 24px 80px;
   }
 
-  .entity-badge {
-    display: inline-block;
+  /* Metrics Strip */
+  .metrics-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .metric-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    transition: box-shadow 0.2s;
+  }
+  .metric-card:hover { box-shadow: var(--shadow-lg); }
+  .metric-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .metric-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .metric-value.danger { color: var(--red); }
+  .metric-value.warning { color: var(--amber); }
+  .metric-value.success { color: var(--green); }
+
+  /* Alert Banner */
+  .alert-banner {
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    border-radius: var(--radius);
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--red);
+    font-weight: 500;
+  }
+  .alert-banner.visible { display: flex; }
+  .alert-icon { font-size: 18px; }
+
+  /* Section Cards */
+  .section {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+  }
+  .section-header:hover { background: #FAFBFC; }
+  .section-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-badge {
     font-size: 11px;
     font-weight: 600;
     padding: 2px 8px;
-    border-radius: 4px;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-    margin-left: auto;
-    flex-shrink: 0;
-  }
-
-  .urgency {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 2px 7px;
-    border-radius: 4px;
-    margin-left: auto;
-    flex-shrink: 0;
-  }
-  .urgency.high { background: rgba(218,54,51,0.15); color: var(--red); }
-  .urgency.medium { background: rgba(230,126,34,0.15); color: var(--cos); }
-  .urgency.low { background: rgba(46,160,67,0.15); color: var(--green); }
-
-  .focus-list { list-style: none; }
-  .focus-item {
-    display: flex;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 14px;
-  }
-  .focus-item:last-child { border-bottom: none; }
-  .focus-item .text { flex: 1; }
-
-  .meeting-item {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 14px;
-  }
-  .meeting-item:last-child { border-bottom: none; }
-  .meeting-time {
-    font-size: 13px;
-    font-weight: 600;
+    border-radius: 10px;
+    background: var(--accent-light);
     color: var(--accent);
-    min-width: 56px;
-    flex-shrink: 0;
   }
-  .meeting-title { flex: 1; }
-
-  .weather-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-  .weather-card .city {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-bottom: 4px;
-  }
-  .weather-card .temp {
-    font-size: 32px;
-    font-weight: 600;
-    letter-spacing: -1px;
-  }
-  .weather-card .condition {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-top: 2px;
-  }
-  .weather-icon { font-size: 28px; float: right; margin-top: -4px; }
-
-  .ticker-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-  .ticker-card .pair {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-bottom: 2px;
-  }
-  .ticker-card .rate {
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: -0.3px;
-  }
-  .ticker-card .change { font-size: 13px; font-weight: 500; margin-top: 2px; }
-
-  .commodity-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-  .commodity-card .name {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-bottom: 2px;
-  }
-  .commodity-card .price {
-    font-size: 20px;
-    font-weight: 600;
-  }
-  .commodity-card .unit {
+  .section-toggle {
     font-size: 12px;
     color: var(--text-secondary);
+    transition: transform 0.2s;
   }
+  .section-body {
+    padding: 16px 20px;
+  }
+  .section.collapsed .section-body { display: none; }
+  .section.collapsed .section-toggle { transform: rotate(-90deg); }
 
-  .news-item {
+  /* Next Up / Schedule */
+  .schedule-item {
     display: flex;
     align-items: flex-start;
     gap: 12px;
     padding: 10px 0;
     border-bottom: 1px solid var(--border);
-    font-size: 14px;
   }
-  .news-item:last-child { border-bottom: none; }
-  .source-badge {
-    font-size: 10px;
+  .schedule-item:last-child { border-bottom: none; }
+  .schedule-time {
+    font-size: 13px;
     font-weight: 600;
-    padding: 2px 6px;
-    border-radius: 3px;
-    background: rgba(0,113,227,0.12);
     color: var(--accent);
-    white-space: nowrap;
+    min-width: 60px;
     flex-shrink: 0;
+  }
+  .schedule-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .schedule-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
     margin-top: 2px;
   }
 
-  .project-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    margin-bottom: 24px;
+  /* Task Gauge */
+  .gauge-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+    gap: 40px;
+    flex-wrap: wrap;
   }
-  .project-card {
+  .gauge {
     position: relative;
-    padding-left: 24px;
+    width: 120px;
+    height: 120px;
   }
-  .project-card .entity-bar {
+  .gauge svg {
+    width: 120px;
+    height: 120px;
+    transform: rotate(-90deg);
+  }
+  .gauge-bg {
+    fill: none;
+    stroke: #E5E7EB;
+    stroke-width: 10;
+  }
+  .gauge-fill {
+    fill: none;
+    stroke-width: 10;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.8s ease;
+  }
+  .gauge-label {
     position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    border-radius: 2px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
   }
-  .project-card .project-name {
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 4px;
+  .gauge-number {
+    font-size: 24px;
+    font-weight: 700;
+    display: block;
+    line-height: 1;
   }
-  .project-card .project-meta {
-    font-size: 13px;
+  .gauge-text {
+    font-size: 11px;
     color: var(--text-secondary);
+    display: block;
+    margin-top: 4px;
   }
-  .status-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-right: 6px;
-  }
-  .status-dot.active { background: var(--green); }
-  .status-dot.blocked { background: var(--red); }
-  .status-dot.planning { background: var(--cos); }
 
+  /* Entity Chips */
+  .entity-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 6px;
+    margin: 2px 4px 2px 0;
+  }
+  .entity-afsh { background: #FFF3E0; color: #E65100; }
+  .entity-illume { background: #E8F5E9; color: #2E7D32; }
+  .entity-spade { background: #E3F2FD; color: #1565C0; }
+  .entity-personal { background: #F3F4F6; color: #6B7280; }
+  .entity-logos { background: #F3E5F5; color: #6A1B9A; }
+
+  /* Table */
   .data-table {
     width: 100%;
     border-collapse: collapse;
@@ -334,821 +302,550 @@
   .data-table th {
     text-align: left;
     padding: 8px 12px;
+    font-weight: 600;
     color: var(--text-secondary);
-    font-weight: 500;
-    text-transform: uppercase;
     font-size: 11px;
+    text-transform: uppercase;
     letter-spacing: 0.5px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 2px solid var(--border);
   }
   .data-table td {
     padding: 10px 12px;
     border-bottom: 1px solid var(--border);
+    color: var(--text);
   }
   .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: #FAFBFC; }
 
-  .chart-container {
-    position: relative;
-    height: 280px;
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .tab {
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    font-weight: 600;
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* News & Markets */
+  .news-item {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .news-item:last-child { border-bottom: none; }
+  .news-headline {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .news-source {
+    font-size: 12px;
+    color: var(--text-secondary);
   }
 
-  .status-grid {
+  .market-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
   }
-  .status-badge {
+  .market-item {
+    padding: 12px;
+    background: var(--bg);
+    border-radius: 8px;
+    text-align: center;
+  }
+  .market-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .market-value {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+  .market-change {
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 2px;
+  }
+  .market-change.up { color: var(--green); }
+  .market-change.down { color: var(--red); }
+
+  /* System Health */
+  .health-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 8px;
+  }
+  .health-item {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 14px;
-    background: var(--card);
-    border: 1px solid var(--border);
+    padding: 8px 12px;
+    background: var(--bg);
     border-radius: 8px;
     font-size: 13px;
   }
-  .status-indicator {
-    width: 10px;
-    height: 10px;
+  .health-status {
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     flex-shrink: 0;
   }
-  .status-indicator.ok { background: var(--green); box-shadow: 0 0 6px rgba(46,160,67,0.4); }
-  .status-indicator.error { background: var(--red); box-shadow: 0 0 6px rgba(218,54,51,0.4); }
-
-  @media (max-width: 900px) {
-    .stat-row { grid-template-columns: repeat(3, 1fr); }
-    .two-col, .weather-row, .ticker-row, .commodity-row, .project-grid { grid-template-columns: 1fr; }
-    .status-grid { grid-template-columns: repeat(2, 1fr); }
+  .health-status.ok { background: var(--green); }
+  .health-status.warn { background: var(--amber); }
+  .health-status.error { background: var(--red); }
+  .health-status.off { background: #D1D5DB; }
+  .health-name { font-weight: 500; }
+  .health-detail {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-left: auto;
   }
-  @media (max-width: 600px) {
-    .stat-row { grid-template-columns: repeat(2, 1fr); }
-    .content { padding: 16px; }
-    .topbar, .tab-bar { padding-left: 16px; padding-right: 16px; }
-    .tab-btn { padding: 10px 12px; font-size: 13px; }
+
+  /* Quick Capture */
+  .quick-capture {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 100;
+  }
+  .quick-capture input {
+    flex: 1;
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .quick-capture input:focus { border-color: var(--accent); }
+  .quick-capture button {
+    padding: 10px 20px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+  }
+  .quick-capture button:hover { background: #245332; }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 24px;
+    color: var(--text-secondary);
+    font-size: 13px;
+  }
+
+  /* Brief narrative */
+  .brief-text {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    white-space: pre-wrap;
+  }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .metrics-strip { grid-template-columns: repeat(3, 1fr); }
+    .gauge-container { gap: 24px; }
+  }
+  @media (max-width: 768px) {
+    .container { padding: 12px 16px 80px; }
+    .metrics-strip { grid-template-columns: repeat(2, 1fr); }
+    .header { padding: 10px 16px; }
+    .header-title { font-size: 16px; }
+    .gauge-container { flex-direction: column; gap: 16px; }
+    .health-grid { grid-template-columns: 1fr; }
+    .market-grid { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <h1>CEO Dashboard</h1>
-  <span class="timestamp" id="last-updated"></span>
+<script>
+// ===== S20 DATA INJECTION POINT =====
+const DASHBOARD_DATA = {"generated_at": "2026-04-18T18:22:41.405832+00:00", "tasks": {"total": 312, "overdue": 41, "urgent": 135}, "meetings": {"upcoming": 38}, "projects": {"active": 6}, "errors": {"unresolved": 1494}, "waiting_on": {"count": 0}};
+// ===== S20 DATA INJECTION POINT =====
+</script>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <div class="header-logo">E</div>
+    <div>
+      <div class="header-title">COS Control Center</div>
+      <div class="header-subtitle">Chief of Staff OS</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="status-dot" id="statusDot"></span>
+    <span class="header-time" id="headerTime">--</span>
+  </div>
 </div>
 
-<div class="tab-bar">
-  <button class="tab-btn active" data-tab="command">Command Center</button>
-  <button class="tab-btn" data-tab="comms">Communications</button>
-  <button class="tab-btn" data-tab="markets">Markets &amp; Intel</button>
-  <button class="tab-btn" data-tab="operations">Operations</button>
-  <button class="tab-btn" data-tab="health">System Health</button>
+<!-- Main Content -->
+<div class="container">
+
+  <!-- Alert Banner -->
+  <div class="alert-banner" id="alertBanner">
+    <span class="alert-icon">!</span>
+    <span id="alertText"></span>
+  </div>
+
+  <!-- Metrics Strip -->
+  <div class="metrics-strip" id="metricsStrip">
+    <div class="metric-card">
+      <div class="metric-label">Tasks</div>
+      <div class="metric-value" id="metricTasks">--</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Overdue</div>
+      <div class="metric-value danger" id="metricOverdue">--</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Urgent</div>
+      <div class="metric-value warning" id="metricUrgent">--</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Meetings</div>
+      <div class="metric-value" id="metricMeetings">--</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Projects</div>
+      <div class="metric-value" id="metricProjects">--</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Waiting On</div>
+      <div class="metric-value" id="metricWaiting">--</div>
+    </div>
+  </div>
+
+  <!-- Next Up -->
+  <div class="section" id="sectionNextUp">
+    <div class="section-header" onclick="toggleSection('sectionNextUp')">
+      <span class="section-title">Next Up <span class="section-badge" id="nextUpBadge">0</span></span>
+      <span class="section-toggle">&#9660;</span>
+    </div>
+    <div class="section-body" id="nextUpBody">
+      <div class="empty-state">No upcoming meetings loaded</div>
+    </div>
+  </div>
+
+  <!-- Task Gauge -->
+  <div class="section" id="sectionTasks">
+    <div class="section-header" onclick="toggleSection('sectionTasks')">
+      <span class="section-title">Task Overview</span>
+      <span class="section-toggle">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <div class="gauge-container">
+        <div class="gauge" id="gaugeOverdue">
+          <svg viewBox="0 0 120 120">
+            <circle class="gauge-bg" cx="60" cy="60" r="50"/>
+            <circle class="gauge-fill" cx="60" cy="60" r="50"
+                    stroke="var(--red)"
+                    stroke-dasharray="314"
+                    stroke-dashoffset="314"
+                    id="gaugeOverdueFill"/>
+          </svg>
+          <div class="gauge-label">
+            <span class="gauge-number" id="gaugeOverdueNum" style="color:var(--red)">0</span>
+            <span class="gauge-text">Overdue</span>
+          </div>
+        </div>
+        <div class="gauge" id="gaugeUrgent">
+          <svg viewBox="0 0 120 120">
+            <circle class="gauge-bg" cx="60" cy="60" r="50"/>
+            <circle class="gauge-fill" cx="60" cy="60" r="50"
+                    stroke="var(--amber)"
+                    stroke-dasharray="314"
+                    stroke-dashoffset="314"
+                    id="gaugeUrgentFill"/>
+          </svg>
+          <div class="gauge-label">
+            <span class="gauge-number" id="gaugeUrgentNum" style="color:var(--amber)">0</span>
+            <span class="gauge-text">Urgent</span>
+          </div>
+        </div>
+        <div class="gauge" id="gaugeTotal">
+          <svg viewBox="0 0 120 120">
+            <circle class="gauge-bg" cx="60" cy="60" r="50"/>
+            <circle class="gauge-fill" cx="60" cy="60" r="50"
+                    stroke="var(--accent)"
+                    stroke-dasharray="314"
+                    stroke-dashoffset="314"
+                    id="gaugeTotalFill"/>
+          </svg>
+          <div class="gauge-label">
+            <span class="gauge-number" id="gaugeTotalNum" style="color:var(--accent)">0</span>
+            <span class="gauge-text">Total</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Projects -->
+  <div class="section" id="sectionProjects">
+    <div class="section-header" onclick="toggleSection('sectionProjects')">
+      <span class="section-title">Active Projects <span class="section-badge" id="projectsBadge">0</span></span>
+      <span class="section-toggle">&#9660;</span>
+    </div>
+    <div class="section-body" id="projectsBody">
+      <div class="empty-state">No project data loaded</div>
+    </div>
+  </div>
+
+  <!-- Errors / Scenario Health -->
+  <div class="section" id="sectionHealth">
+    <div class="section-header" onclick="toggleSection('sectionHealth')">
+      <span class="section-title">System Health <span class="section-badge" id="errorsBadge">0 errors</span></span>
+      <span class="section-toggle">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <div class="health-grid" id="healthGrid">
+        <div class="empty-state">No scenario health data loaded</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Waiting On -->
+  <div class="section collapsed" id="sectionWaiting">
+    <div class="section-header" onclick="toggleSection('sectionWaiting')">
+      <span class="section-title">Waiting On <span class="section-badge" id="waitingBadge">0</span></span>
+      <span class="section-toggle">&#9660;</span>
+    </div>
+    <div class="section-body" id="waitingBody">
+      <div class="empty-state">No items</div>
+    </div>
+  </div>
+
+  <!-- News -->
+  <div class="section collapsed" id="sectionNews">
+    <div class="section-header" onclick="toggleSection('sectionNews')">
+      <span class="section-title">News &amp; Intel</span>
+      <span class="section-toggle">&#9660;</span>
+    </div>
+    <div class="section-body" id="newsBody">
+      <div class="empty-state">No news data loaded</div>
+    </div>
+  </div>
+
+  <!-- Markets -->
+  <div class="section collapsed" id="sectionMarkets">
+    <div class="section-header" onclick="toggleSection('sectionMarkets')">
+      <span class="section-title">Markets &amp; Forex</span>
+      <span class="section-toggle">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <div class="market-grid" id="marketGrid">
+        <div class="empty-state">No market data loaded</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Brief Narrative -->
+  <div class="section" id="sectionBrief">
+    <div class="section-header" onclick="toggleSection('sectionBrief')">
+      <span class="section-title">Daily Brief</span>
+      <span class="section-toggle">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <div class="brief-text" id="briefText">No brief generated yet.</div>
+    </div>
+  </div>
+
 </div>
 
-<div class="content">
-  <div class="tab-panel active" id="tab-command"></div>
-  <div class="tab-panel" id="tab-comms"></div>
-  <div class="tab-panel" id="tab-markets"></div>
-  <div class="tab-panel" id="tab-operations"></div>
-  <div class="tab-panel" id="tab-health"></div>
+<!-- Quick Capture Bar -->
+<div class="quick-capture">
+  <input type="text" id="captureInput" placeholder="Quick capture: type a task or note..." />
+  <button onclick="quickCapture()">Add</button>
 </div>
 
 <script>
-// ===== S20 DATA INJECTION POINT =====
-const DASHBOARD_DATA = {
-  "updated_at": "2026-04-18T15:30:32+00:00Z",
-  "stats": {
-    "active_tasks": 194,
-    "overdue": 42,
-    "meetings": 16,
-    "errors": 1495,
-    "waiting": 0,
-    "deltas": {
-      "active_tasks": 0,
-      "overdue": 0,
-      "meetings": 0,
-      "errors": 0,
-      "waiting": 0
-    },
-    "sparklines": {
-      "active_tasks": [
-        194,
-        194,
-        194,
-        194,
-        194,
-        194,
-        194
-      ],
-      "overdue": [
-        42,
-        42,
-        42,
-        42,
-        42,
-        42,
-        42
-      ],
-      "meetings": [
-        16,
-        16,
-        16,
-        16,
-        16,
-        16,
-        16
-      ],
-      "errors": [
-        1495,
-        1495,
-        1495,
-        1495,
-        1495,
-        1495,
-        1495
-      ],
-      "waiting": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
+// -----------------------------------------------------------
+// Dashboard Logic
+// -----------------------------------------------------------
+const D = (typeof DASHBOARD_DATA !== 'undefined' && DASHBOARD_DATA) ? DASHBOARD_DATA : {};
+
+function init() {
+  // Update header time
+  const genAt = D.generated_at;
+  const timeEl = document.getElementById('headerTime');
+  const dotEl = document.getElementById('statusDot');
+  if (genAt) {
+    const d = new Date(genAt);
+    const now = new Date();
+    const ageMin = Math.floor((now - d) / 60000);
+    timeEl.textContent = 'Updated ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ' UTC';
+    if (ageMin > 120) {
+      dotEl.className = 'status-dot error';
+      timeEl.textContent += ' (' + Math.floor(ageMin/60) + 'h ago)';
+    } else if (ageMin > 60) {
+      dotEl.className = 'status-dot warning';
+    } else {
+      dotEl.className = 'status-dot';
     }
-  },
-  "focus_items": [
-    {
-      "text": "Fix S16 Health Check workflow failures on main",
-      "entity": "Personal",
-      "urgency": "high"
-    },
-    {
-      "text": "Investigate failed S16 Health Check workflow run",
-      "entity": "Personal",
-      "urgency": "high"
-    },
-    {
-      "text": "Fix failed S7 Daily News Brief GitHub Action",
-      "entity": "Personal",
-      "urgency": "high"
-    },
-    {
-      "text": "Investigate failed S7 Daily News Brief workflow run",
-      "entity": "Personal",
-      "urgency": "high"
-    },
-    {
-      "text": "Update GMAIL_TOKEN_JSON and GCAL_TOKEN_JSON in Azure",
-      "entity": "Personal",
-      "urgency": "high"
-    },
-    {
-      "text": "Fix OAuth token errors in Azure Function config",
-      "entity": "Personal",
-      "urgency": "high"
-    },
-    {
-      "text": "Fix S16 Health Check workflow failure on main",
-      "entity": "Personal",
-      "urgency": "high"
-    },
-    {
-      "text": "Investigate failed S16 Health Check workflow run",
-      "entity": "Personal",
-      "urgency": "high"
-    },
-    {
-      "text": "Fix and re-run S20 CEO Dashboard refresh workflow",
-      "entity": "Personal",
-      "urgency": "high"
-    },
-    {
-      "text": "Investigate failed CEO Dashboard refresh workflow run",
-      "entity": "Personal",
-      "urgency": "high"
-    }
-  ],
-  "meetings": [
-    {
-      "time": "22:30",
-      "title": "Dinner Meeting with Clark Griffith at Lonesome Dove",
-      "entity": "AFSH"
-    },
-    {
-      "time": "07:30",
-      "title": "Prep for AFSH OPS & Logistics Sunday Call",
-      "entity": "AFSH"
-    },
-    {
-      "time": "07:30",
-      "title": "Prepare for AFSH CashFlow Teams Meeting",
-      "entity": "AFSH"
-    },
-    {
-      "time": "08:00",
-      "title": "Prepare for Receivables Collection Meeting",
-      "entity": "AFSH"
-    },
-    {
-      "time": "12:00",
-      "title": "Attend ADJD Notary Public Appointment",
-      "entity": "AFSH"
-    },
-    {
-      "time": "12:00",
-      "title": "Attend ADJD Notary Public Appointment via Webex",
-      "entity": "AFSH"
-    },
-    {
-      "time": "12:00",
-      "title": "Attend ADJD Notary Public Appointment",
-      "entity": "AFSH"
-    },
-    {
-      "time": "12:00",
-      "title": "Attend ADJD Notary Public Appointment via Webex",
-      "entity": "AFSH"
-    },
-    {
-      "time": "12:00",
-      "title": "Attend ADJD Notary Public Appointment via Webex",
-      "entity": "AFSH"
-    },
-    {
-      "time": "12:00",
-      "title": "Attend ADJD Notary Appointment for AFSH Power of Attorney",
-      "entity": "AFSH"
-    },
-    {
-      "time": "05:00",
-      "title": "Schedule Meeting Thursday April 23 9am UAE",
-      "entity": "AFSH"
-    },
-    {
-      "time": "05:00",
-      "title": "Schedule Meeting Thursday April 23 9am UAE",
-      "entity": "AFSH"
-    },
-    {
-      "time": "05:00",
-      "title": "Confirm Meeting Thursday April 23 9am UAE",
-      "entity": "AFSH"
-    },
-    {
-      "time": "05:00",
-      "title": "Schedule Meeting Thursday April 23 9am UAE",
-      "entity": "AFSH"
-    },
-    {
-      "time": "05:00",
-      "title": "Confirm Meeting Thursday 23rd 9am UAE Time",
-      "entity": "AFSH"
-    }
-  ],
-  "weather": [
-    {
-      "city": "Sant Cugat",
-      "temp": 18,
-      "condition": "Partly Cloudy",
-      "icon": "26"
-    },
-    {
-      "city": "Houston",
-      "temp": 31,
-      "condition": "Sunny",
-      "icon": "2600"
-    },
-    {
-      "city": "New York",
-      "temp": 14,
-      "condition": "Overcast",
-      "icon": "2601"
-    }
-  ],
-  "forex": [
-    {
-      "pair": "EUR/USD",
-      "rate": 1.134,
-      "change": 0.002
-    },
-    {
-      "pair": "GBP/USD",
-      "rate": 1.329,
-      "change": -0.001
-    },
-    {
-      "pair": "USD/CHF",
-      "rate": 0.816,
-      "change": -0.003
-    }
-  ],
-  "commodities": [
-    {
-      "name": "Almonds",
-      "price": 3.42,
-      "unit": "USD/lb",
-      "change": 0.08
-    },
-    {
-      "name": "Olive Oil",
-      "price": 8950,
-      "unit": "EUR/ton",
-      "change": -120
-    },
-    {
-      "name": "Wheat",
-      "price": 542.5,
-      "unit": "USD/bu",
-      "change": 3.25
-    }
-  ],
-  "news": [
-    {
-      "headline": "EU proposes new agricultural subsidy framework for 2027",
-      "source": "Reuters"
-    },
-    {
-      "headline": "California almond exports hit record high in Q1 2026",
-      "source": "AgDaily"
-    },
-    {
-      "headline": "ECB signals rate pause amid slowing eurozone inflation",
-      "source": "FT"
-    },
-    {
-      "headline": "Spain tech sector draws record VC funding",
-      "source": "TechCrunch"
-    },
-    {
-      "headline": "AI-driven supply chain tools adoption surges among SMEs",
-      "source": "Bloomberg"
-    },
-    {
-      "headline": "Mediterranean drought concerns push olive oil futures higher",
-      "source": "Reuters"
-    }
-  ],
-  "projects": [
-    {
-      "name": "reMarkable Integration",
-      "entity": "Personal",
-      "status": "active",
-      "owner": "Nick enables OneDrive integration in reMarkable tablet \u2192 verify test file lands in OneDrive \u2192 build Make.com S6"
-    },
-    {
-      "name": "Divorce Proceedings",
-      "entity": "Personal",
-      "status": "active",
-      "owner": ""
-    },
-    {
-      "name": "Spade Contract Negotiation",
-      "entity": "Spade",
-      "status": "active",
-      "owner": "Call with Tom\u00e1s re: NDA / D&O / IP / PII Agreement delivery"
-    },
-    {
-      "name": "NetSuite \u2192 AFSH Sales Pipeline Sync",
-      "entity": "AFSH",
-      "status": "planning",
-      "owner": "Scope NetSuite REST/SOAP opportunity endpoints + dedup key"
-    },
-    {
-      "name": "Daily News Brief",
-      "entity": "Personal",
-      "status": "planning",
-      "owner": "Stand up Make.com scenario pulling WSJ / Foreign Affairs / Economist / FT / RANE + commodities + forex"
-    },
-    {
-      "name": "Logos Legacy Holdings LLC \u2014 Setup",
-      "entity": "Logos",
-      "status": "active",
-      "owner": "Mercury Bank account activation (LegalZoom docs uploaded Apr 9)"
-    }
-  ],
-  "waiting_on": [],
-  "task_distribution": {
-    "AFSH": 110,
-    "Personal": 61,
-    "Illume": 18,
-    "Logos": 2,
-    "Spade": 3
-  },
-  "errors_by_scenario": {
-    "S11": 5,
-    "S2d": 569,
-    "S3c": 401,
-    "S2c": 376,
-    "S5": 83,
-    "S1": 10,
-    "S6": 47,
-    "S2a": 2,
-    "S16": 2
-  },
-  "recent_errors": [],
-  "scenario_status": {
-    "S11": "error",
-    "S2d": "error",
-    "S3c": "error",
-    "S2c": "error",
-    "S5": "error",
-    "S1": "error",
-    "S6": "error",
-    "S2a": "error",
-    "S16": "error"
-  },
-  "comms": {
-    "accounts": [
-      {
-        "name": "Gmail",
-        "key": "gmail",
-        "unread": 0,
-        "flagged": 0
-      },
-      {
-        "name": "AFSH Outlook",
-        "key": "afsh",
-        "unread": 0,
-        "flagged": 0
-      },
-      {
-        "name": "Illume Outlook",
-        "key": "illume",
-        "unread": 0,
-        "flagged": 0
-      },
-      {
-        "name": "WhatsApp",
-        "key": "whatsapp",
-        "unread": 0,
-        "flagged": 0
-      }
-    ],
-    "total_unread": 0,
-    "recent_threads": [],
-    "flagged_items": []
-  }
-};
-// ===== END S20 DATA =====
-
-var ENTITY_COLORS = {
-  AFSH: '#B8860B', Illume: '#5A8A2E', Spade: '#0071E3',
-  Logos: '#9B59B6', Personal: '#6E6E73', COS: '#E67E22'
-};
-
-function entityColor(e) { return ENTITY_COLORS[e] || '#8B949E'; }
-
-function formatTime(iso) {
-  var d = new Date(iso);
-  return d.toLocaleString('en-US', {
-    month: 'short', day: 'numeric',
-    hour: '2-digit', minute: '2-digit', hour12: false
-  });
-}
-
-function weatherIcon(code) {
-  var map = { '26': '\u26C5', '2601': '\u2601\uFE0F', '2614': '\u2614', '2600': '\u2600\uFE0F' };
-  return map[code] || '\u2600\uFE0F';
-}
-
-// --- Tab switching ---
-document.querySelectorAll('.tab-btn').forEach(function(btn) {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
-    document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
-    btn.classList.add('active');
-    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-  });
-});
-
-// --- Set timestamp ---
-document.getElementById('last-updated').textContent = 'Updated ' + formatTime(DASHBOARD_DATA.updated_at);
-
-// --- Build Command Center ---
-(function buildCommand() {
-  var d = DASHBOARD_DATA;
-  var s = d.stats;
-  var panel = document.getElementById('tab-command');
-
-  var statKeys = [
-    { key: 'active_tasks', label: 'Active Tasks' },
-    { key: 'overdue', label: 'Overdue' },
-    { key: 'meetings', label: "Today's Meetings" },
-    { key: 'errors', label: 'Scenario Errors' },
-    { key: 'waiting', label: 'Waiting On' }
-  ];
-
-  var html = '<div class="stat-row">';
-  statKeys.forEach(function(sk) {
-    var val = s[sk.key];
-    var delta = s.deltas[sk.key];
-    var isUp = delta > 0;
-    var cls = (sk.key === 'overdue' || sk.key === 'errors')
-      ? (isUp ? 'down' : 'up')
-      : (isUp ? 'up' : 'down');
-    var arrow = isUp ? '\u25B2' : '\u25BC';
-    html += '<div class="card stat-card">' +
-      '<div class="label">' + sk.label + '</div>' +
-      '<div class="value-row">' +
-        '<span class="value">' + val + '</span>' +
-        '<span class="delta ' + cls + '">' + arrow + ' ' + Math.abs(delta) + '</span>' +
-      '</div>' +
-      '<div class="sparkline-container"><canvas id="spark-' + sk.key + '"></canvas></div>' +
-    '</div>';
-  });
-  html += '</div>';
-
-  html += '<div class="two-col">';
-
-  html += '<div class="card"><div class="section-title">Today\'s Focus</div><ul class="focus-list">';
-  d.focus_items.forEach(function(f) {
-    html += '<li class="focus-item">' +
-      '<span class="entity-dot" style="background:' + entityColor(f.entity) + '"></span>' +
-      '<span class="text">' + f.text + '</span>' +
-      '<span class="urgency ' + f.urgency + '">' + f.urgency.toUpperCase() + '</span>' +
-    '</li>';
-  });
-  html += '</ul></div>';
-
-  html += '<div class="card"><div class="section-title">Upcoming Meetings</div>';
-  d.meetings.forEach(function(m) {
-    html += '<div class="meeting-item">' +
-      '<span class="meeting-time">' + m.time + '</span>' +
-      '<span class="meeting-title">' + m.title + '</span>' +
-      '<span class="entity-badge" style="background:' + entityColor(m.entity) + '22;color:' + entityColor(m.entity) + '">' + m.entity + '</span>' +
-    '</div>';
-  });
-  html += '</div></div>';
-
-  panel.innerHTML = html;
-
-  statKeys.forEach(function(sk) {
-    var ctx = document.getElementById('spark-' + sk.key);
-    var color = (sk.key === 'overdue' || sk.key === 'errors') ? '#DA3633' : '#0071E3';
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: s.sparklines[sk.key].map(function(_, i) { return i; }),
-        datasets: [{
-          data: s.sparklines[sk.key],
-          borderColor: color,
-          borderWidth: 2,
-          pointRadius: 0,
-          tension: 0.4,
-          fill: true,
-          backgroundColor: color + '18'
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { enabled: false } },
-        scales: { x: { display: false }, y: { display: false } },
-        animation: false
-      }
-    });
-  });
-})();
-
-
-// --- Build Communications ---
-(function buildComms() {
-  var d = DASHBOARD_DATA;
-  var c = d.comms || {accounts:[],recent_threads:[],flagged_items:[]};
-  var panel = document.getElementById('tab-comms');
-  if (!panel) return;
-  var html = '';
-
-  var ACCOUNT_COLORS = {
-    gmail: '#EA4335', afsh: '#B8860B', illume: '#5A8A2E', whatsapp: '#25D366'
-  };
-
-  html += '<div class="comms-accounts">';
-  (c.accounts||[]).forEach(function(a) {
-    var color = ACCOUNT_COLORS[a.key] || '#8B949E';
-    html += '<div class="card comms-card">' +
-      '<div class="account-name">' + a.name + '</div>' +
-      '<div class="unread-count" style="color:' + color + '">' + a.unread + '</div>' +
-      '<div class="unread-label">unread</div>' +
-      (a.flagged > 0 ? '<div class="flagged">' + a.flagged + ' flagged</div>' : '') +
-    '</div>';
-  });
-  html += '</div>';
-
-  html += '<div class="two-col">';
-
-  html += '<div class="card"><div class="section-title">Action Required</div>';
-  if (c.flagged_items && c.flagged_items.length > 0) {
-    c.flagged_items.forEach(function(f) {
-      html += '<div class="thread-item">' +
-        '<span class="thread-account ' + f.account + '">' + f.account.toUpperCase() + '</span>' +
-        '<div class="thread-meta">' +
-          '<div class="thread-from">' + f.from + '</div>' +
-          '<div class="thread-subject">' + f.subject + '</div>' +
-        '</div>' +
-      '</div>';
-    });
   } else {
-    html += '<div style="padding:20px 0;color:var(--text-secondary);font-size:14px">No flagged items</div>';
+    timeEl.textContent = 'No data';
+    dotEl.className = 'status-dot error';
   }
-  html += '</div>';
 
-  html += '<div class="card"><div class="section-title">Recent Threads</div>';
-  (c.recent_threads||[]).forEach(function(t) {
-    html += '<div class="thread-item">' +
-      '<span class="thread-account ' + t.account + '">' + t.account.toUpperCase() + '</span>' +
-      '<div class="thread-meta">' +
-        '<div class="thread-from">' + t.from + (t.flagged ? ' <span style="color:var(--red)">*</span>' : '') + '</div>' +
-        '<div class="thread-subject">' + t.subject + '</div>' +
-      '</div>' +
-    '</div>';
-  });
-  html += '</div></div>';
+  // Metrics
+  const tasks = D.tasks || {};
+  const meetings = D.meetings || {};
+  const projects = D.projects || {};
+  const errors = D.errors || {};
+  const waiting = D.waiting_on || {};
 
-  panel.innerHTML = html;
-})();
+  setMetric('metricTasks', tasks.total);
+  setMetric('metricOverdue', tasks.overdue);
+  setMetric('metricUrgent', tasks.urgent);
+  setMetric('metricMeetings', meetings.upcoming);
+  setMetric('metricProjects', projects.active);
+  setMetric('metricWaiting', waiting.count);
 
-// --- Build Markets & Intel ---
-(function buildMarkets() {
-  var d = DASHBOARD_DATA;
-  var panel = document.getElementById('tab-markets');
-  var html = '';
+  // Badges
+  setText('projectsBadge', (projects.active || 0) + '');
+  setText('errorsBadge', (errors.unresolved || 0) + ' errors');
+  setText('waitingBadge', (waiting.count || 0) + '');
+  setText('nextUpBadge', (meetings.upcoming || 0) + '');
 
-  html += '<div class="section-title">Weather</div><div class="weather-row">';
-  d.weather.forEach(function(w) {
-    html += '<div class="card weather-card">' +
-      '<span class="weather-icon">' + weatherIcon(w.icon) + '</span>' +
-      '<div class="city">' + w.city + '</div>' +
-      '<div class="temp">' + w.temp + '&deg;C</div>' +
-      '<div class="condition">' + w.condition + '</div>' +
-    '</div>';
-  });
-  html += '</div>';
+  // Alert banner
+  const overdueCount = tasks.overdue || 0;
+  const errorCount = errors.unresolved || 0;
+  if (overdueCount > 10 || errorCount > 50) {
+    const banner = document.getElementById('alertBanner');
+    const parts = [];
+    if (overdueCount > 10) parts.push(overdueCount + ' overdue tasks');
+    if (errorCount > 50) parts.push(errorCount + ' unresolved scenario errors');
+    document.getElementById('alertText').textContent = 'Attention: ' + parts.join(', ');
+    banner.classList.add('visible');
+  }
 
-  html += '<div class="section-title">Forex</div><div class="ticker-row">';
-  d.forex.forEach(function(f) {
-    var up = f.change >= 0;
-    var cls = up ? 'up' : 'down';
-    var arrow = up ? '\u25B2' : '\u25BC';
-    html += '<div class="card ticker-card">' +
-      '<div class="pair">' + f.pair + '</div>' +
-      '<div class="rate">' + f.rate.toFixed(4) + '</div>' +
-      '<div class="change delta ' + cls + '">' + arrow + ' ' + Math.abs(f.change).toFixed(4) + '</div>' +
-    '</div>';
-  });
-  html += '</div>';
+  // Gauges
+  animateGauge('gaugeOverdueFill', 'gaugeOverdueNum', tasks.overdue || 0, tasks.total || 1);
+  animateGauge('gaugeUrgentFill', 'gaugeUrgentNum', tasks.urgent || 0, tasks.total || 1);
+  animateGauge('gaugeTotalFill', 'gaugeTotalNum', tasks.total || 0, 500);
 
-  html += '<div class="section-title">Commodities</div><div class="commodity-row">';
-  d.commodities.forEach(function(c) {
-    var up = c.change >= 0;
-    var cls = up ? 'up' : 'down';
-    var arrow = up ? '\u25B2' : '\u25BC';
-    var displayPrice = c.price > 100 ? c.price.toLocaleString() : c.price;
-    html += '<div class="card commodity-card">' +
-      '<div class="name">' + c.name + '</div>' +
-      '<div class="price">' + displayPrice + ' <span class="unit">' + c.unit + '</span></div>' +
-      '<div class="change delta ' + cls + '">' + arrow + ' ' + Math.abs(c.change) + '</div>' +
-    '</div>';
-  });
-  html += '</div>';
+  // News (if present in extended data)
+  if (D.news && D.news.length) {
+    const newsHtml = D.news.map(function(n) {
+      return '<div class="news-item"><div class="news-headline">' + esc(n.title || n.headline || '') +
+             '</div><div class="news-source">' + esc(n.source || '') + '</div></div>';
+    }).join('');
+    document.getElementById('newsBody').innerHTML = newsHtml;
+  }
 
-  html += '<div class="card"><div class="section-title">Headlines</div>';
-  d.news.forEach(function(n) {
-    html += '<div class="news-item">' +
-      '<span class="source-badge">' + n.source + '</span>' +
-      '<span>' + n.headline + '</span>' +
-    '</div>';
-  });
-  html += '</div>';
-
-  panel.innerHTML = html;
-})();
-
-// --- Build Operations ---
-(function buildOps() {
-  var d = DASHBOARD_DATA;
-  var panel = document.getElementById('tab-operations');
-  var html = '';
-
-  html += '<div class="section-title">Active Projects</div><div class="project-grid">';
-  d.projects.forEach(function(p) {
-    html += '<div class="card project-card">' +
-      '<div class="entity-bar" style="background:' + entityColor(p.entity) + '"></div>' +
-      '<div class="project-name"><span class="status-dot ' + p.status + '"></span>' + p.name + '</div>' +
-      '<div class="project-meta">' + p.entity + ' &middot; ' + p.owner + ' &middot; ' + p.status.charAt(0).toUpperCase() + p.status.slice(1) + '</div>' +
-    '</div>';
-  });
-  html += '</div>';
-
-  html += '<div class="card" style="margin-bottom:24px"><div class="section-title">Waiting On</div>' +
-    '<table class="data-table"><thead><tr><th>Who</th><th>What</th><th>Follow-up</th></tr></thead><tbody>';
-  d.waiting_on.forEach(function(w) {
-    html += '<tr><td>' + w.who + '</td><td>' + w.what + '</td><td>' + w.follow_up + '</td></tr>';
-  });
-  html += '</tbody></table></div>';
-
-  html += '<div class="card"><div class="section-title">Task Distribution by Entity</div>' +
-    '<div class="chart-container"><canvas id="chart-tasks"></canvas></div></div>';
-
-  panel.innerHTML = html;
-
-  var entities = Object.keys(d.task_distribution);
-  var counts = Object.values(d.task_distribution);
-  new Chart(document.getElementById('chart-tasks'), {
-    type: 'bar',
-    data: {
-      labels: entities,
-      datasets: [{
-        data: counts,
-        backgroundColor: entities.map(function(e) { return entityColor(e); }),
-        borderRadius: 4,
-        barThickness: 28
-      }]
-    },
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: {
-          grid: { color: '#2A3038' },
-          ticks: { color: '#8B949E', font: { size: 12 } }
-        },
-        y: {
-          grid: { display: false },
-          ticks: { color: '#E8EAED', font: { size: 13, weight: '600' } }
-        }
-      }
+  // Markets (if present in extended data)
+  if (D.markets && Object.keys(D.markets).length) {
+    var mHtml = '';
+    for (var k in D.markets) {
+      var v = D.markets[k];
+      var val = typeof v === 'object' ? (v.rate || v.value || v.price || '--') : v;
+      mHtml += '<div class="market-item"><div class="market-label">' + esc(k) + '</div>' +
+               '<div class="market-value">' + esc(String(val)) + '</div></div>';
     }
-  });
-})();
+    document.getElementById('marketGrid').innerHTML = mHtml;
+  }
 
-// --- Build System Health ---
-(function buildHealth() {
-  var d = DASHBOARD_DATA;
-  var panel = document.getElementById('tab-health');
-  var html = '';
+  // Brief narrative
+  if (D.brief) {
+    document.getElementById('briefText').textContent = D.brief;
+  }
 
-  html += '<div class="card" style="margin-bottom:24px"><div class="section-title">Errors by Scenario (Last 24h)</div>' +
-    '<div class="chart-container"><canvas id="chart-errors"></canvas></div></div>';
+  // Schedule
+  if (D.schedule && D.schedule.length) {
+    var sHtml = D.schedule.map(function(s) {
+      return '<div class="schedule-item"><div class="schedule-time">' + esc(s.time || '') +
+             '</div><div><div class="schedule-title">' + esc(s.title || '') +
+             '</div><div class="schedule-meta">' + esc(s.meta || '') + '</div></div></div>';
+    }).join('');
+    document.getElementById('nextUpBody').innerHTML = sHtml;
+  }
+}
 
-  html += '<div class="card" style="margin-bottom:24px"><div class="section-title">Recent Errors</div>' +
-    '<table class="data-table"><thead><tr><th>Scenario</th><th>Message</th><th>Time</th></tr></thead><tbody>';
-  d.recent_errors.forEach(function(e) {
-    html += '<tr>' +
-      '<td style="white-space:nowrap">' + e.scenario + '</td>' +
-      '<td>' + e.message + '</td>' +
-      '<td style="white-space:nowrap">' + formatTime(e.timestamp) + '</td>' +
-    '</tr>';
-  });
-  html += '</tbody></table></div>';
+function setMetric(id, val) {
+  var el = document.getElementById(id);
+  if (el) el.textContent = (val != null && val !== undefined) ? val : '--';
+}
 
-  html += '<div class="section-title">Scenario Status</div><div class="status-grid">';
-  Object.entries(d.scenario_status).forEach(function(entry) {
-    html += '<div class="status-badge">' +
-      '<span class="status-indicator ' + entry[1] + '"></span>' +
-      '<span>' + entry[0] + '</span>' +
-    '</div>';
-  });
-  html += '</div>';
+function setText(id, val) {
+  var el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
 
-  panel.innerHTML = html;
+function esc(s) {
+  var d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
 
-  var scenarios = Object.keys(d.errors_by_scenario);
-  var errCounts = Object.values(d.errors_by_scenario);
-  new Chart(document.getElementById('chart-errors'), {
-    type: 'bar',
-    data: {
-      labels: scenarios,
-      datasets: [{
-        data: errCounts,
-        backgroundColor: errCounts.map(function(c) {
-          return c > 5 ? '#DA3633' : c > 0 ? '#E67E22' : '#2EA043';
-        }),
-        borderRadius: 4,
-        barThickness: 28
-      }]
-    },
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: {
-          grid: { color: '#2A3038' },
-          ticks: { color: '#8B949E', font: { size: 12 } }
-        },
-        y: {
-          grid: { display: false },
-          ticks: { color: '#E8EAED', font: { size: 12, weight: '500' } }
-        }
-      }
-    }
-  });
-})();
+function animateGauge(fillId, numId, value, max) {
+  var circ = 314; // 2*pi*50
+  var ratio = Math.min(value / (max || 1), 1);
+  var offset = circ * (1 - ratio);
+  var el = document.getElementById(fillId);
+  var num = document.getElementById(numId);
+  if (el) {
+    setTimeout(function() { el.setAttribute('stroke-dashoffset', offset); }, 100);
+  }
+  if (num) num.textContent = value;
+}
+
+function toggleSection(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.toggle('collapsed');
+}
+
+function quickCapture() {
+  var input = document.getElementById('captureInput');
+  var text = input.value.trim();
+  if (!text) return;
+  // In a future version, this could POST to a webhook or Notion API
+  alert('Captured: ' + text);
+  input.value = '';
+}
+
+// Init on load
+document.addEventListener('DOMContentLoaded', init);
 </script>
+
 </body>
 </html>

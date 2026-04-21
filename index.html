@@ -1775,7 +1775,8 @@ function briefChat() {
             replyEl.innerHTML = '<div class="elly-label">ELLY</div>Error (' + res.status + '): ' + esc(JSON.stringify(res.data || {}));
             return;
         }
-        var reply = (res.data && (res.data.reply || res.data.message)) ? (res.data.reply || res.data.message) : 'No reply received.';
+        if (res.data && res.data.error) { replyEl.innerHTML = '<div class="elly-label">ELLY</div>Error: ' + esc(String(res.data.error)); return; }
+            var reply = (res.data && (res.data.reply || res.data.message)) ? (res.data.reply || res.data.message) : 'No reply received.';
         replyEl.innerHTML = '<div class="elly-label">ELLY</div>' + esc(reply).replace(/\n/g, '<br>');
     }).catch(function(err) {
         input.disabled = false;

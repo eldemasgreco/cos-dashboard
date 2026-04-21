@@ -773,7 +773,108 @@
         .sug-reason { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
         .sug-entity { font-size: 10px; font-weight: 600; color: var(--text-secondary); }
 
-    </style>
+    
+/* ===== Ask Elly (compact) ===== */
+.ai-brief-card .brief-chat { margin-bottom: 12px; }
+.brief-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0 4px 0;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--text-secondary);
+    user-select: none;
+}
+.brief-summary-row:hover { color: var(--text-primary); }
+.brief-summary-chev {
+    font-size: 14px;
+    transition: transform 0.18s ease;
+    opacity: 0.7;
+}
+.brief-summary-chev.open { transform: rotate(180deg); }
+.brief-details { margin-top: 8px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
+.brief-details .ai-brief-narrative { max-height: none; }
+.brief-details .brief-expand-btn { display: none !important; }
+
+/* ===== Compact schedule list ===== */
+.sched-list { display: flex; flex-direction: column; gap: 4px; }
+.sched-list-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sched-list-count {
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: rgba(255,255,255,0.06);
+    padding: 1px 6px;
+    border-radius: 8px;
+    font-size: 10px;
+    letter-spacing: 0;
+}
+.sched-list-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    background: rgba(255,255,255,0.02);
+    transition: background 0.15s;
+}
+.sched-list-item:hover { background: rgba(255,255,255,0.05); }
+.sched-list-item.past { opacity: 0.4; }
+.sched-list-item.now {
+    background: rgba(16,185,129,0.12);
+    box-shadow: inset 2px 0 0 var(--green);
+    padding-left: 8px;
+}
+.sched-list-item.tomorrow { opacity: 0.75; }
+.sched-list-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.sched-list-time {
+    font-family: var(--mono, ui-monospace, monospace);
+    font-weight: 600;
+    font-size: 11px;
+    color: var(--text-secondary);
+    min-width: 82px;
+    white-space: nowrap;
+}
+.sched-list-title {
+    flex: 1;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.sched-list-meta {
+    color: var(--text-tertiary);
+    font-size: 11px;
+    margin-left: 6px;
+}
+.sched-list-more {
+    margin-top: 6px;
+    padding: 6px 10px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 6px;
+    user-select: none;
+}
+.sched-list-more:hover { color: var(--text-primary); background: rgba(255,255,255,0.04); }
+.sched-list-more.tomorrow-toggle { margin-top: 14px; font-weight: 600; }
+
+</style>
 </head>
 <body>
 
@@ -867,22 +968,27 @@
             </div>
         </div>
 
-        <!-- AI Brief -->
+        <!-- Ask Elly -->
         <div class="card mb-20 ai-brief-card" id="ai-brief-card">
             <div class="card-hdr">
-                <span class="card-hdr-title">AI Brief</span>
+                <span class="card-hdr-title">Ask Elly</span>
                 <span class="badge badge-green" id="brief-time">--</span>
             </div>
             <div class="card-body">
-                <div id="brief-topics-container"></div>
-                <div class="ai-brief-narrative" id="brief-narrative"></div>
-                <div class="brief-expand-btn" id="brief-expand" onclick="toggleBriefExpand()" style="display:none;">Read more</div>
                 <div class="brief-chat">
                     <div class="brief-chat-row">
-                        <input type="text" id="brief-chat-msg" placeholder="Ask Elly about this brief..." onkeydown="if(event.key==='Enter')briefChat()">
+                        <input type="text" id="brief-chat-msg" placeholder="Ask about today, projects, markets, people..." onkeydown="if(event.key==='Enter')briefChat()">
                         <button onclick="briefChat()">Ask</button>
                     </div>
                     <div id="brief-chat-reply" style="display:none;"></div>
+                </div>
+                <div class="brief-summary-row" id="brief-summary-row" onclick="toggleBriefExpand()">
+                    <span id="brief-summary-line">Daily brief</span>
+                    <span class="brief-summary-chev" id="brief-summary-chev">▾</span>
+                </div>
+                <div class="brief-details" id="brief-details" style="display:none;">
+                    <div id="brief-topics-container"></div>
+                    <div class="ai-brief-narrative" id="brief-narrative"></div>
                 </div>
             </div>
         </div>
@@ -1259,61 +1365,43 @@ function renderScheduleDay(d) {
     var tomorrow = s.tomorrow || [];
     if (!today.length && !tomorrow.length) { body.innerHTML = '<div class="empty">No events</div>'; return; }
 
-    var minH = 24, maxH = 0;
-    today.forEach(function(ev) {
-        var t = parseTime12(ev.time);
-        if (t !== null) { minH = Math.min(minH, Math.floor(t/60)); maxH = Math.max(maxH, Math.floor(t/60) + 1); }
-    });
-    if (minH > maxH) { minH = 8; maxH = 19; }
-    minH = Math.max(0, minH - 1);
-    maxH = Math.min(24, maxH + 1);
-    var totalMinutes = (maxH - minH) * 60;
-    var pxPerMin = 1.0;
-    var tlHeight = totalMinutes * pxPerMin;
-
     var now = new Date();
     var nowMin = now.getHours() * 60 + now.getMinutes();
 
-    var html = '<div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;">Today</div>';
-    html += '<div class="sched-tl" style="height:' + tlHeight + 'px;">';
-
-    for (var h = minH; h <= maxH; h++) {
-        var top = (h - minH) * 60 * pxPerMin;
-        var label = h === 0 ? '12 AM' : h < 12 ? h + ' AM' : h === 12 ? '12 PM' : (h-12) + ' PM';
-        html += '<div class="sched-tl-hour" style="position:absolute;top:' + top + 'px;left:0;right:0;">' +
-            '<div class="sched-tl-hour-label">' + label + '</div></div>';
+    function renderList(events, cls) {
+        return events.map(function(ev) {
+            var startMin = parseTime12(ev.time);
+            var isPast = (startMin !== null && startMin < (nowMin - 30));
+            var isNow = (startMin !== null && startMin >= (nowMin - 15) && startMin <= (nowMin + 45));
+            var dot = ev.type === 'personal' ? 'var(--purple)' : entityColor(ev.entity);
+            var timeTxt = ev.time + (ev.end ? '–' + ev.end : '');
+            var meta = ev.attendees ? ' <span class="sched-list-meta">' + esc(ev.attendees) + '</span>' : '';
+            var classes = 'sched-list-item';
+            if (cls) classes += ' ' + cls;
+            if (isPast) classes += ' past';
+            if (isNow) classes += ' now';
+            return '<div class="' + classes + '">' +
+                '<span class="sched-list-dot" style="background:' + dot + '"></span>' +
+                '<span class="sched-list-time">' + esc(timeTxt) + '</span>' +
+                '<span class="sched-list-title">' + esc(ev.title) + meta + '</span>' +
+                '</div>';
+        }).join('');
     }
 
-    today.forEach(function(ev) {
-        var startMin = parseTime12(ev.time);
-        if (startMin === null) return;
-        var endMin = ev.end ? parseTime12(ev.end) : startMin + 30;
-        var top = (startMin - minH * 60) * pxPerMin;
-        var height = Math.max(24, (endMin - startMin) * pxPerMin);
-        var borderColor = ev.type === 'personal' ? 'var(--purple)' : entityColor(ev.entity);
-        var pastCls = (startMin < (nowMin - 30)) ? ' past' : '';
-        html += '<div class="sched-tl-item' + pastCls + '" style="top:' + top + 'px;height:' + height + 'px;border-left-color:' + borderColor + '">' +
-            '<div class="sched-event-title">' + esc(ev.title) + '</div>' +
-            '<div class="sched-event-meta">' + esc(ev.time) + (ev.end ? ' - ' + esc(ev.end) : '') +
-            (ev.attendees ? ' &middot; ' + esc(ev.attendees) : '') + '</div></div>';
-    });
-
-    if (nowMin >= minH * 60 && nowMin <= maxH * 60) {
-        var nowTop = (nowMin - minH * 60) * pxPerMin;
-        var nowLabel = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-        html += '<div class="sched-now-marker" style="top:' + nowTop + 'px;"><span class="now-time">' + nowLabel + '</span></div>';
+    var html = '';
+    if (today.length) {
+        var visible = today.slice(0, 6);
+        var rest = today.slice(6);
+        html += '<div class="sched-list-label">Today <span class="sched-list-count">' + today.length + '</span></div>';
+        html += '<div class="sched-list">' + renderList(visible, '') + '</div>';
+        if (rest.length) {
+            html += '<div class="sched-list-more" onclick="var el=this.nextElementSibling;var open=el.style.display!==\'none\';el.style.display=open?\'none\':\'block\';this.textContent=(open?\'+ \':\'- \')+\'' + rest.length + ' more today\';">+ ' + rest.length + ' more today</div>';
+            html += '<div class="sched-list" style="display:none;">' + renderList(rest, '') + '</div>';
+        }
     }
-    html += '</div>';
-
     if (tomorrow.length) {
-        html += '<div style="font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.04em;margin:20px 0 8px;">Tomorrow</div>';
-        tomorrow.forEach(function(ev) {
-            var borderColor = ev.type === 'personal' ? 'var(--purple)' : entityColor(ev.entity);
-            html += '<div class="sched-slot">' +
-                '<div class="sched-time-col"><span class="sched-time">' + esc(ev.time) + '</span></div>' +
-                '<div class="sched-event" style="border-left-color:' + borderColor + '">' +
-                '<div class="sched-event-title">' + esc(ev.title) + '</div></div></div>';
-        });
+        html += '<div class="sched-list-more tomorrow-toggle" onclick="var el=this.nextElementSibling;var open=el.style.display!==\'none\';el.style.display=open?\'none\':\'block\';this.textContent=(open?\'+ \':\'- \')+\'Tomorrow (' + tomorrow.length + ')\';">+ Tomorrow (' + tomorrow.length + ')</div>';
+        html += '<div class="sched-list" style="display:none;">' + renderList(tomorrow, 'tomorrow') + '</div>';
     }
     body.innerHTML = html;
 }
@@ -1636,6 +1724,19 @@ function renderBrief(d) {
         }
     }
 
+    // --- One-line summary for collapsed Ask Elly card ---
+    var summaryEl = document.getElementById('brief-summary-line');
+    if (summaryEl) {
+        var urgCount = topics.filter(function(t) { return (t.urgency||'').toLowerCase() === 'red'; }).length;
+        var total = topics.length;
+        var bits = [];
+        if (total) bits.push(total + (total===1?' topic':' topics'));
+        if (urgCount) bits.push(urgCount + ' urgent');
+        var tomorrowMeetings = ((d.schedule||{}).today || []).length;
+        if (tomorrowMeetings) bits.push(tomorrowMeetings + ' mtg' + (tomorrowMeetings===1?'':'s') + ' today');
+        summaryEl.textContent = bits.length ? bits.join(' · ') : 'Daily brief ready';
+    }
+
     // --- Always show narrative summary at top ---
     if (fallback) {
         fallback.style.display = 'block';
@@ -1733,11 +1834,12 @@ function renderSuggested(d) {
 
 
 function toggleBriefExpand() {
-    var el = document.getElementById('brief-narrative');
-    var btn = document.getElementById('brief-expand');
-    if (!el) return;
-    el.classList.toggle('expanded');
-    if (btn) btn.textContent = el.classList.contains('expanded') ? 'Show less' : 'Read more';
+    var details = document.getElementById('brief-details');
+    var chev = document.getElementById('brief-summary-chev');
+    if (!details) return;
+    var open = details.style.display !== 'none';
+    details.style.display = open ? 'none' : 'block';
+    if (chev) chev.classList.toggle('open', !open);
 }
 
 function briefChat() {
@@ -1758,8 +1860,15 @@ function briefChat() {
     replyEl.style.display = 'block';
     replyEl.innerHTML = '<div class="elly-label">ELLY</div>Thinking...';
     var briefCtx = {
-        narrative: (d.brief && d.brief.narrative) ? d.brief.narrative : '',
-        topics: (d.brief && d.brief.topics) ? d.brief.topics : []
+        narrative: d.brief_narrative || '',
+        topics: d.brief_topics || [],
+        priorities: d.priorities || [],
+        schedule_today: (d.schedule && d.schedule.today) ? d.schedule.today : [],
+        tasks: (d.tasks || []).slice(0, 20),
+        markets: d.markets || {},
+        alerts: d.alerts || [],
+        waiting_on: d.waiting_on || [],
+        signals: (d.signals || []).slice(0, 10)
     };
     fetch(syncUrl, {
         method: 'POST',

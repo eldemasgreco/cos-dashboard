@@ -1740,6 +1740,49 @@ function toggleBriefExpand() {
     if (btn) btn.textContent = el.classList.contains('expanded') ? 'Show less' : 'Read more';
 }
 
+function briefChat() {
+    var input = document.getElementById('brief-chat-msg');
+    var replyEl = document.getElementById('brief-chat-reply');
+    if (!input || !replyEl) return;
+    var msg = (input.value || '').trim();
+    if (!msg) return;
+    var d = window.DASHBOARD_DATA || {};
+    var syncUrl = d.sync_url;
+    var syncKey = d.sync_key;
+    if (!syncUrl || !syncKey) {
+        replyEl.style.display = 'block';
+        replyEl.innerHTML = '<div class="elly-label">ELLY</div>Sync config missing -- cannot reach brief_chat.';
+        return;
+    }
+    input.disabled = true;
+    replyEl.style.display = 'block';
+    replyEl.innerHTML = '<div class="elly-label">ELLY</div>Thinking...';
+    var briefCtx = {
+        narrative: (d.brief && d.brief.narrative) ? d.brief.narrative : '',
+        topics: (d.brief && d.brief.topics) ? d.brief.topics : []
+    };
+    fetch(syncUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Sync-Key': syncKey },
+        body: JSON.stringify({ action: 'brief_chat', message: msg, brief_context: briefCtx })
+    }).then(function(r) {
+        return r.json().then(function(data) { return { ok: r.ok, status: r.status, data: data }; })
+            .catch(function() { return { ok: r.ok, status: r.status, data: null }; });
+    }).then(function(res) {
+        input.disabled = false;
+        input.value = '';
+        if (!res.ok) {
+            replyEl.innerHTML = '<div class="elly-label">ELLY</div>Error (' + res.status + '): ' + esc(JSON.stringify(res.data || {}));
+            return;
+        }
+        var reply = (res.data && (res.data.reply || res.data.message)) ? (res.data.reply || res.data.message) : 'No reply received.';
+        replyEl.innerHTML = '<div class="elly-label">ELLY</div>' + esc(reply).replace(/\n/g, '<br>');
+    }).catch(function(err) {
+        input.disabled = false;
+        replyEl.innerHTML = '<div class="elly-label">ELLY</div>Error reaching brief_chat: ' + esc(String(err));
+    });
+}
+
 function renderAll() {
     var d = window.DASHBOARD_DATA || {};
     renderHeader(d);

@@ -920,10 +920,10 @@
         <span class="cos-status"><span class="cos-status-dot" id="cosStatusDot"></span><span id="cosStatusText">COS Active</span></span>
         <div class="hdr-divider"></div>
         <div class="hdr-controls">
-            <button class="hdr-btn-refresh" id="refreshBtn" onclick="cosAction('refresh')" title="Trigger S21 Control Center refresh">&#x21bb; Refresh</button>
-            <button class="hdr-btn-stop" id="stopBtn" onclick="cosAction('stop')" title="PANIC — disable all COS workflows + Elly">&#x25a0; Stop</button>
-            <button class="hdr-btn-resume" id="resumeBtn" onclick="cosAction('resume')" title="Re-enable all COS workflows + Elly">&#x25b6; Resume</button>
-            <button class="hdr-btn-sync" id="syncBtn" onclick="syncCompletions()" title="Push task completions + captures to COS">&#x2191; Sync</button>
+            <button class="hdr-btn-refresh" id="refreshBtn" onclick="cosAction('refresh')" title="Rebuild the whole dashboard — triggers S21 Control Center on GitHub Actions, reloads when done (~3 min)">&#x21bb; Refresh</button>
+            <button class="hdr-btn-stop" id="stopBtn" onclick="cosAction('stop')" title="Pause Elly — stops WhatsApp auto-replies, proactive nudges, and dashboard Elly responses">&#x25a0; Stop</button>
+            <button class="hdr-btn-resume" id="resumeBtn" onclick="cosAction('resume')" title="Resume Elly — re-enables WhatsApp auto-replies, proactive nudges, and dashboard Elly">&#x25b6; Resume</button>
+            <button class="hdr-btn-sync" id="syncBtn" onclick="syncCompletions()" title="Flush pending task completions + quick captures to COS. Task checks already push live; use this if you want an explicit sync.">&#x2191; Sync</button>
         </div>
     </div>
 </div>
@@ -1900,7 +1900,7 @@ function briefChat() {
     fetch(syncUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Sync-Key': syncKey },
-        body: JSON.stringify({ action: 'brief_chat', message: msg, brief_context: briefCtx })
+        body: JSON.stringify({ action: 'brief_chat', message: msg, brief_context: briefCtx, mode: 'fast' })
     }).then(function(r) {
         return r.json().then(function(data) { return { ok: r.ok, status: r.status, data: data }; })
             .catch(function() { return { ok: r.ok, status: r.status, data: null }; });
@@ -2131,34 +2131,76 @@ function copyAllCaptures() {
 
 var _lastRefresh = 0;
 function cosAction(action) {
-    var btn = document.getElementById({refresh:'refreshBtn',stop:'stopBtn',resume:'resumeBtn'}[action]);
+    var btnIds = {refresh:'refreshBtn',stop:'stopBtn',resume:'resumeBtn'};
+    var btn = document.getElementById(btnIds[action]);
     if (!btn) return;
-    if (action === 'refresh') {
-        var now = Date.now();
-        if (now - _lastRefresh < 30000) {
-            btn.innerHTML = 'Wait ' + Math.ceil((30000 - (now - _lastRefresh)) / 1000) + 's...';
-            setTimeout(function() { btn.innerHTML = '\u21bb Refresh'; }, 2000);
-            return;
-        }
-        _lastRefresh = now;
-        btn.innerHTML = 'Refreshing...';
-        btn.disabled = true;
-        setTimeout(function() { location.reload(); }, 800);
-        return;
-    }
     var d = window.DASHBOARD_DATA || {};
     var syncUrl = d.sync_url;
     var syncKey = d.sync_key;
     if (!syncUrl || !syncKey) { btn.textContent = 'No sync config'; return; }
+
+    // Cooldown for refresh — GitHub Actions run is ~2-3 min, no point spamming
+    if (action === 'refresh') {
+        var now = Date.now();
+        if (now - _lastRefresh < 30000) {
+            btn.innerHTML = 'Wait ' + Math.ceil((30000 - (now - _lastRefresh)) / 1000) + 's…';
+            setTimeout(function() { btn.innerHTML = '\u21bb Refresh'; btn.disabled = false; }, 2000);
+            return;
+        }
+        _lastRefresh = now;
+        btn.innerHTML = 'Rebuilding…';
+        btn.disabled = true;
+        fetch(syncUrl, {
+            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Sync-Key': syncKey },
+            body: JSON.stringify({ action: 'refresh' })
+        }).then(function(r) { return r.json().catch(function() { return {}; }); }).then(function(j) {
+            if (j && j.success) {
+                btn.innerHTML = 'Queued — reload in 3m';
+                // Reload after the expected rebuild window so we pick up new DASHBOARD_DATA
+                setTimeout(function() { location.reload(); }, (j.eta_seconds || 180) * 1000);
+            } else {
+                btn.innerHTML = (j && j.error) ? ('Err: ' + String(j.error).slice(0,24)) : 'Error';
+                console.warn('Refresh failed', j);
+                setTimeout(function() { btn.innerHTML = '\u21bb Refresh'; btn.disabled = false; }, 4000);
+            }
+        }).catch(function(err) {
+            btn.innerHTML = 'Offline';
+            console.warn('Refresh network error', err);
+            setTimeout(function() { btn.innerHTML = '\u21bb Refresh'; btn.disabled = false; }, 3000);
+        });
+        return;
+    }
+
+    // Stop / Resume — writes /home/elly_pause.json, blocks/unblocks WhatsApp Elly and dashboard Elly
     btn.disabled = true;
-    btn.textContent = action === 'stop' ? 'Stopping...' : 'Resuming...';
+    btn.textContent = action === 'stop' ? 'Stopping…' : 'Resuming…';
     fetch(syncUrl, {
         method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Sync-Key': syncKey },
         body: JSON.stringify({ action: action })
-    }).then(function(r) {
-        btn.textContent = r.ok ? (action === 'stop' ? 'Stopped' : 'Resumed') : 'Error';
-        btn.disabled = false;
-    }).catch(function() { btn.textContent = 'Offline'; btn.disabled = false; });
+    }).then(function(r) { return r.json().catch(function() { return {ok: r.ok}; }); }).then(function(j) {
+        var ok = j && (j.success || j.ok);
+        if (ok) {
+            btn.textContent = action === 'stop' ? 'Stopped ■' : 'Resumed ▶';
+            setTimeout(function() {
+                btn.textContent = action === 'stop' ? '■ Stop' : '▶ Resume';
+                btn.disabled = false;
+            }, 3000);
+        } else {
+            btn.textContent = (j && j.error) ? ('Err: ' + String(j.error).slice(0,20)) : 'Error';
+            console.warn('cosAction failed', action, j);
+            setTimeout(function() {
+                btn.textContent = action === 'stop' ? '■ Stop' : '▶ Resume';
+                btn.disabled = false;
+            }, 4000);
+        }
+    }).catch(function(err) {
+        btn.textContent = 'Offline';
+        console.warn('cosAction network error', action, err);
+        setTimeout(function() {
+            btn.textContent = action === 'stop' ? '■ Stop' : '▶ Resume';
+            btn.disabled = false;
+        }, 3000);
+    });
 }
 
 function syncToAzure(taskId, label, action) {

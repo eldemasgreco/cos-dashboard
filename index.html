@@ -775,104 +775,131 @@
 
     
 /* ===== Ask Elly (compact) ===== */
-.ai-brief-card .brief-chat { margin-bottom: 12px; }
+.ai-brief-card .brief-chat { margin-bottom: 14px; }
+.ai-brief-card .brief-chat-row input {
+    font-size: 14px;
+    padding: 12px 14px;
+}
 .brief-summary-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 0 4px 0;
+    padding: 12px 14px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: 500;
     color: var(--text-secondary);
+    background: var(--card-hover);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
     user-select: none;
+    transition: background 0.15s;
 }
-.brief-summary-row:hover { color: var(--text-primary); }
+.brief-summary-row:hover { background: #F0F0F2; color: var(--text-primary); }
 .brief-summary-chev {
-    font-size: 14px;
+    font-size: 13px;
     transition: transform 0.18s ease;
-    opacity: 0.7;
+    opacity: 0.55;
 }
-.brief-summary-chev.open { transform: rotate(180deg); }
-.brief-details { margin-top: 8px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
+.brief-summary-chev.open { transform: rotate(180deg); opacity: 0.9; }
+.brief-details {
+    margin-top: 12px;
+    padding: 14px;
+    background: var(--card-hover);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+}
 .brief-details .ai-brief-narrative { max-height: none; }
 .brief-details .brief-expand-btn { display: none !important; }
 
-/* ===== Compact schedule list ===== */
-.sched-list { display: flex; flex-direction: column; gap: 4px; }
+/* ===== Compact schedule list (light theme) ===== */
+#sched-day, #sched-week, #sched-month, #sched-quarter { font-size: 14px; }
+.sched-list { display: flex; flex-direction: column; gap: 6px; }
 .sched-list-label {
     font-size: 10px;
     font-weight: 700;
     color: var(--text-tertiary);
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin: 0 0 8px 0;
+    letter-spacing: 0.08em;
+    margin: 0 0 10px 0;
     display: flex;
     align-items: center;
     gap: 8px;
 }
 .sched-list-count {
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text-secondary);
-    background: rgba(255,255,255,0.06);
-    padding: 1px 6px;
-    border-radius: 8px;
+    background: var(--border);
+    padding: 2px 8px;
+    border-radius: 10px;
     font-size: 10px;
     letter-spacing: 0;
 }
 .sched-list-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 7px 10px;
-    border-radius: 6px;
-    font-size: 13px;
-    background: rgba(255,255,255,0.02);
-    transition: background 0.15s;
+    gap: 14px;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    background: var(--card-hover);
+    border: 1px solid var(--border);
+    transition: background 0.15s, border-color 0.15s;
+    line-height: 1.35;
 }
-.sched-list-item:hover { background: rgba(255,255,255,0.05); }
-.sched-list-item.past { opacity: 0.4; }
+.sched-list-item:hover { background: #F0F0F2; border-color: var(--border-strong); }
+.sched-list-item.past { opacity: 0.5; }
 .sched-list-item.now {
-    background: rgba(16,185,129,0.12);
-    box-shadow: inset 2px 0 0 var(--green);
-    padding-left: 8px;
+    background: var(--green-light);
+    border-color: var(--green-mid);
+    box-shadow: inset 3px 0 0 var(--green);
+    padding-left: 11px;
 }
-.sched-list-item.tomorrow { opacity: 0.75; }
+.sched-list-item.tomorrow { opacity: 0.85; }
 .sched-list-dot {
-    width: 6px; height: 6px;
+    width: 9px; height: 9px;
     border-radius: 50%;
     flex-shrink: 0;
+    box-shadow: 0 0 0 2px var(--card);
 }
 .sched-list-time {
-    font-family: var(--mono, ui-monospace, monospace);
-    font-weight: 600;
-    font-size: 11px;
+    font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+    font-weight: 700;
+    font-size: 12px;
     color: var(--text-secondary);
-    min-width: 82px;
+    min-width: 108px;
     white-space: nowrap;
+    letter-spacing: 0.01em;
 }
 .sched-list-title {
     flex: 1;
     color: var(--text-primary);
+    font-weight: 500;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 .sched-list-meta {
     color: var(--text-tertiary);
-    font-size: 11px;
-    margin-left: 6px;
+    font-size: 12px;
+    font-weight: 400;
+    margin-left: 8px;
 }
 .sched-list-more {
-    margin-top: 6px;
-    padding: 6px 10px;
-    font-size: 11px;
+    margin-top: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 600;
     color: var(--text-secondary);
     cursor: pointer;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
+    background: transparent;
     user-select: none;
+    text-align: center;
+    transition: background 0.15s, color 0.15s;
 }
-.sched-list-more:hover { color: var(--text-primary); background: rgba(255,255,255,0.04); }
-.sched-list-more.tomorrow-toggle { margin-top: 14px; font-weight: 600; }
+.sched-list-more:hover { color: var(--text-primary); background: var(--card-hover); }
+.sched-list-more.tomorrow-toggle { margin-top: 16px; }
 
 </style>
 </head>
@@ -977,7 +1004,7 @@
             <div class="card-body">
                 <div class="brief-chat">
                     <div class="brief-chat-row">
-                        <input type="text" id="brief-chat-msg" placeholder="Ask about today, projects, markets, people..." onkeydown="if(event.key==='Enter')briefChat()">
+                        <input type="text" id="brief-chat-msg" name="ask-elly-q" placeholder="Ask about today, projects, markets, people..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other" onkeydown="if(event.key==='Enter')briefChat()">
                         <button onclick="briefChat()">Ask</button>
                     </div>
                     <div id="brief-chat-reply" style="display:none;"></div>

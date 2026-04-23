@@ -33,7 +33,7 @@
   --purple-bg: rgba(107,62,94,0.08);
   --teal: #2F6B5E;
   --teal-bg: rgba(47,107,94,0.08);
-  --left-w: 292px;
+  --left-w: 208px;
   --right-w: 408px;
   --hdr-h: 52px;
   --banner-h: 108px;   /* 2 banner rows × 52px + 4px borders */
@@ -937,6 +937,42 @@ body[data-entity-filter="Personal"] [data-entity]:not([data-entity="Personal"]) 
   transition: opacity 0.2s;
 }
 
+/* Sidebar signal tiles — per-entity count + status dot, click to filter */
+.signals-block { padding: 14px 12px 4px; }
+.signals-label {
+  font-size: 9px; letter-spacing: 1px; color: var(--text-3);
+  font-weight: 700; margin-bottom: 8px;
+}
+.signal-tiles { display: flex; flex-direction: column; gap: 6px; }
+.signal-tile {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px; border-radius: 10px;
+  background: var(--card-2); border: 1px solid var(--border);
+  cursor: pointer; transition: all var(--t);
+}
+.signal-tile:hover { border-color: var(--text-3); }
+.signal-tile-emoji { font-size: 15px; line-height: 1; flex-shrink: 0; }
+.signal-tile-body { flex: 1; min-width: 0; }
+.signal-tile-name {
+  font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.2;
+  display: flex; align-items: baseline; gap: 6px;
+}
+.signal-tile-count { font-size: 10px; color: var(--text-3); font-weight: 600; }
+.signal-tile-ctx {
+  font-size: 10px; color: var(--text-2); line-height: 1.3; margin-top: 1px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.signal-tile-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.signal-tile-dot.red    { background: var(--red); }
+.signal-tile-dot.amber  { background: var(--amber); }
+.signal-tile-dot.green  { background: var(--green); }
+.signal-tile-dot.gray   { background: var(--text-3); opacity: 0.4; }
+.signal-tile.afsh.active     { border-color: var(--blue);   background: var(--blue-bg);   }
+.signal-tile.illume.active   { border-color: var(--green);  background: var(--green-bg);  }
+.signal-tile.spade.active    { border-color: var(--purple); background: var(--purple-bg); }
+.signal-tile.personal.active { border-color: var(--amber);  background: var(--amber-bg);  }
+body.dark .signal-tile { background: var(--card); }
+
 /* Quick Capture input bar (right column, above tabs) */
 .quick-capture {
   display: flex; align-items: center; gap: 6px;
@@ -1472,14 +1508,7 @@ body.dark .entity-filter-bar { background: var(--card); }
   </div>
 </header>
 
-<!-- Entity filter chips — click to focus the dashboard on one entity -->
-<div class="entity-filter-bar" id="entity-filter-bar">
-  <button class="ef-chip active" data-ent="" onclick="applyEntityFilter('')">All</button>
-  <button class="ef-chip afsh" data-ent="AFSH" onclick="applyEntityFilter('AFSH')">🐄 AFSH</button>
-  <button class="ef-chip illume" data-ent="Illume" onclick="applyEntityFilter('Illume')">🫒 Illume</button>
-  <button class="ef-chip spade" data-ent="Spade" onclick="applyEntityFilter('Spade')">⚙️ Spade</button>
-  <button class="ef-chip personal" data-ent="Personal" onclick="applyEntityFilter('Personal')">👤 Personal</button>
-</div>
+<!-- Entity filter bar removed — entity filtering lives on the sidebar signal tiles now -->
 
 <!-- ═══ NEWS BANNER — markets strip + rolling alerts/news ticker ═══ -->
 <div class="news-banner" id="news-banner">
@@ -1495,13 +1524,6 @@ body.dark .entity-filter-bar { background: var(--card); }
     </div>
     <button class="section-refresh-btn" onclick="cosAction('refresh_news', this)" title="Refresh external news" style="flex-shrink:0;">↻</button>
   </div>
-  <div class="banner-row">
-    <span class="banner-label">Internal</span>
-    <div class="banner-ticker-viewport">
-      <div class="banner-ticker-track reverse" id="banner-ticker-internal"></div>
-    </div>
-    <button class="section-refresh-btn" onclick="cosAction('full_refresh', this)" title="Refresh internal signals" style="flex-shrink:0;">↻</button>
-  </div>
 </div>
 
 <div class="layout">
@@ -1509,6 +1531,12 @@ body.dark .entity-filter-bar { background: var(--card); }
   <!-- ═══ LEFT COLUMN ═══ -->
   <aside class="col col-left">
     <div class="weather-instrument" id="weather-instrument"></div>
+
+    <!-- Signals — per-entity tiles, replaces Internal ticker -->
+    <div class="signals-block">
+      <div class="signals-label">SIGNALS</div>
+      <div class="signal-tiles" id="signal-tiles"></div>
+    </div>
 
     <!-- Phase 1: Markets / Ag / Signals moved to top banner. Kept hidden so
          legacy render functions that target these IDs don't throw. -->
@@ -2147,6 +2175,15 @@ function applyEntityFilter(ent){
   document.querySelectorAll('.ef-chip').forEach(c => {
     c.classList.toggle('active', (c.dataset.ent || '') === ENTITY_FILTER);
   });
+  document.querySelectorAll('.signal-tile').forEach(t => {
+    const cls = t.classList;
+    const is =
+      (cls.contains('afsh')     && ENTITY_FILTER === 'AFSH')     ||
+      (cls.contains('illume')   && ENTITY_FILTER === 'Illume')   ||
+      (cls.contains('spade')    && ENTITY_FILTER === 'Spade')    ||
+      (cls.contains('personal') && ENTITY_FILTER === 'Personal');
+    cls.toggle('active', is);
+  });
 }
 // Normalize entity strings from payload (strip emoji + trim)
 function _normEntity(s){
@@ -2507,9 +2544,9 @@ function renderBannerExternal(){
     items.push({
       icon: '📰',
       severity: 'blue',
-      title: n.headline || n.summary || '',
+      title: _stripMd(n.headline || n.summary || ''),
       source: (n.category || 'news').toUpperCase(),
-      detail: n.summary || '',
+      detail: _stripMd(n.summary || ''),
       entity: '',
       rank: 0,
     });
@@ -2534,57 +2571,85 @@ function renderBannerExternal(){
   _writeBannerTrack(track, items, 'No external news this cycle.');
 }
 
-function renderBannerInternal(){
-  // "Internal" = COS / Elly / entity alerts + signals from Nick's own systems.
-  // Sourced from DD.alerts (clusters), DD.alerts_flat (fallback), DD.signals.
-  const track = $('banner-ticker-internal');
-  if(!track) return;
-  const items = [];
-  // Alert clusters first (red → amber → blue)
+// ── Strip basic markdown artifacts (**bold**, __u__, *em*) that leak in from RSS feeds ──
+function _stripMd(s){
+  return String(s || '')
+    .replace(/\*\*([\s\S]*?)\*\*/g, '$1')
+    .replace(/__([\s\S]*?)__/g, '$1')
+    .replace(/(^|[\s(])\*([^*\n]+?)\*(?=[\s).,!?:;]|$)/g, '$1$2')
+    .replace(/\*\*/g, '')
+    .trim();
+}
+
+// ── Per-entity signal tiles in the left sidebar (replaces Internal ticker) ──
+function renderSignalTiles(){
+  const host = $('signal-tiles');
+  if(!host) return;
+  const ENT = {
+    AFSH:     {count: 0, worst: 'gray', latest: ''},
+    Illume:   {count: 0, worst: 'gray', latest: ''},
+    Spade:    {count: 0, worst: 'gray', latest: ''},
+    Personal: {count: 0, worst: 'gray', latest: ''},
+  };
+  const RANK = { red: 3, amber: 2, green: 1, gray: 0 };
+  function bump(ent, tier, title){
+    if(!ENT[ent]) return;
+    ENT[ent].count++;
+    if((RANK[tier]||0) > RANK[ENT[ent].worst]) ENT[ent].worst = tier;
+    if(!ENT[ent].latest && title) ENT[ent].latest = _stripMd(title);
+  }
   (DD.alerts || []).forEach(cluster => {
-    const label = cluster.label || '';
+    const ent = _normEntity(cluster.label || '');
     (cluster.items || []).forEach(it => {
       const sev = (it.severity || 'b').toLowerCase();
-      items.push({
-        icon: sev==='r' ? '⚠' : (sev==='a' ? '⚑' : '•'),
-        severity: sev==='r' ? 'red' : (sev==='a' ? 'amber' : 'blue'),
-        title: it.title || '',
-        source: it.source || label,
-        detail: it.detail || '',
-        entity: label,
-        rank: sev==='r' ? 0 : (sev==='a' ? 1 : 2),
-      });
+      const tier = sev==='r' ? 'red' : (sev==='a' ? 'amber' : 'green');
+      bump(ent, tier, it.title || '');
     });
   });
-  // Fallback if clusters are empty
-  if(items.length === 0){
+  if(Object.values(ENT).every(e => e.count === 0)){
     (DD.alerts_flat || []).forEach(a => {
+      const ent = _normEntity(a.entity || '');
       const level = (a.level || '').toLowerCase();
-      items.push({
-        icon: level==='red' ? '⚠' : (level==='amber' ? '⚑' : '•'),
-        severity: level==='red' ? 'red' : (level==='amber' ? 'amber' : 'blue'),
-        title: a.title || '',
-        source: a.entity || '',
-        detail: a.detail || '',
-        entity: a.entity || '',
-        rank: level==='red' ? 0 : (level==='amber' ? 1 : 2),
-      });
+      const tier = level==='red' ? 'red' : (level==='amber' ? 'amber' : 'green');
+      bump(ent, tier, a.title || '');
     });
   }
-  // Signals (Elly brain + COS pipeline events)
-  (DD.signals || []).slice(0, 12).forEach(s => {
-    items.push({
-      icon: '🔔',
-      severity: (s.tier || s.severity || 'blue').toLowerCase(),
-      title: s.title || s.summary || '',
-      source: s.source || '',
-      detail: s.summary || '',
-      entity: s.entity || '',
-      rank: 3,
-    });
+  (DD.signals || []).forEach(s => {
+    const ent = _normEntity(s.entity || '');
+    const t = String(s.tier || s.severity || '').toLowerCase();
+    const tier = (t==='red'||t==='r') ? 'red' : ((t==='amber'||t==='a') ? 'amber' : 'green');
+    bump(ent, tier, s.title || s.summary || '');
   });
-  items.sort((a,b)=> a.rank - b.rank);
-  _writeBannerTrack(track, items, 'Quiet cycle — no internal alerts or signals.');
+
+  const TILES = [
+    {key:'AFSH',     emoji:'🐄', name:'AFSH'},
+    {key:'Illume',   emoji:'🫒', name:'Illume'},
+    {key:'Spade',    emoji:'⚙️', name:'Spade'},
+    {key:'Personal', emoji:'👤', name:'Personal'},
+  ];
+  host.innerHTML = TILES.map(t => {
+    const e = ENT[t.key];
+    const n = e.count;
+    let ctx;
+    if(n === 0)       ctx = 'quiet';
+    else if(e.latest) ctx = e.latest;
+    else              ctx = `${n} ${n===1?'signal':'signals'}`;
+    const isActive = (ENTITY_FILTER === t.key);
+    const countTxt = n === 0 ? '' : `<span class="signal-tile-count">${n}</span>`;
+    return `<div class="signal-tile ${t.key.toLowerCase()}${isActive?' active':''}" onclick="applyEntityFilter('${t.key}')" title="${esc(t.name)} — click to focus, click again to clear">
+      <span class="signal-tile-emoji">${t.emoji}</span>
+      <div class="signal-tile-body">
+        <div class="signal-tile-name">${esc(t.name)}${countTxt}</div>
+        <div class="signal-tile-ctx">${esc(ctx)}</div>
+      </div>
+      <span class="signal-tile-dot ${e.worst}"></span>
+    </div>`;
+  }).join('');
+}
+
+function renderBannerInternal(){
+  // Internal ticker retired — sidebar signal tiles replace it. Kept for call-site compatibility.
+  try { renderSignalTiles(); } catch(e) { console.error('renderSignalTiles', e); }
 }
 
 function renderMarketsSidebar(){

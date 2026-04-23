@@ -1023,7 +1023,41 @@ body[data-entity-filter="Personal"] [data-entity]:not([data-entity="Personal"]) 
 .signal-tile.personal.active { border-color: var(--amber);  background: var(--amber-bg);  }
 body.dark .signal-tile { background: var(--card); }
 
+/* What's new since last visit — subtle pulse on brief eyebrow */
+.whatsnew-dot {
+  display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green); margin-left: 6px; vertical-align: middle;
+  animation: whatsnew-pulse 1.6s ease-in-out infinite;
+}
+@keyframes whatsnew-pulse {
+  0%,100% { opacity: 0.5; transform: scale(1); }
+  50%     { opacity: 1;   transform: scale(1.3); }
+}
+
+/* Deep work mode — ⇧⌘F toggles body.focus-mode; dims non-P0 noise */
+body.focus-mode .news-banner,
+body.focus-mode .col-left .weather-instrument,
+body.focus-mode .col-right .tab-btn:not([data-tab='schedule']):not([data-tab='tasks']),
+body.focus-mode .col-center .center-section:not(:first-child):not(:nth-child(2)) {
+  opacity: 0.22; transition: opacity 0.2s;
+}
+body.focus-mode .hero-eyebrow::after { content: ' · focus mode'; color: var(--text-3); font-size: 10px; }
+
 /* Quick Capture input bar (right column, above tabs) */
+.qc-mode {
+  display: inline-flex; gap: 2px; flex-shrink: 0;
+  background: var(--card-2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 2px;
+}
+.qc-mode-btn {
+  border: none; background: transparent; cursor: pointer;
+  padding: 3px 6px; border-radius: 6px; font-size: 13px;
+  opacity: 0.5; transition: all var(--t);
+}
+.qc-mode-btn:hover { opacity: 0.85; }
+.qc-mode-btn.active { background: var(--card); opacity: 1; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+body.dark .qc-mode-btn.active { background: var(--card-2); }
+
 .quick-capture {
   display: flex; align-items: center; gap: 6px;
   padding: 8px 10px; border-bottom: 1px solid var(--border);
@@ -1667,6 +1701,10 @@ body.dark .entity-filter-bar { background: var(--card); }
           <option value="Spade">⚙️</option>
           <option value="Logos">🏛</option>
         </select>
+        <div class="qc-mode" id="qc-mode" role="radiogroup" aria-label="Capture mode">
+          <button type="button" class="qc-mode-btn active" data-mode="note" onclick="setQcMode('note')" title="Save as Note">📝</button>
+          <button type="button" class="qc-mode-btn" data-mode="task" onclick="setQcMode('task')" title="Save as Task">✅</button>
+        </div>
         <input class="qc-input" id="qc-input" type="text"
                placeholder="Jot a thought… (Enter to save)"
                onkeydown="if(event.key==='Enter')submitQuickCapture()">
@@ -2155,6 +2193,24 @@ try {
 } catch(_) {}
 applyTheme(localStorage.getItem(THEME_KEY) || 'light');
 
+// "What's new since last view" — track ts of last open; render pulse on eyebrow
+const LAST_VIEWED_KEY = 'cos.dashboard.lastViewedAt.v1';
+let _PREV_VISIT_TS = 0;
+try { _PREV_VISIT_TS = parseInt(localStorage.getItem(LAST_VIEWED_KEY) || '0', 10) || 0; } catch(_){}
+try { localStorage.setItem(LAST_VIEWED_KEY, String(Date.now())); } catch(_){}
+function renderWhatsNew(){
+  const genAt = (DD.generated_at ? new Date(DD.generated_at).getTime() : 0);
+  const fresh = (genAt > 0 && _PREV_VISIT_TS > 0 && genAt > _PREV_VISIT_TS);
+  if(!fresh) return;
+  const eyebrow = document.getElementById('brief-eyebrow');
+  if(eyebrow && !eyebrow.querySelector('.whatsnew-dot')){
+    const d = document.createElement('span');
+    d.className = 'whatsnew-dot';
+    d.title = 'Updated since your last visit';
+    eyebrow.appendChild(d);
+  }
+}
+
 // ── Global search (⌘K / Ctrl+K) ───────────────────────────────────────────
 let _searchActiveIdx = 0;
 function openSearch(){
@@ -2206,6 +2262,12 @@ document.addEventListener('keydown', (e)=>{
   const modKey = e.metaKey || e.ctrlKey;
   if(modKey && (e.key === 'k' || e.key === 'K')){ e.preventDefault(); openSearch(); return; }
   if(modKey && e.shiftKey && (e.key === 'D' || e.key === 'd')){ e.preventDefault(); toggleTheme(); return; }
+if(modKey && e.shiftKey && (e.key === 'F' || e.key === 'f')){
+  e.preventDefault();
+  document.body.classList.toggle('focus-mode');
+  showToast(document.body.classList.contains('focus-mode') ? 'Deep work mode (⇧⌘F to exit)' : 'Deep work mode off');
+  return;
+}
 });
 
 // ── Settings modal (focus areas, travel city) ─────────────────────────────
@@ -2275,6 +2337,21 @@ function _normEntity(s){
 }
 
 // ── Quick Capture: jot a thought into Notion Notes DB (category=Quick Capture) ──
+let QC_MODE = 'note';
+try { QC_MODE = localStorage.getItem('cos.dashboard.qcMode.v1') || 'note'; } catch(_){}
+function setQcMode(m){
+  QC_MODE = (m === 'task') ? 'task' : 'note';
+  try { localStorage.setItem('cos.dashboard.qcMode.v1', QC_MODE); } catch(_){}
+  document.querySelectorAll('.qc-mode-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === QC_MODE);
+  });
+  const inp = document.getElementById('qc-input');
+  if(inp){ inp.placeholder = QC_MODE === 'task' ? 'New task… (Enter to save)' : 'Jot a thought… (Enter to save)'; }
+  const btn = document.querySelector('.qc-btn');
+  if(btn){ btn.title = QC_MODE === 'task' ? 'Save as Task' : 'Save as Note'; }
+}
+try { setTimeout(() => setQcMode(QC_MODE), 0); } catch(_){}
+
 async function submitQuickCapture(){
   const input = $('qc-input');
   const entitySel = $('qc-entity');
@@ -2284,7 +2361,7 @@ async function submitQuickCapture(){
   const btn = document.querySelector('.qc-btn');
   if(btn){ btn.disabled = true; btn.textContent = '…'; }
   try{
-    const r = await postSync({action:'capture_note', text, entity});
+    const r = await postSync({action: (QC_MODE==='task' ? 'capture' : 'capture_note'), text, entity});
     const ok = !!(r && (r.success || r.ok));
     if(ok){
       input.value = '';
@@ -2911,6 +2988,19 @@ function renderMetrics(){
 }
 
 // Drill drawer for metric tiles — routes by key into existing drawer helper
+async function runBulkDeferOverdue(){
+  if(!confirm('Defer all tasks overdue by >90 days out by 30 days? (Reversible per task.)')) return;
+  try {
+    const r = await postSync({action:'bulk_defer_overdue', days_threshold: 90, defer_days: 30});
+    if(r && (r.success || r.ok)){
+      showToast(`Deferred ${r.deferred || 0} stale overdue tasks`);
+    } else {
+      showToast('Bulk defer failed — ' + (r && (r.error || r.message) || 'unknown'));
+    }
+  } catch(e) { showToast('Bulk defer error: ' + e); }
+}
+window.runBulkDeferOverdue = runBulkDeferOverdue;
+
 function openMetricDrawer(key, label, value){
   const mapper = {
     critical: () => (DD.alerts || []).flatMap(c => (c.items||[]).filter(it => (it.severity||'').toLowerCase() === 'r')),
@@ -2927,9 +3017,12 @@ function openMetricDrawer(key, label, value){
     }),
   };
   const items = (mapper[key] ? mapper[key]() : []).slice(0, 25);
-  const body = items.length
+  let body = items.length
     ? items.map(it => `• ${esc(it.title || it.subject || it.label || '—')}${it.entity?` (${esc(it.entity)})`:''}`).join('\n')
     : 'No items in this bucket.';
+  if(key === 'overdue'){
+    body += '\n\n▸ Call runBulkDeferOverdue() (browser console) to defer tasks overdue >90d by 30d.';
+  }
   openDrawer(`${label}: ${value}`, '', '', body);
 }
 
@@ -3250,6 +3343,19 @@ function renderAll(){
   try{ renderWaiting(); }catch(e){ console.error('renderWaiting',e); }
 try{ renderSchedule(); }catch(e){ console.error('renderSchedule',e); }
 try{ renderTopPriority(); }catch(e){ console.error('renderTopPriority',e); }
+try{ renderWhatsNew(); }catch(e){ console.error('renderWhatsNew',e); }
+
+async function _fetchSchedule(){
+  try {
+    const r = await postSync({action:'schedule_refresh'});
+    if(r && (r.success || r.ok) && Array.isArray(r.schedule)){
+      DD.schedule = r.schedule;
+      try { renderSchedule(); } catch(e) { console.warn('renderSchedule', e); }
+    }
+  } catch(e) { console.debug('schedule_refresh failed', e); }
+}
+try { _fetchSchedule(); } catch(_) {}
+setInterval(() => { try { _fetchSchedule(); } catch(_){} }, 15 * 60 * 1000);
   try{ renderSuggested(); }catch(e){ console.error('renderSuggested',e); }
   try{ renderSystem(); }catch(e){ console.error('renderSystem',e); }
 }

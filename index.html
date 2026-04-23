@@ -2761,41 +2761,79 @@ function _normSource(e){
 function renderSchedule(){
   const host = $('schedule-body');
   if(!host) return;
-  // DD.schedule preferred (source-tagged); DD.meetings fallback
   const rows = (DD.schedule && DD.schedule.length) ? DD.schedule : (DD.meetings || []);
   const filtered = SCHED_SOURCE ? rows.filter(e => _normSource(e) === SCHED_SOURCE) : rows;
   if(!filtered.length){
-    host.innerHTML = `<div class="empty-state" style="padding:24px 16px;">No upcoming events${SCHED_SOURCE?` in ${SCHED_SOURCE}`:''}.</div>`;
+    host.innerHTML = '<div class="empty-state" style="padding:24px 16px;">No upcoming events' + (SCHED_SOURCE ? ' in ' + SCHED_SOURCE : '') + '.</div>';
+    const badgeE = $('sched-badge');
+    if(badgeE){ badgeE.style.display = 'none'; }
     return;
   }
-  // Group by day label
+  // Coerce attendees to string (backend sends string; older fallback may send array)
+  function _attStr(e){
+    const a = e.attendees;
+    if(!a) return '';
+    if(Array.isArray(a)) return a.join(', ');
+    return String(a);
+  }
+  // Build drawer detail as a single string without embedding in onclick — use data-* + delegated handler.
   const byDay = {};
   filtered.forEach(e => {
     const d = e.day || e.date || 'Upcoming';
     (byDay[d] = byDay[d] || []).push(e);
   });
-  host.innerHTML = Object.keys(byDay).map(day => {
-    const items = byDay[day].map(e => {
+  const parts = [];
+  Object.keys(byDay).forEach(day => {
+    parts.push('<div class="sched-day-hdr">' + esc(day) + '</div>');
+    byDay[day].forEach((e, idx) => {
       const src = _normSource(e);
       const t = e.start_time || e.time || e.when || '';
       const title = _stripMd(e.title || e.subject || '—');
       const loc = _stripMd(e.location || e.where || '');
-      return `<div class="sched-event" onclick="openDrawer('${esc(title)}','${esc(e.source || src)}','${esc(t)}','${esc([loc, (e.attendees||[]).join(', '), e.detail||e.summary||''].filter(Boolean).join('\n'))}')">
-        <div class="sched-event-time">${esc(t)}</div>
-        <div>
-          <div class="sched-event-title">${esc(title)}</div>
-          ${loc ? `<div class="sched-event-meta">${esc(loc)}</div>` : ''}
-        </div>
-        <span class="sched-event-src ${src}">${src}</span>
-      </div>`;
-    }).join('');
-    return `<div class="sched-day-hdr">${esc(day)}</div>${items}`;
-  }).join('');
+      const att = _attStr(e);
+      const detail = [loc, att, e.detail || e.summary || ''].filter(Boolean).join('\n');
+      parts.push(
+        '<div class="sched-event" data-idx="' + (day + '::' + idx) + '">' +
+          '<div class="sched-event-time">' + esc(t) + '</div>' +
+          '<div>' +
+            '<div class="sched-event-title">' + esc(title) + '</div>' +
+            (loc ? '<div class="sched-event-meta">' + esc(loc) + '</div>' : '') +
+          '</div>' +
+          '<span class="sched-event-src ' + src + '">' + esc(src) + '</span>' +
+        '</div>'
+      );
+      // stash on the element after render, below
+      if(!window.__SCHED_PAYLOAD) window.__SCHED_PAYLOAD = {};
+      window.__SCHED_PAYLOAD[day + '::' + idx] = {title, src: e.source || src, t, detail};
+    });
+  });
+  host.innerHTML = parts.join('');
+  // Delegated click → openDrawer
+  host.querySelectorAll('.sched-event').forEach(el => {
+    el.addEventListener('click', () => {
+      const p = window.__SCHED_PAYLOAD[el.dataset.idx];
+      if(p) openDrawer(p.title, p.src, p.t, p.detail);
+    });
+  });
   const badge = $('sched-badge');
   if(badge){
     const n = filtered.length;
     badge.textContent = n; badge.style.display = n ? 'inline-block' : 'none';
   }
+}
+
+// Expose _fetchSchedule globally (originally scoped inside renderAll due to placement)
+// so manual refresh + debugging from console works.
+if(typeof window !== 'undefined' && typeof _fetchSchedule === 'undefined'){
+  window._fetchSchedule = async function(){
+    try {
+      const r = await postSync({action:'schedule_refresh'});
+      if(r && (r.success || r.ok) && Array.isArray(r.schedule)){
+        DD.schedule = r.schedule;
+        try { renderSchedule(); } catch(e) { console.warn('renderSchedule', e); }
+      }
+    } catch(e) { console.debug('schedule_refresh failed', e); }
+  };
 }
 
 // ── Top priority pill: surface the single most-urgent item above the brief ──

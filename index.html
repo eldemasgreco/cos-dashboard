@@ -937,6 +937,56 @@ body[data-entity-filter="Personal"] [data-entity]:not([data-entity="Personal"]) 
   transition: opacity 0.2s;
 }
 
+/* Schedule rail source chips + event list (right-column tab) */
+.sched-source-chips {
+  display: flex; gap: 6px; padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--border); overflow-x: auto;
+}
+.sched-source-chips::-webkit-scrollbar { display: none; }
+.sc-chip {
+  flex-shrink: 0; font-size: 10px; font-weight: 600;
+  padding: 3px 8px; border-radius: 10px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--card); color: var(--text-2);
+  transition: all var(--t);
+}
+.sc-chip:hover { border-color: var(--text-3); color: var(--text); }
+.sc-chip.active { background: var(--green); color: #fff; border-color: var(--green); }
+.sched-event {
+  display: grid; grid-template-columns: 54px 1fr auto; gap: 10px;
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background var(--t);
+}
+.sched-event:hover { background: var(--card-2); }
+.sched-event-time { font-size: 11px; font-weight: 600; color: var(--text-2); line-height: 1.3; }
+.sched-event-title { font-size: 13px; color: var(--text); font-weight: 500; line-height: 1.3; }
+.sched-event-meta { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+.sched-event-src { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.3px; }
+.sched-event-src.icloud { background: var(--blue-bg); color: var(--blue); }
+.sched-event-src.google { background: var(--red-bg);  color: var(--red); }
+.sched-event-src.afsh   { background: var(--amber-bg);color: var(--amber); }
+.sched-event-src.illume { background: var(--green-bg);color: var(--green); }
+.sched-event-src.other  { background: var(--card-2);  color: var(--text-3); }
+.sched-day-hdr {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--text-3);
+  padding: 10px 12px 4px; text-transform: uppercase;
+}
+
+/* Top priority pill — single most urgent item above hero brief */
+.top-priority-pill {
+  display: flex; align-items: center; gap: 10px;
+  margin: 12px 0 8px; padding: 10px 14px;
+  background: var(--red-bg); border: 1px solid var(--red);
+  border-radius: 999px; cursor: pointer;
+  transition: transform var(--t);
+}
+.top-priority-pill:hover { transform: translateY(-1px); }
+.top-priority-pill.amber { background: var(--amber-bg); border-color: var(--amber); }
+.top-priority-pill .tpp-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+.top-priority-pill.amber .tpp-dot { background: var(--amber); }
+.top-priority-pill .tpp-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--red); text-transform: uppercase; flex-shrink: 0; }
+.top-priority-pill.amber .tpp-label { color: var(--amber); }
+.top-priority-pill .tpp-title { font-size: 13px; font-weight: 500; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
 /* Sidebar signal tiles — per-entity count + status dot, click to filter */
 .signals-block { padding: 14px 12px 4px; }
 .signals-label {
@@ -1015,20 +1065,20 @@ body.dark .signal-tile { background: var(--card); }
 
 /* ── Dark mode: warm dark tones, same sage/terracotta accent palette ── */
 body.dark {
-  --bg: #1A1410;
-  --card: #23201B;
-  --card-2: #2D2822;
-  --border: rgba(244,239,231,0.08);
-  --border-med: rgba(244,239,231,0.14);
+  --bg: #2A2620;
+  --card: #342F27;
+  --card-2: #3E3830;
+  --border: rgba(244,239,231,0.12);
+  --border-med: rgba(244,239,231,0.20);
   --text: #F4EFE7;
-  --text-2: #C4B9A8;
-  --text-3: #8F8577;
-  --green-bg: rgba(63,107,78,0.18);
-  --red-bg: rgba(184,84,56,0.18);
-  --amber-bg: rgba(200,137,31,0.18);
-  --blue-bg: rgba(58,85,120,0.20);
-  --purple-bg: rgba(107,62,94,0.20);
-  --teal-bg: rgba(47,107,94,0.20);
+  --text-2: #D4CBBC;
+  --text-3: #A89F8F;
+  --green-bg: rgba(63,107,78,0.22);
+  --red-bg: rgba(184,84,56,0.22);
+  --amber-bg: rgba(200,137,31,0.22);
+  --blue-bg: rgba(58,85,120,0.24);
+  --purple-bg: rgba(107,62,94,0.24);
+  --teal-bg: rgba(47,107,94,0.24);
 }
 body.dark .news-banner { background: linear-gradient(180deg, var(--card-2) 0%, var(--card) 100%); }
 body.dark .entity-filter-bar { background: var(--card); }
@@ -1518,7 +1568,7 @@ body.dark .entity-filter-bar { background: var(--card); }
     <button class="section-refresh-btn" onclick="cosAction('refresh_markets', this)" title="Refresh markets" style="flex-shrink:0;">↻</button>
   </div>
   <div class="banner-row">
-    <span class="banner-label">External</span>
+    <span class="banner-label">Breaking</span>
     <div class="banner-ticker-viewport">
       <div class="banner-ticker-track" id="banner-ticker-external"></div>
     </div>
@@ -1547,6 +1597,9 @@ body.dark .entity-filter-bar { background: var(--card); }
 
   <!-- ═══ CENTER COLUMN ═══ -->
   <main class="col col-center">
+
+    <!-- Top priority pill — single most urgent item, extracted from DD.priorities / DD.alerts -->
+    <div class="top-priority-pill" id="top-priority-pill" onclick="openTopPriority()" style="display:none;"></div>
 
     <!-- Hero brief -->
     <div class="center-hero" id="hero-brief" onclick="toggleHero()">
@@ -1620,7 +1673,10 @@ body.dark .entity-filter-bar { background: var(--card); }
         <button class="qc-btn" onclick="submitQuickCapture()" title="Save to Notes (Quick Capture)">+</button>
       </div>
       <div class="tabs-hdr">
-        <button class="tab-btn active" data-tab="tasks" onclick="switchTab('tasks', this)">
+        <button class="tab-btn active" data-tab="schedule" onclick="switchTab('schedule', this)">
+          Schedule <span class="tab-unread" id="sched-badge" style="display:none">0</span>
+        </button>
+        <button class="tab-btn" data-tab="tasks" onclick="switchTab('tasks', this)">
           Tasks <span class="tab-unread" id="tasks-badge" style="display:none">0</span>
         </button>
         <button class="tab-btn" data-tab="projects" onclick="switchTab('projects', this)">Projects</button>
@@ -1632,7 +1688,17 @@ body.dark .entity-filter-bar { background: var(--card); }
         </button>
       </div>
       <div class="tab-panels-area">
-        <div class="tab-panel active" id="tab-tasks"><div id="tasks-body"></div></div>
+        <div class="tab-panel active" id="tab-schedule">
+          <div class="sched-source-chips" id="sched-source-chips">
+            <button class="sc-chip active" data-src="" onclick="applyScheduleSource('')">All</button>
+            <button class="sc-chip" data-src="icloud" onclick="applyScheduleSource('icloud')">🍎 iCloud</button>
+            <button class="sc-chip" data-src="google" onclick="applyScheduleSource('google')">📧 Gmail</button>
+            <button class="sc-chip" data-src="afsh" onclick="applyScheduleSource('afsh')">🐄 AFSH</button>
+            <button class="sc-chip" data-src="illume" onclick="applyScheduleSource('illume')">🫒 Illume</button>
+          </div>
+          <div id="schedule-body"></div>
+        </div>
+        <div class="tab-panel" id="tab-tasks"><div id="tasks-body"></div></div>
         <div class="tab-panel" id="tab-projects"><div id="projects-body"></div></div>
         <div class="tab-panel" id="tab-comms"><div id="comms-body"></div></div>
         <div class="tab-panel" id="tab-waiting"><div id="waiting-body"></div></div>
@@ -2079,6 +2145,14 @@ function toggleTheme(){
   const cur = localStorage.getItem(THEME_KEY) || 'light';
   applyTheme(cur === 'dark' ? 'light' : 'dark');
 }
+// Palette v2 migration (session 51): one-time reset to light so Nick sees the
+// lightened palette; users can re-toggle dark via the ☀️/🌙 button.
+try {
+  if (!localStorage.getItem('cos.dashboard.palette.v2')) {
+    localStorage.setItem(THEME_KEY, 'light');
+    localStorage.setItem('cos.dashboard.palette.v2', '1');
+  }
+} catch(_) {}
 applyTheme(localStorage.getItem(THEME_KEY) || 'light');
 
 // ── Global search (⌘K / Ctrl+K) ───────────────────────────────────────────
@@ -2442,10 +2516,17 @@ function renderWeather(){
       <div class="wi-fc-hi">${esc(d.hi||'')}</div>
       <div class="wi-fc-lo">${esc(d.lo||'')}</div>
     </div>`).join('');
-  $('weather-instrument').innerHTML = `
+  const host = $('weather-instrument');
+  host.onclick = function(e){
+    if(e.target.closest('button')) return;
+    const fc = (w.forecast || []).map(d => `${d.label||''}: ${d.hi||''}/${d.lo||''} ${d.icon||''}`).join('\n');
+    openDrawer(`${w.location||'Weather'} — ${w.temp||''}°`, w.desc||'', `Humidity ${w.humidity||''} · Wind ${w.wind||''} km/h · UV ${w.uv||''}`, fc || 'No extended forecast.');
+  };
+  host.style.cursor = 'pointer';
+  host.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1;margin-bottom:4px;">
       <div class="wi-loc" style="margin-bottom:0;">${esc(w.location||'—')}</div>
-      <button class="widget-refresh-btn" onclick="cosAction('refresh_weather', this)" title="Refresh">↻</button>
+      <button class="widget-refresh-btn" onclick="event.stopPropagation(); cosAction('refresh_weather', this)" title="Refresh">↻</button>
     </div>
     <div class="wi-top">
       <div>
@@ -2582,6 +2663,102 @@ function _stripMd(s){
 }
 
 // ── Per-entity signal tiles in the left sidebar (replaces Internal ticker) ──
+// ── Schedule rail (right-column tab) ──────────────────────────────────────
+let SCHED_SOURCE = '';
+function applyScheduleSource(src){
+  SCHED_SOURCE = (SCHED_SOURCE === src) ? '' : src;
+  document.querySelectorAll('.sc-chip').forEach(c => {
+    c.classList.toggle('active', (c.dataset.src || '') === SCHED_SOURCE);
+  });
+  renderSchedule();
+}
+function _normSource(e){
+  // Normalize e.source → chip key. Falls back to heuristic on e.account_email.
+  const s = String(e.source || e.account || e.calendar || e.account_email || '').toLowerCase();
+  if(s.includes('icloud') || s.includes('caldav') || s.includes('@me.com') || s.includes('@icloud')) return 'icloud';
+  if(s.includes('google') || s.includes('gmail') || s.includes('@gmail')) return 'google';
+  if(s.includes('afsh') || s.includes('alliance') || s.includes('@alliancefoodsecurity')) return 'afsh';
+  if(s.includes('illume') || s.includes('@illumeag') || s.includes('@illume')) return 'illume';
+  return 'other';
+}
+function renderSchedule(){
+  const host = $('schedule-body');
+  if(!host) return;
+  // DD.schedule preferred (source-tagged); DD.meetings fallback
+  const rows = (DD.schedule && DD.schedule.length) ? DD.schedule : (DD.meetings || []);
+  const filtered = SCHED_SOURCE ? rows.filter(e => _normSource(e) === SCHED_SOURCE) : rows;
+  if(!filtered.length){
+    host.innerHTML = `<div class="empty-state" style="padding:24px 16px;">No upcoming events${SCHED_SOURCE?` in ${SCHED_SOURCE}`:''}.</div>`;
+    return;
+  }
+  // Group by day label
+  const byDay = {};
+  filtered.forEach(e => {
+    const d = e.day || e.date || 'Upcoming';
+    (byDay[d] = byDay[d] || []).push(e);
+  });
+  host.innerHTML = Object.keys(byDay).map(day => {
+    const items = byDay[day].map(e => {
+      const src = _normSource(e);
+      const t = e.start_time || e.time || e.when || '';
+      const title = _stripMd(e.title || e.subject || '—');
+      const loc = _stripMd(e.location || e.where || '');
+      return `<div class="sched-event" onclick="openDrawer('${esc(title)}','${esc(e.source || src)}','${esc(t)}','${esc([loc, (e.attendees||[]).join(', '), e.detail||e.summary||''].filter(Boolean).join('\n'))}')">
+        <div class="sched-event-time">${esc(t)}</div>
+        <div>
+          <div class="sched-event-title">${esc(title)}</div>
+          ${loc ? `<div class="sched-event-meta">${esc(loc)}</div>` : ''}
+        </div>
+        <span class="sched-event-src ${src}">${src}</span>
+      </div>`;
+    }).join('');
+    return `<div class="sched-day-hdr">${esc(day)}</div>${items}`;
+  }).join('');
+  const badge = $('sched-badge');
+  if(badge){
+    const n = filtered.length;
+    badge.textContent = n; badge.style.display = n ? 'inline-block' : 'none';
+  }
+}
+
+// ── Top priority pill: surface the single most-urgent item above the brief ──
+function renderTopPriority(){
+  const pill = $('top-priority-pill');
+  if(!pill) return;
+  // Pick: first red alert across all clusters > first amber > first critical-tier priority
+  let found = null, tier = 'red';
+  for(const c of (DD.alerts || [])){
+    for(const it of (c.items || [])){
+      if((it.severity||'').toLowerCase() === 'r'){ found = it; break; }
+    }
+    if(found) break;
+  }
+  if(!found){
+    tier = 'amber';
+    for(const c of (DD.alerts || [])){
+      for(const it of (c.items || [])){
+        if((it.severity||'').toLowerCase() === 'a'){ found = it; break; }
+      }
+      if(found) break;
+    }
+  }
+  if(!found){
+    for(const p of (DD.priorities || [])){
+      if((p.tier || p.urgency || '').toLowerCase() === 'red'){ found = p; tier = 'red'; break; }
+    }
+  }
+  if(!found){ pill.style.display = 'none'; return; }
+  pill.className = 'top-priority-pill' + (tier === 'amber' ? ' amber' : '');
+  pill.style.display = 'flex';
+  pill.innerHTML = `<span class="tpp-dot"></span><span class="tpp-label">${tier==='amber'?'Watch':'Top'}</span><span class="tpp-title">${esc(_stripMd(found.title || found.subject || ''))}</span>`;
+  pill._payload = found;
+}
+function openTopPriority(){
+  const pill = $('top-priority-pill');
+  const p = pill && pill._payload; if(!p) return;
+  openDrawer(_stripMd(p.title || ''), p.source || p.entity || '', p.context || p.meta_line || '', p.detail || p.summary || '');
+}
+
 function renderSignalTiles(){
   const host = $('signal-tiles');
   if(!host) return;
@@ -2724,12 +2901,36 @@ function renderBrief(){
 function renderMetrics(){
   const m = DD.metrics || [];
   if(!m.length){ $('metrics-row').innerHTML=''; return; }
-  $('metrics-row').innerHTML = m.slice(0,4).map(x=>
-    `<div class="metric-tile">
+  $('metrics-row').innerHTML = m.slice(0,4).map(x=>{
+    const key = (x.key || x.label || '').toLowerCase().replace(/\s+/g,'_');
+    return `<div class="metric-tile" onclick="openMetricDrawer('${esc(key)}', '${esc(x.label||'')}', '${esc(x.value||'')}')" style="cursor:pointer;">
        <div class="metric-num ${esc(x.color||'')}">${esc(x.value||'—')}</div>
        <div class="metric-lbl">${esc(x.label||'')}</div>
-     </div>`
-  ).join('');
+     </div>`;
+  }).join('');
+}
+
+// Drill drawer for metric tiles — routes by key into existing drawer helper
+function openMetricDrawer(key, label, value){
+  const mapper = {
+    critical: () => (DD.alerts || []).flatMap(c => (c.items||[]).filter(it => (it.severity||'').toLowerCase() === 'r')),
+    meetings: () => (DD.meetings || DD.schedule || []),
+    overdue:  () => (DD.tasks || []).filter(t => {
+      const d = new Date(t.due_date || t.due || '');
+      return !isNaN(d) && d < new Date() && (t.status || '').toLowerCase() !== 'done';
+    }),
+    this_week: () => (DD.tasks || []).filter(t => {
+      const d = new Date(t.due_date || t.due || '');
+      if(isNaN(d)) return false;
+      const now = new Date(); const wk = new Date(now); wk.setDate(wk.getDate() + 7);
+      return d >= now && d <= wk;
+    }),
+  };
+  const items = (mapper[key] ? mapper[key]() : []).slice(0, 25);
+  const body = items.length
+    ? items.map(it => `• ${esc(it.title || it.subject || it.label || '—')}${it.entity?` (${esc(it.entity)})`:''}`).join('\n')
+    : 'No items in this bucket.';
+  openDrawer(`${label}: ${value}`, '', '', body);
 }
 
 function renderAlerts(){
@@ -3047,6 +3248,8 @@ function renderAll(){
   try{ renderProjects(); }catch(e){ console.error('renderProjects',e); }
   try{ renderComms(); }catch(e){ console.error('renderComms',e); }
   try{ renderWaiting(); }catch(e){ console.error('renderWaiting',e); }
+try{ renderSchedule(); }catch(e){ console.error('renderSchedule',e); }
+try{ renderTopPriority(); }catch(e){ console.error('renderTopPriority',e); }
   try{ renderSuggested(); }catch(e){ console.error('renderSuggested',e); }
   try{ renderSystem(); }catch(e){ console.error('renderSystem',e); }
 }

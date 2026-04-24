@@ -4419,7 +4419,9 @@ function _renderUnifiedSignals(d){
   host.querySelectorAll('.signals-row').forEach(el => el.addEventListener('click', () => {
     const sig = window.__SIGNALS[el.dataset.k];
     if(!sig) return;
-    if(window.openDrawer) openDrawer(sig.title || '', (sig.source || '') + (sig.sender ? ' · ' + sig.sender : ''), sig.reason || '', sig.body || '');
+    // [session 54 Bite 5] Signal drawer with channel-aware composer (WA send, read-only for others)
+    if(typeof openSignalDrawer === 'function') openSignalDrawer(sig);
+    else if(window.openDrawer) openDrawer(sig.title || '', (sig.source || '') + (sig.sender ? ' · ' + sig.sender : ''), sig.reason || '', sig.body || '');
   }));
 }
 
@@ -4641,6 +4643,106 @@ async function _saveProjectMilestone(pageId, label){
 
 try { _fetchProjects(); } catch(_){}
 setInterval(() => { try { _fetchProjects(); } catch(_){} }, 90 * 1000);
+
+// [session 54 Bite 5] Signal drawer with reply composer
+function openSignalDrawer(sig){
+  if(!sig) return;
+  const s = sig;
+  const titleEl = document.getElementById('drawer-title');
+  const ctxEl = document.getElementById('drawer-context');
+  const detEl = document.getElementById('drawer-details');
+  if(!titleEl || !ctxEl || !detEl) return;
+
+  const src = String(s.source || '').toLowerCase();
+  const isWA = src === 'whatsapp';
+  const isGmail = src === 'gmail';
+  const isReminder = src === 'reminder' || s.kind === 'reminder';
+
+  titleEl.textContent = s.title || s.sender || '—';
+  const meta = [];
+  const srcLabel = isWA ? 'WhatsApp' : isGmail ? 'Gmail' : isReminder ? 'Reminder' : (s.source || 'signal');
+  meta.push('<span class="tdrawer-chip">' + esc(srcLabel) + '</span>');
+  if(s.sender) meta.push('<span class="tdrawer-chip">' + esc(s.sender) + '</span>');
+  if(s.reason) meta.push('<span class="tdrawer-chip">' + esc(String(s.reason).replace(/^kw:/, '')) + '</span>');
+  if(s.ts_iso){
+    try {
+      const when = new Date(s.ts_iso).toLocaleString('en-US', {timeZone: (typeof CURRENT_TZ !== 'undefined' && CURRENT_TZ) || 'UTC', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', hour12:false});
+      meta.push('<span class="tdrawer-chip">' + esc(when) + '</span>');
+    } catch(_){}
+  }
+  ctxEl.innerHTML = meta.join(' ');
+
+  // Body — the signal content
+  const bodyHtml = s.body ? ('<div class="tdrawer-notes">' + esc(s.body) + '</div>') : '';
+
+  let composer = '';
+  if(isWA){
+    const phone = s.sender || '';
+    composer = '<div class="pdrawer-section" style="margin-top:12px;">' +
+      '<div class="pdrawer-label">Reply via WhatsApp</div>' +
+      '<textarea id="sig-reply-text" rows="3" placeholder="Type your reply…" style="width:100%; box-sizing:border-box; font-family:inherit; font-size:13px; padding:10px 12px; border:0.5px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); resize:vertical;"></textarea>' +
+      '<div class="tdrawer-actions" style="margin-top:8px;">' +
+        '<button class="tdrawer-btn tdrawer-btn-primary" onclick="_signalReplySend(\'' + esc(phone) + '\')">Send</button>' +
+        '<button class="tdrawer-btn" onclick="_signalDraftReply(\'' + esc(phone) + '\',\'' + esc((s.body||s.title||'').replace(/\'/g,"\\'")) + '\',\'whatsapp\')">Draft with Elly</button>' +
+      '</div>' +
+      '<div id="sig-draft-hint" style="font-size:10px; color:var(--text-3); margin-top:6px;">Elly can draft a reply in your voice using shared memory.</div>' +
+    '</div>';
+  } else if(isGmail){
+    composer = '<div class="tdrawer-actions" style="margin-top:12px;">' +
+      (s.link ? '<button class="tdrawer-btn" onclick="window.open(\'' + esc(s.link) + '\',\'_blank\')">Open in Gmail</button>' : '') +
+      '<button class="tdrawer-btn" onclick="if(typeof toggleElly===\'function\'){toggleElly(); const i=document.getElementById(\'elly-input\'); if(i){i.value=\'Draft a reply to this: \' + ' + JSON.stringify(String(s.body || s.title || '').slice(0, 200)) + '; if(typeof ellySend===\'function\') setTimeout(ellySend, 50);}}">Ask Elly to draft</button>' +
+    '</div>';
+  } else if(isReminder){
+    composer = '<div class="tdrawer-actions" style="margin-top:12px;">' +
+      '<button class="tdrawer-btn tdrawer-btn-primary" onclick="if(window.showToast)showToast(\'iCloud reminder actions coming\'); const ov=document.getElementById(\'drawer-overlay\'); const dr=document.getElementById(\'detail-drawer\'); if(ov)ov.classList.remove(\'open\'); if(dr)dr.classList.remove(\'open\');">Got it</button>' +
+    '</div>';
+  } else {
+    composer = '';
+  }
+
+  detEl.innerHTML = bodyHtml + composer;
+
+  const ov = document.getElementById('drawer-overlay');
+  const dr = document.getElementById('detail-drawer');
+  if(ov) ov.classList.add('open');
+  if(dr) dr.classList.add('open');
+}
+
+async function _signalReplySend(phone){
+  const ta = document.getElementById('sig-reply-text');
+  const text = ta ? (ta.value || '').trim() : '';
+  if(!phone || !text){ if(window.showToast) showToast('Reply text + phone required'); return; }
+  try {
+    const r = await postSync({action:'send_wa_reply', phone: phone, text: text});
+    if(r && (r.success || r.ok)){
+      if(window.showToast) showToast('✓ WhatsApp reply sent');
+      const ov = document.getElementById('drawer-overlay');
+      const dr = document.getElementById('detail-drawer');
+      if(ov) ov.classList.remove('open');
+      if(dr) dr.classList.remove('open');
+      try { if(typeof _fetchUnifiedSignals === 'function') _fetchUnifiedSignals(); } catch(_){}
+    } else {
+      if(window.showToast) showToast('× ' + (r && r.error ? r.error : 'Send failed'));
+    }
+  } catch(e){
+    if(window.showToast) showToast('× ' + String(e).slice(0,80));
+  }
+}
+
+async function _signalDraftReply(phone, message, channel){
+  const hint = document.getElementById('sig-draft-hint');
+  if(hint) hint.textContent = 'Drafting with Elly…';
+  try {
+    const r = await postSync({action:'elly_draft_reply', message: message, sender: phone, channel: channel});
+    const reply = (r && (r.reply || r.message || r.text)) || '';
+    const ta = document.getElementById('sig-reply-text');
+    if(ta && reply){ ta.value = reply; ta.focus(); }
+    if(hint) hint.textContent = reply ? 'Elly drafted — edit as needed, then Send.' : 'Elly could not draft. Try again or type manually.';
+  } catch(e){
+    if(hint) hint.textContent = 'Draft failed: ' + String(e).slice(0,60);
+  }
+}
+
 
 // ── Live wiring (Bite 2): Tasks poll ────────────────────────────────────
 // 90s cadence. Diffs task IDs vs current DD.tasks, animates new rows in.

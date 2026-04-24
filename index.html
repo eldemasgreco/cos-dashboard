@@ -1924,6 +1924,18 @@ body.dark {
   50% { background-color: var(--red-mid); }
   100% { background-color: transparent; transform: none; }
 }
+
+/* ── Live-wire: new task flash-in ── */
+@keyframes taskFlashIn {
+  0% { background-color: var(--ink-navy-bg); border-left: 3px solid var(--ink-navy); padding-left: 8px; }
+  100% { background-color: transparent; border-left: 3px solid transparent; padding-left: 4px; }
+}
+/* Live indicator dot (existing .live-pill gains a subtle pulse when polling) */
+.live-pill.polling .live-dot { animation: liveTick 2s ease infinite; }
+@keyframes liveTick {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
 </style>
 </head>
 <body>
@@ -4151,7 +4163,45 @@ async function _fetchSchedule(){
   } catch(e) { console.debug('schedule_refresh failed', e); }
 }
 try { _fetchSchedule(); } catch(_) {}
-setInterval(() => { try { _fetchSchedule(); } catch(_){} }, 15 * 60 * 1000);
+setInterval(() => { try { _fetchSchedule(); } catch(_){} }, 5 * 60 * 1000);
+
+// ── Live wiring (Bite 2): Tasks poll ────────────────────────────────────
+// 90s cadence. Diffs task IDs vs current DD.tasks, animates new rows in.
+let _TASKS_LAST_IDS = null;
+async function _fetchTasks(){
+  try {
+    const r = await postSync({action:'tasks_refresh', lookahead_days: 14});
+    if(!r || !r.success || !Array.isArray(r.tasks)) return;
+    const newIds = new Set(r.tasks.map(t => t.id).filter(Boolean));
+    // Detect additions
+    const additions = _TASKS_LAST_IDS ? [...newIds].filter(id => !_TASKS_LAST_IDS.has(id)) : [];
+    DD.tasks = r.tasks;
+    _TASKS_LAST_IDS = newIds;
+    // Re-render the two task surfaces
+    try { if(typeof renderTasksThisWeek === 'function') renderTasksThisWeek(); } catch(e){ console.warn(e); }
+    try { if(typeof renderTasks === 'function') renderTasks(); } catch(e){ console.warn(e); }
+    // Update badge on Tasks tab
+    const badge = document.getElementById('tasks-badge');
+    if(badge){ badge.textContent = r.tasks.length; badge.style.display = r.tasks.length ? 'inline-block' : 'none'; }
+    // Animate new rows (flash). Gated to avoid animating on first load or >5 additions (too noisy).
+    if(additions.length > 0 && additions.length <= 5 && _TASKS_LAST_IDS){
+      setTimeout(() => {
+        document.querySelectorAll('.tw-row, .right-row').forEach(row => {
+          const rowId = (row.dataset.taskId) || (row.dataset.k && window.__TW && window.__TW[row.dataset.k] && window.__TW[row.dataset.k].id);
+          if(rowId && additions.includes(rowId)){
+            row.style.animation = 'taskFlashIn 1.2s ease';
+            row.setAttribute('data-new','1');
+          }
+        });
+      }, 50);
+      if(typeof showToast === 'function'){
+        showToast((additions.length === 1 ? '1 new task' : additions.length + ' new tasks'));
+      }
+    }
+  } catch(e) { console.debug('tasks_refresh poll failed', e); }
+}
+try { _fetchTasks(); } catch(_){}
+setInterval(() => { try { _fetchTasks(); } catch(_){} }, 90 * 1000);
 
 // ── Live wiring (Bite 1): status-line + top-priority ────────────────────
 // Polls /critical_refresh every 30s. Updates status-line silently on every

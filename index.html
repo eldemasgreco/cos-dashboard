@@ -1726,6 +1726,12 @@ body.dark .entity-filter-bar { background: var(--card); }
 .copilot-insight { font-family: var(--font-serif); font-style: italic; font-size: 13px; color: var(--text-2); border-top: 0.5px solid var(--border); padding-top: 12px; margin: 4px 0 12px; }
 .copilot-ask input { width: 100%; font-size: 13px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); box-sizing: border-box; font-family: inherit; }
 .copilot-ask input:focus { outline: none; border-color: var(--text-3); }
+.copilot-item.clickable { cursor: pointer; padding: 4px 6px; border-radius: 4px; transition: background 0.12s; margin: 0 -6px; }
+.copilot-item.clickable:hover { background: rgba(0,0,0,0.04); }
+body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
+.cop-item-menu { background: var(--card); border: 0.5px solid var(--border); border-radius: 8px; padding: 4px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); display: flex; flex-direction: column; min-width: 160px; }
+.cop-item-menu button { font-size: 12px; padding: 8px 12px; background: none; border: none; color: var(--text); text-align: left; cursor: pointer; font-family: inherit; border-radius: 4px; }
+.cop-item-menu button:hover { background: var(--bg); }
 @media (max-width: 900px) { .copilot-grid { grid-template-columns: 1fr; } .copilot-headline { font-size: 20px; } }
 /* [session 54 Bite 2] Unified Signals rail — always visible at bottom of right col */
 .signals-rail { margin-top: 14px; padding: 12px 14px; background: var(--card); border: 0.5px solid var(--border); border-radius: 8px; }
@@ -4335,11 +4341,21 @@ function _renderCopilotBrief(d){
       body.innerHTML = '<div class="copilot-item" style="opacity:0.45">—</div>';
       return;
     }
-    body.innerHTML = items.slice(0, 3).map(it => {
+    window.__COPILOT_ITEMS = window.__COPILOT_ITEMS || {};
+    body.innerHTML = items.slice(0, 3).map((it, i) => {
+      const k = id + '::' + i;
+      window.__COPILOT_ITEMS[k] = it;
       const title = esc(it.title || '');
       const sub = esc(it[subField] || '');
-      return `<div class="copilot-item">${title}${sub ? `<div class="copilot-item-why">${sub}</div>` : ''}</div>`;
+      return '<div class="copilot-item clickable" data-k="' + esc(k) + '">' + title + (sub ? '<div class="copilot-item-why">' + sub + '</div>' : '') + '</div>';
     }).join('');
+    body.querySelectorAll('.copilot-item.clickable').forEach(el => {
+      el.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        const item = window.__COPILOT_ITEMS[el.dataset.k];
+        if(item) _openCopilotItemMenu(el, item);
+      });
+    });
   };
   renderTile('copilot-critical', d.critical || [], 'why');
   renderTile('copilot-today', d.today || [], 'action');
@@ -4365,6 +4381,68 @@ async function _copilotAsk(){
     }
   } else if(window.showToast) {
     showToast('Elly panel not ready');
+  }
+}
+
+// [session 54 Bite 7] Click a Copilot item -> mini menu: Create task | Ask Elly | Dismiss
+function _openCopilotItemMenu(anchorEl, item){
+  // Close any existing menu
+  document.querySelectorAll('.cop-item-menu').forEach(n => n.remove());
+  const m = document.createElement('div');
+  m.className = 'cop-item-menu';
+  const title = (item.title || '').replace(/'/g, "\\'");
+  const esc1 = (s) => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+  m.innerHTML = '' +
+    '<button onclick="_copilotCreateTask(\'' + esc1(title) + '\')">➕ Create task</button>' +
+    '<button onclick="_copilotAskAbout(\'' + esc1(title) + '\')">Ask Elly</button>' +
+    '<button onclick="this.parentNode.remove()">Dismiss</button>';
+  // Position below the clicked item
+  const rect = anchorEl.getBoundingClientRect();
+  m.style.position = 'absolute';
+  m.style.left = Math.round(rect.left + window.scrollX) + 'px';
+  m.style.top = Math.round(rect.bottom + window.scrollY + 4) + 'px';
+  m.style.zIndex = '9999';
+  document.body.appendChild(m);
+  // Close on outside click
+  setTimeout(() => {
+    const close = (ev) => {
+      if(!m.contains(ev.target)){ m.remove(); document.removeEventListener('click', close); }
+    };
+    document.addEventListener('click', close);
+  }, 0);
+}
+
+async function _copilotCreateTask(title){
+  if(!title){ if(window.showToast) showToast('No title'); return; }
+  // Entity hint — pull from title contents
+  const t = String(title).toLowerCase();
+  let entity = 'Personal';
+  if(t.includes('afsh') || t.includes('adafsa') || t.includes('uae') || t.includes('transmar')) entity = 'AFSH';
+  else if(t.includes('illume') || t.includes('olive') || t.includes('almencor') || t.includes('castelos') || t.includes('pas')) entity = 'Illume';
+  else if(t.includes('spade')) entity = 'Spade';
+  try {
+    const r = await postSync({action:'capture', text: title, entity: entity});
+    if(r && (r.success || r.ok)){
+      if(window.showToast) showToast('✓ Task created: ' + title.slice(0, 60));
+      document.querySelectorAll('.cop-item-menu').forEach(n => n.remove());
+      try { if(typeof _fetchTasks === 'function') _fetchTasks(); } catch(_){}
+      try { if(typeof _fetchCopilotBrief === 'function') _fetchCopilotBrief(true); } catch(_){}
+    } else {
+      if(window.showToast) showToast('× ' + (r && r.error ? r.error : 'Task create failed'));
+    }
+  } catch(e){
+    if(window.showToast) showToast('× ' + String(e).slice(0,80));
+  }
+}
+
+function _copilotAskAbout(title){
+  document.querySelectorAll('.cop-item-menu').forEach(n => n.remove());
+  if(typeof toggleElly !== 'function') return;
+  try { toggleElly(); } catch(_){}
+  const input = document.getElementById('elly-input');
+  if(input){
+    input.value = 'Tell me more about: ' + title;
+    if(typeof ellySend === 'function') setTimeout(ellySend, 50);
   }
 }
 

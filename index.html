@@ -999,6 +999,50 @@ body[data-entity-filter="Personal"] [data-entity]:not([data-entity="Personal"]) 
 .top-priority-pill.amber .tpp-label { color: var(--amber); }
 .top-priority-pill .tpp-title { font-size: 13px; font-weight: 500; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+:root { --left-w: 0px !important; }
+.layout { grid-template-columns: 1fr var(--right-w) !important; padding-top: var(--hdr-h) !important; }
+.news-banner { display: none !important; }
+.col-left { display: none !important; }
+.entity-filter-bar { display: none !important; }
+#metrics-row { display: none !important; }
+#alerts-section { display: none !important; }
+.top-priority-pill { display: none !important; }
+.status-line { display: flex; align-items: center; gap: 10px; padding: 16px 24px 14px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.status-line-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 0 4px var(--border); }
+.status-line.green .status-line-dot { background: #4f8a5f; box-shadow: 0 0 0 4px rgba(79,138,95,0.12); }
+.status-line.amber .status-line-dot { background: var(--amber); box-shadow: 0 0 0 4px var(--amber-bg); }
+.status-line.red .status-line-dot { background: var(--red); box-shadow: 0 0 0 4px var(--red-bg); }
+.status-line-lbl { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); }
+.status-line.red .status-line-lbl { color: var(--red); }
+.status-line.amber .status-line-lbl { color: var(--amber); }
+.status-line.green .status-line-lbl { color: #4f8a5f; }
+.status-line-msg { flex: 1; color: var(--text); font-size: 14px; font-weight: 500; cursor: pointer; }
+.status-line-msg:hover { text-decoration: underline; }
+.tw-section { padding: 6px 24px 14px; }
+.tw-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
+.tw-title { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--text-3); text-transform: uppercase; }
+.tw-chips { display: flex; gap: 4px; }
+.tw-chip { font-size: 10px; border: 1px solid var(--border); background: var(--card); color: var(--text-2); padding: 3px 8px; border-radius: 10px; cursor: pointer; }
+.tw-chip:hover { border-color: var(--text-3); color: var(--text); }
+.tw-chip.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+.tw-chip.afsh.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+.tw-chip.illume.active { background: var(--green); color: #fff; border-color: var(--green); }
+.tw-chip.spade.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+.tw-chip.personal.active { background: var(--amber); color: #fff; border-color: var(--amber); }
+.tw-row { display: grid; grid-template-columns: 10px 1fr auto auto; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--border); cursor: pointer; align-items: center; }
+.tw-row:hover { background: var(--card-2); }
+.tw-row-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); opacity: 0.4; }
+.tw-row.high .tw-row-dot { background: var(--red); opacity: 1; }
+.tw-row.medium .tw-row-dot { background: var(--amber); opacity: 1; }
+.tw-row-title { font-size: 13px; color: var(--text); line-height: 1.4; }
+.tw-row-meta { font-size: 11px; color: var(--text-3); }
+.tw-row-due { font-size: 11px; color: var(--text-3); font-weight: 600; }
+.tw-row-due.overdue { color: var(--red); }
+.tw-more-link { display: block; margin-top: 10px; font-size: 11px; color: var(--text-3); cursor: pointer; text-align: right; }
+.dz-pills { display: flex; gap: 8px; padding: 8px 24px 24px; flex-wrap: wrap; }
+.dz-pill { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 18px; font-size: 11px; color: var(--text-2); cursor: pointer; transition: all var(--t); }
+.dz-pill:hover { color: var(--text); border-color: var(--text-3); transform: translateY(-1px); }
+
 /* ── Fantastical-style calendar (Schedule tab) ──────────────────────────── */
 .cal-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 8px 10px 4px; border-bottom: 1px solid var(--border); }
 .cal-views { display: inline-flex; background: var(--card-2); border: 1px solid var(--border); border-radius: 6px; padding: 2px; }
@@ -1751,6 +1795,12 @@ body.dark .entity-filter-bar { background: var(--card); }
   <!-- ═══ CENTER COLUMN ═══ -->
   <main class="col col-center">
 
+    <div class="status-line green" id="status-line">
+      <span class="status-line-dot"></span>
+      <span class="status-line-lbl" id="status-line-lbl">On track</span>
+      <span class="status-line-msg" id="status-line-msg" onclick="openTopPriority()"></span>
+    </div>
+
     <!-- Top priority pill — single most urgent item, extracted from DD.priorities / DD.alerts -->
     <div class="top-priority-pill" id="top-priority-pill" onclick="openTopPriority()" style="display:none;"></div>
 
@@ -1766,6 +1816,29 @@ body.dark .entity-filter-bar { background: var(--card); }
 
     <!-- Metrics mini-row -->
     <div id="metrics-row" class="metrics-mini-row"></div>
+
+    <div class="tw-section" id="tw-section">
+      <div class="tw-header">
+        <span class="tw-title">This Week</span>
+        <div class="tw-chips">
+          <button class="tw-chip active" data-ent="" onclick="setTwEntity('')">All</button>
+          <button class="tw-chip afsh" data-ent="AFSH" onclick="setTwEntity('AFSH')">🐄</button>
+          <button class="tw-chip illume" data-ent="Illume" onclick="setTwEntity('Illume')">🫒</button>
+          <button class="tw-chip spade" data-ent="Spade" onclick="setTwEntity('Spade')">⚙️</button>
+          <button class="tw-chip personal" data-ent="Personal" onclick="setTwEntity('Personal')">👤</button>
+        </div>
+      </div>
+      <div id="tw-body"></div>
+    </div>
+
+    <div class="dz-pills">
+      <span class="dz-pill" onclick="openDzDrawer('markets')">📊 Markets</span>
+      <span class="dz-pill" onclick="openDzDrawer('news')">📰 News</span>
+      <span class="dz-pill" onclick="openDzDrawer('weather')">🌤 Weather</span>
+      <span class="dz-pill" onclick="openDzDrawer('alerts')">⚠️ Alerts</span>
+      <span class="dz-pill" onclick="openDzDrawer('signals')">🔔 Signals</span>
+    </div>
+
 
     <!-- Alerts cluster -->
     <div class="center-section" id="alerts-section"></div>
@@ -2951,6 +3024,66 @@ function _normSource(e){
   return 'other';
 }
 // ── Fantastical-style calendar (Day/Week/Month/Quarter) ──────────────────
+// ── v2 status line, tasks-this-week, drawer pills ──
+let TW_ENTITY = '';
+function _twEntityOf(t){ const s = String(t.entity || '').toLowerCase(); if(s.includes('afsh'))return'AFSH'; if(s.includes('illume'))return'Illume'; if(s.includes('spade'))return'Spade'; if(s.includes('personal'))return'Personal'; return 'Other'; }
+function setTwEntity(e){ TW_ENTITY = e; document.querySelectorAll('.tw-chip').forEach(c => c.classList.toggle('active', (c.dataset.ent || '') === e)); renderTasksThisWeek(); }
+function renderStatusLine(){
+  const host = document.getElementById('status-line'); const lbl = document.getElementById('status-line-lbl'); const msg = document.getElementById('status-line-msg');
+  if(!host || !lbl || !msg) return;
+  let found = null, tier = 'green', label = 'On track';
+  for(const c of (DD.alerts || [])){ for(const it of (c.items || [])){ if((it.severity||'').toLowerCase() === 'r'){ found = it; tier = 'red'; label = 'Critical'; break; } } if(found) break; }
+  if(!found){ for(const c of (DD.alerts || [])){ for(const it of (c.items || [])){ if((it.severity||'').toLowerCase() === 'a'){ found = it; tier = 'amber'; label = 'Watch'; break; } } if(found) break; } }
+  if(!found){ for(const p of (DD.priorities || [])){ if((p.tier || p.urgency || '').toLowerCase() === 'red'){ found = p; tier = 'red'; label = 'Critical'; break; } } }
+  host.className = 'status-line ' + tier; lbl.textContent = label;
+  const strip = (typeof _stripMd === 'function') ? _stripMd : (s => String(s || ''));
+  msg.textContent = found ? strip(found.title || found.subject || '') : 'No red or amber items.';
+  host._payload = found;
+}
+function openTopPriority(){ const host = document.getElementById('status-line'); const p = host && host._payload; if(!p){ if(window.showToast) showToast('No critical item right now.'); return; } const strip = (typeof _stripMd === 'function') ? _stripMd : (s => String(s || '')); if(window.openDrawer) openDrawer(strip(p.title || ''), p.source || p.entity || '', p.context || p.meta_line || '', p.detail || p.summary || ''); }
+function renderTasksThisWeek(){
+  const host = document.getElementById('tw-body'); if(!host) return;
+  const now = new Date(); now.setHours(0,0,0,0);
+  const weekEnd = new Date(now); weekEnd.setDate(weekEnd.getDate() + 7);
+  const tasks = (DD.tasks || []).filter(t => {
+    const st = (t.status || '').toLowerCase(); if(st === 'done' || st === 'cancelled') return false;
+    const due = new Date(t.due_date || t.due || ''); if(isNaN(due)) return false;
+    if(due > weekEnd) return false;
+    if(TW_ENTITY && _twEntityOf(t) !== TW_ENTITY) return false;
+    return true;
+  }).sort((a,b) => {
+    const w = p => { const s = String(p||'').toLowerCase(); if(s.includes('high')||s.includes('red')||s.includes('🔴')) return 0; if(s.includes('medium')||s.includes('normal')||s.includes('amber')||s.includes('🟡')) return 1; return 2; };
+    const pa = w(a.priority), pb = w(b.priority);
+    if(pa !== pb) return pa - pb;
+    return new Date(a.due_date||a.due||0) - new Date(b.due_date||b.due||0);
+  });
+  const strip = (typeof _stripMd === 'function') ? _stripMd : (s => String(s || ''));
+  if(!tasks.length){ host.innerHTML = '<div class="cal-empty">No tasks this week' + (TW_ENTITY ? ' for ' + TW_ENTITY : '') + '.</div>'; return; }
+  const cap = tasks.slice(0, 10); window.__TW = {};
+  host.innerHTML = cap.map((t, i) => {
+    const k = 'tw::' + i; window.__TW[k] = t;
+    const pr = String(t.priority || '').toLowerCase();
+    const cls = (pr.includes('high')||pr.includes('red')||pr.includes('🔴')) ? 'high' : ((pr.includes('medium')||pr.includes('normal')||pr.includes('amber')||pr.includes('🟡')) ? 'medium' : 'low');
+    const due = new Date(t.due_date || t.due || '');
+    const isOverdue = !isNaN(due) && due < now;
+    const dueStr = isNaN(due) ? '' : (due.toDateString() === now.toDateString() ? 'today' : (isOverdue ? 'overdue' : due.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'})));
+    const title = strip(t.task || t.title || t.subject || '—');
+    return '<div class="tw-row ' + cls + '" data-k="' + k + '"><span class="tw-row-dot"></span><div><div class="tw-row-title">' + title + '</div><div class="tw-row-meta">' + _twEntityOf(t) + '</div></div><span class="tw-row-due' + (isOverdue?' overdue':'') + '">' + dueStr + '</span><span></span></div>';
+  }).join('') + (tasks.length > 10 ? '<div class="tw-more-link" onclick="switchTab(\'tasks\', document.querySelector(\'.tab-btn[data-tab=tasks]\'))">See all ' + tasks.length + ' →</div>' : '');
+  host.querySelectorAll('.tw-row').forEach(el => el.addEventListener('click', () => {
+    const t = window.__TW[el.dataset.k]; if(!t) return;
+    if(window.openDrawer) openDrawer(strip(t.task || t.title || '—'), t.entity || '', String(t.priority || ''), String(t.notes || t.detail || t.context || ''));
+  }));
+}
+function openDzDrawer(kind){
+  if(!window.openDrawer) return;
+  if(kind === 'markets'){ const rows = (DD.markets || []).slice(0, 14); const body = rows.length ? rows.map(m => `• ${m.ticker || ''}: ${m.value || ''} (${m.change_pct || m.change || ''})`).join('\n') : 'No market data.'; openDrawer('Markets', 'refresh ~5 min', '', body); }
+  else if(kind === 'news'){ const rows = (DD.news || []).slice(0, 12); const body = rows.length ? rows.map(n => `• ${n.headline || n.title || ''}${n.category?' ['+n.category+']':''}`).join('\n') : 'No news.'; openDrawer('Breaking News', 'WSJ · FT · Economist · Reuters', '', body); }
+  else if(kind === 'weather'){ const w = DD.weather || {}; const fc = (w.forecast || []).map(d => `${d.label||''}: ${d.hi||''}/${d.lo||''} ${d.icon||''}`).join('\n'); openDrawer(`${w.location || 'Weather'} — ${w.temp || ''}°`, w.desc || '', `Humidity ${w.humidity || ''} · Wind ${w.wind || ''} km/h · UV ${w.uv || ''}`, fc || 'No extended forecast.'); }
+  else if(kind === 'alerts'){ const items = (DD.alerts || []).flatMap(c => (c.items||[]).map(it => ({...it, label: c.label || ''}))); const body = items.length ? items.map(it => `${(it.severity||'').toUpperCase()==='R'?'🔴':(it.severity||'').toUpperCase()==='A'?'🟡':'•'} ${it.title || ''}${it.label?' ('+it.label+')':''}`).join('\n') : 'No alerts.'; openDrawer('Alerts', '', '', body); }
+  else if(kind === 'signals'){ const body = (DD.signals || []).slice(0, 12).map(s => `• ${s.title || s.summary || ''}${s.entity?' ('+s.entity+')':''}`).join('\n') || 'No signals.'; openDrawer('Signals', 'Elly + COS pipeline', '', body); }
+}
+
 let CAL_VIEW = 'day';
 let CAL_ANCHOR = new Date();
 let CAL_ENTITY = '';
@@ -3723,6 +3856,8 @@ function renderAll(){
 try{ renderSchedule(); }catch(e){ console.error('renderSchedule',e); }
 try{ renderTopPriority(); }catch(e){ console.error('renderTopPriority',e); }
 try{ renderWhatsNew(); }catch(e){ console.error('renderWhatsNew',e); }
+try{ renderStatusLine(); }catch(e){ console.error('renderStatusLine',e); }
+try{ renderTasksThisWeek(); }catch(e){ console.error('renderTasksThisWeek',e); }
 
 async function _fetchSchedule(){
   try {

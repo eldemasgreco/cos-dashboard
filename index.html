@@ -3944,32 +3944,7 @@ function renderPriorities(){
   }).join('') || '<div class="empty-state">No priorities</div>');
 }
 
-function renderSchedule(){
-  const sched = DD.schedule || {};
-  const view = SCHED_VIEWS[SCHED_IDX];
-  const items = (sched[view] || sched.day || []);
-  const next = sched.next_label || '';
-  $('sch-hdr-l').textContent = (view.charAt(0).toUpperCase()+view.slice(1));
-  $('sch-next').textContent = next || '';
-  $('sch-next').style.display = next?'inline-block':'none';
-  const n=items.length;
-  $('sched-timeline').innerHTML = items.map((e,i)=>{
-    const state = (e.state||'upcoming');
-    const chipCls = e.chip_class || '';
-    return `<div class="tl-item">
-      <div class="tl-left"><div class="tl-time">${esc(e.time||'')}</div></div>
-      <div class="tl-spine">
-        <div class="tl-dot ${state}"></div>
-        ${i<n-1?'<div class="tl-line"></div>':''}
-      </div>
-      <div class="tl-content">
-        <div class="tl-title ${state==='done'?'done':''}">${esc(e.title||'')}</div>
-        <div class="tl-sub">${esc(e.sub||'')}</div>
-        ${e.chip?`<div class="tl-chip ${esc(chipCls)}">${esc(e.chip)}</div>`:''}
-      </div>
-    </div>`;
-  }).join('') || '<div class="empty-state">No events</div>';
-}
+// [session 53] legacy renderSchedule removed — was shadowing the Fantastical-style renderer above and throwing on \$('sch-hdr-l') which doesn't exist in v2 layout. That throw broke calendar nav buttons.
 
 function avatarClassFor(name){
   const letters=(name||'').replace(/[^A-Za-z]/g,'').toUpperCase();

@@ -1917,6 +1917,13 @@ body.dark {
 
 /* 12. Ask Elly / FAB — keep warm sienna (warm voice) */
 .elly-fab, .fab { background: var(--green) !important; }  /* sienna */
+
+/* ── Live-wire: status line pulse when a new critical arrives ── */
+@keyframes criticalPulse {
+  0% { background-color: var(--red-bg); transform: none; }
+  50% { background-color: var(--red-mid); }
+  100% { background-color: transparent; transform: none; }
+}
 </style>
 </head>
 <body>
@@ -4145,6 +4152,93 @@ async function _fetchSchedule(){
 }
 try { _fetchSchedule(); } catch(_) {}
 setInterval(() => { try { _fetchSchedule(); } catch(_){} }, 15 * 60 * 1000);
+
+// ── Live wiring (Bite 1): status-line + top-priority ────────────────────
+// Polls /critical_refresh every 30s. Updates status-line silently on every
+// change. Fires a browser Notification the FIRST time a given critical ID is
+// seen (dedup via localStorage). Falls back to inline toast + status-line flash.
+const CRITICAL_NOTIFIED_KEY = 'cos.critical.notified.v1';
+let _CRITICAL_LAST_ID = null;
+let _CRITICAL_LAST_TITLE = null;
+
+async function _requestNotifPermission(){
+  if(typeof Notification === 'undefined') return 'no-api';
+  if(Notification.permission === 'granted') return 'granted';
+  if(Notification.permission === 'denied') return 'denied';
+  try { return await Notification.requestPermission(); } catch(e) { return 'error'; }
+}
+
+async function _fetchCritical(){
+  try {
+    const r = await postSync({action:'critical_refresh'});
+    if(!r || !r.success) return;
+    const top = r.top;
+    if(!top){
+      // No red-priority items — keep renderStatusLine's state (which may be amber or green)
+      return;
+    }
+    const id = top.id;
+    const title = String(top.title || '');
+    if(id === _CRITICAL_LAST_ID && title === _CRITICAL_LAST_TITLE) return;  // no change
+
+    const isFirstSeenForSession = (_CRITICAL_LAST_ID === null);
+    _CRITICAL_LAST_ID = id;
+    _CRITICAL_LAST_TITLE = title;
+
+    // Silent UI update — always
+    const sl = document.getElementById('status-line');
+    const lbl = document.getElementById('status-line-lbl');
+    const msg = document.getElementById('status-line-msg');
+    if(sl){ sl.className = 'status-line red'; sl._payload = top; }
+    if(lbl){ lbl.textContent = 'Critical'; }
+    if(msg){
+      msg.textContent = title;
+      // pulse animation
+      msg.style.animation = 'none';
+      void msg.offsetWidth;
+      msg.style.animation = 'criticalPulse 0.8s ease';
+    }
+
+    // Browser notification — only on NEW items not previously notified.
+    // Don't fire on initial page-load match unless truly new.
+    let notified = {};
+    try { notified = JSON.parse(localStorage.getItem(CRITICAL_NOTIFIED_KEY) || '{}'); } catch(_){}
+    if(notified[id]){
+      // Prune + return (still updated UI above)
+      return;
+    }
+    if(!isFirstSeenForSession && typeof Notification !== 'undefined' && Notification.permission === 'granted'){
+      try {
+        const n = new Notification('⚠ Critical — ' + title.slice(0, 60), {
+          body: top.entity ? 'Entity: ' + top.entity : 'Click to open dashboard',
+          icon: '/cos-dashboard/favicon.ico',
+          tag: id,
+          requireInteraction: false,
+        });
+        n.onclick = () => {
+          window.focus();
+          if(typeof openTopPriority === 'function') openTopPriority();
+          n.close();
+        };
+        setTimeout(() => { try { n.close(); } catch(_){} }, 12000);
+      } catch(e) { console.warn('notification failed', e); }
+    }
+    // Inline toast — always
+    if(typeof showToast === 'function' && !isFirstSeenForSession){
+      showToast('⚠ ' + title.slice(0, 80));
+    }
+    // Mark as notified + prune
+    notified[id] = Date.now();
+    const cutoff = Date.now() - 48 * 3600 * 1000;
+    Object.keys(notified).forEach(k => { if(notified[k] < cutoff) delete notified[k]; });
+    try { localStorage.setItem(CRITICAL_NOTIFIED_KEY, JSON.stringify(notified)); } catch(_){}
+  } catch(e) { console.debug('critical_refresh poll failed', e); }
+}
+
+// Kick off immediately, then every 30s
+try { _requestNotifPermission(); } catch(_){}
+try { _fetchCritical(); } catch(_){}
+setInterval(() => { try { _fetchCritical(); } catch(_){} }, 30 * 1000);
   try{ renderSuggested(); }catch(e){ console.error('renderSuggested',e); }
   try{ renderSystem(); }catch(e){ console.error('renderSystem',e); }
 }

@@ -2668,10 +2668,12 @@ async function cosAction(action, el){
     showToast(r && r.error ? ('× '+r.error) : '× Failed');
     return;
   }
-  // full_refresh triggers a ~90s S21 run + Pages deploy. Give honest feedback
-  // + auto-reload when it should be done so Nick sees the fresh data.
+  // [session 53] full_refresh re-triggers S21 on the backend but updates live data
+  // IN PLACE via the 4 live polls. No more location.reload() → no flash of empty state,
+  // no CDN roulette, no losing DD state that was just populated by the direct aggregator.
   if(action === 'full_refresh' || body.action === 'refresh'){
-    const secs = 90;
+    // Fire all 4 live polls in parallel — they overwrite DD.schedule/tasks/alerts/signals
+    // from direct-API sources (NOT from the S21 HTML snapshot, which lags by 90s anyway).
     let t = $('refresh-countdown');
     if(!t){
       t = document.createElement('div');
@@ -2679,18 +2681,18 @@ async function cosAction(action, el){
       document.body.appendChild(t);
     }
     t.classList.add('visible');
-    let remaining = secs;
-    t.textContent = `⟳ S21 queued — refreshing in ${remaining}s…`;
-    const iv = setInterval(()=>{
-      remaining -= 1;
-      if(remaining <= 0){
-        clearInterval(iv);
-        t.textContent = '⟳ Reloading…';
-        setTimeout(()=> location.reload(), 600);
-      } else {
-        t.textContent = `⟳ S21 queued — refreshing in ${remaining}s…`;
-      }
-    }, 1000);
+    t.textContent = '⟳ Refreshing live data…';
+    const polls = [];
+    try { if(typeof _fetchSchedule === 'function') polls.push(_fetchSchedule()); } catch(_){}
+    try { if(typeof _fetchTasks === 'function') polls.push(_fetchTasks()); } catch(_){}
+    try { if(typeof _fetchCritical === 'function') polls.push(_fetchCritical()); } catch(_){}
+    try { if(typeof _fetchSignals === 'function') polls.push(_fetchSignals()); } catch(_){}
+    try { if(typeof _fetchTicker === 'function') polls.push(_fetchTicker()); } catch(_){}
+    Promise.allSettled(polls).then(() => {
+      try { if(typeof renderAll === 'function') renderAll(); } catch(_){}
+      t.textContent = '✓ Refreshed';
+      setTimeout(() => { try { t.classList.remove('visible'); } catch(_){} }, 2000);
+    });
   } else {
     showToast('✓ Triggered');
   }

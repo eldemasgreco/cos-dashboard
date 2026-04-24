@@ -4156,9 +4156,15 @@ try{ renderTasksThisWeek(); }catch(e){ console.error('renderTasksThisWeek',e); }
 async function _fetchSchedule(){
   try {
     const r = await postSync({action:'schedule_refresh', lookahead_days: 90});
+    // Session 53: surface debug block to console for fast triage
+    if(r && r.debug){
+      console.log('[schedule_refresh]', 'count=' + (r.count||0), r.debug);
+    }
     if(r && (r.success || r.ok) && Array.isArray(r.schedule)){
       DD.schedule = r.schedule;
       try { renderSchedule(); } catch(e) { console.warn('renderSchedule', e); }
+    } else if(r && r.error){
+      console.warn('[schedule_refresh] error:', r.error);
     }
   } catch(e) { console.debug('schedule_refresh failed', e); }
 }

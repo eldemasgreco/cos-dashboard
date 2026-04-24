@@ -1727,6 +1727,22 @@ body.dark .entity-filter-bar { background: var(--card); }
 .copilot-ask input { width: 100%; font-size: 13px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); box-sizing: border-box; font-family: inherit; }
 .copilot-ask input:focus { outline: none; border-color: var(--text-3); }
 @media (max-width: 900px) { .copilot-grid { grid-template-columns: 1fr; } .copilot-headline { font-size: 20px; } }
+/* [session 54 Bite 2] Unified Signals rail — always visible at bottom of right col */
+.signals-rail { margin-top: 14px; padding: 12px 14px; background: var(--card); border: 0.5px solid var(--border); border-radius: 8px; }
+.signals-rail-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.signals-rail-title { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); }
+.signals-rail-sub { font-size: 10px; color: var(--text-3); font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; }
+.signals-rail-body { display: flex; flex-direction: column; gap: 6px; max-height: 340px; overflow-y: auto; }
+.signals-row { display: flex; gap: 8px; align-items: flex-start; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.12s; }
+.signals-row:hover { background: var(--bg); }
+.signals-row-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.signals-row-dot.red { background: var(--red); }
+.signals-row-dot.amber { background: var(--amber); }
+.signals-row-dot.gray { background: var(--text-3); }
+.signals-row-body { flex: 1; min-width: 0; }
+.signals-row-title { font-size: 12px; line-height: 1.35; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.signals-row-meta { font-size: 10px; color: var(--text-3); margin-top: 1px; }
+.signals-empty { font-size: 11px; color: var(--text-3); padding: 8px 4px; }
 
 .hero-title, .hero-eyebrow ~ .hero-title, #brief-title { font-family: var(--font-serif); font-weight: 500; letter-spacing: -0.01em; }
 .status-line-msg { font-family: var(--font-serif); font-weight: 500; letter-spacing: -0.005em; font-size: 15px; }
@@ -2267,6 +2283,17 @@ body.dark {
         <div class="tab-panel" id="tab-comms"><div id="comms-body"></div></div>
         <div class="tab-panel" id="tab-waiting"><div id="waiting-body"></div></div>
       </div>
+
+      <!-- [session 54 Bite 2] Unified Signals card — always visible below tab area -->
+      <div class="signals-rail" id="signals-rail">
+        <div class="signals-rail-head">
+          <span class="signals-rail-title">Signals · <span id="signals-count">0</span></span>
+          <span class="signals-rail-sub" id="signals-urgent-sub"></span>
+        </div>
+        <div class="signals-rail-body" id="signals-rail-body">
+          <div class="signals-empty">Loading signals…</div>
+        </div>
+      </div>
     </div>
   </aside>
 </div>
@@ -2727,6 +2754,7 @@ async function cosAction(action, el){
     try { if(typeof _fetchSignals === 'function') polls.push(_fetchSignals()); } catch(_){}
     try { if(typeof _fetchTicker === 'function') polls.push(_fetchTicker()); } catch(_){}
     try { if(typeof _fetchCopilotBrief === 'function') polls.push(_fetchCopilotBrief(true)); } catch(_){}
+    try { if(typeof _fetchUnifiedSignals === 'function') polls.push(_fetchUnifiedSignals()); } catch(_){}
     Promise.allSettled(polls).then(() => {
       try { if(typeof renderAll === 'function') renderAll(); } catch(_){}
       t.textContent = '✓ Refreshed';
@@ -4293,6 +4321,61 @@ async function _copilotAsk(){
 
 try { _fetchCopilotBrief(false); } catch(_){}
 setInterval(() => { try { _fetchCopilotBrief(false); } catch(_){} }, 10 * 60 * 1000);
+
+// [session 54 Bite 2] Unified Signals rail — 30s poll, merges live critical_queue + Signal Log
+async function _fetchUnifiedSignals(){
+  try {
+    const r = await postSync({action:'unified_signals', limit: 20});
+    if(!r || !r.success || !Array.isArray(r.signals)) return;
+    _renderUnifiedSignals(r);
+  } catch(e){ console.warn('unified_signals fetch failed', e); }
+}
+
+function _renderUnifiedSignals(d){
+  const host = document.getElementById('signals-rail-body');
+  const count = document.getElementById('signals-count');
+  const sub = document.getElementById('signals-urgent-sub');
+  if(!host) return;
+  if(count) count.textContent = String(d.count || 0);
+  if(sub) sub.textContent = d.urgent_count ? (d.urgent_count + ' urgent') : 'quiet';
+  const sigs = d.signals || [];
+  if(!sigs.length){
+    host.innerHTML = '<div class="signals-empty">No signals.</div>';
+    return;
+  }
+  const esc = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+  const relTime = isoOrEpoch => {
+    let ts;
+    if(typeof isoOrEpoch === 'number') ts = isoOrEpoch * 1000;
+    else if(isoOrEpoch) ts = new Date(isoOrEpoch).getTime();
+    else return '';
+    const diff = Date.now() - ts;
+    if(isNaN(diff)) return '';
+    const mins = Math.round(diff / 60000);
+    if(mins < 1) return 'just now';
+    if(mins < 60) return mins + 'm';
+    const hrs = Math.round(mins / 60);
+    if(hrs < 24) return hrs + 'h';
+    return Math.round(hrs / 24) + 'd';
+  };
+  window.__SIGNALS = {};
+  host.innerHTML = sigs.slice(0, 20).map((s, i) => {
+    const k = 'sig::' + i;
+    window.__SIGNALS[k] = s;
+    const sev = s.severity || (s.kind === 'urgent_comm' ? 'red' : 'gray');
+    const srcLabel = s.source === 'gmail' ? 'Gmail' : s.source === 'whatsapp' ? 'WhatsApp' : (s.sender || s.source || '');
+    const when = relTime(s.ts_epoch || s.ts_iso);
+    return `<div class="signals-row" data-k="${k}"><span class="signals-row-dot ${sev}"></span><div class="signals-row-body"><div class="signals-row-title">${esc(s.title || '')}</div><div class="signals-row-meta">${esc(srcLabel)}${when ? ' · ' + when : ''}${s.reason ? ' · ' + esc(s.reason.replace(/^kw:/,'')) : ''}</div></div></div>`;
+  }).join('');
+  host.querySelectorAll('.signals-row').forEach(el => el.addEventListener('click', () => {
+    const sig = window.__SIGNALS[el.dataset.k];
+    if(!sig) return;
+    if(window.openDrawer) openDrawer(sig.title || '', (sig.source || '') + (sig.sender ? ' · ' + sig.sender : ''), sig.reason || '', sig.body || '');
+  }));
+}
+
+try { _fetchUnifiedSignals(); } catch(_){}
+setInterval(() => { try { _fetchUnifiedSignals(); } catch(_){} }, 30 * 1000);
 
 // ── Live wiring (Bite 2): Tasks poll ────────────────────────────────────
 // 90s cadence. Diffs task IDs vs current DD.tasks, animates new rows in.

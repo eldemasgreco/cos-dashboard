@@ -1752,6 +1752,13 @@ body.dark .entity-filter-bar { background: var(--card); }
 .tdrawer-btn-primary { background: var(--ink-navy, #1A3A5C); color: #fff; border-color: var(--ink-navy, #1A3A5C); }
 .tdrawer-btn-primary:hover { background: #0E2848; }
 .tdrawer-notes { font-size: 12px; color: var(--text-2); line-height: 1.5; white-space: pre-wrap; }
+/* [session 54 Bite 4] Project drawer pickers */
+.pdrawer-section { margin-bottom: 14px; }
+.pdrawer-label { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; }
+.pdrawer-pills { display: flex; flex-wrap: wrap; gap: 4px; }
+.pdrawer-pill { font-size: 11px; padding: 4px 10px; border: 0.5px solid var(--border); background: var(--card); color: var(--text-2); border-radius: 12px; cursor: pointer; font-family: inherit; }
+.pdrawer-pill:hover { border-color: var(--text-3); color: var(--text); }
+.pdrawer-pill.active { background: var(--ink-navy, #1A3A5C); color: #fff; border-color: var(--ink-navy, #1A3A5C); }
 
 .hero-title, .hero-eyebrow ~ .hero-title, #brief-title { font-family: var(--font-serif); font-weight: 500; letter-spacing: -0.01em; }
 .status-line-msg { font-family: var(--font-serif); font-weight: 500; letter-spacing: -0.005em; font-size: 15px; }
@@ -1865,9 +1872,32 @@ header { padding: 0 18px !important; height: var(--hdr-h) !important; }
 }
 
 /* ── v3 right-column cleanup: hide Projects/Comms/Waiting tabs, keep Schedule+Tasks ────── */
-.tab-btn[data-tab="projects"], .tab-btn[data-tab="comms"], .tab-btn[data-tab="waiting"] {
+/* Session 54 Bite 4: Projects tab un-hidden. Comms/Waiting stay hidden. */
+.tab-btn[data-tab="comms"], .tab-btn[data-tab="waiting"] {
   display: none !important;
 }
+/* Session 54 Bite 4: This Week section hidden — Tasks tab + drawer replace it */
+.tw-section { display: none !important; }
+/* Project rows */
+.project-row { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-bottom: 0.5px solid var(--border); cursor: pointer; }
+.project-row:hover { background: var(--bg); }
+.project-row:last-child { border-bottom: 0; }
+.project-row-entity { flex-shrink: 0; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 500; white-space: nowrap; }
+.project-row-entity.afsh { background: #FAECE7; color: #4A1B0C; }
+.project-row-entity.illume { background: #EAF3DE; color: #173404; }
+.project-row-entity.spade { background: #E6F1FB; color: #042C53; }
+.project-row-entity.logos { background: #EEEDFE; color: #26215C; }
+.project-row-entity.personal { background: #F1EFE8; color: #2C2C2A; }
+.project-row-body { flex: 1; min-width: 0; }
+.project-row-title { font-size: 13px; line-height: 1.35; color: var(--text); font-weight: 500; }
+.project-row-meta { font-size: 11px; color: var(--text-3); margin-top: 2px; display: flex; gap: 8px; flex-wrap: wrap; }
+.project-row-status { flex-shrink: 0; font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 500; white-space: nowrap; }
+.project-row-status.inprogress { background: rgba(24,95,165,0.12); color: var(--ink-navy,#1A3A5C); }
+.project-row-status.planning { background: rgba(186,117,23,0.12); color: var(--amber); }
+.project-row-status.blocked { background: rgba(163,45,45,0.12); color: var(--red); }
+.project-row-status.notstarted { background: var(--bg); color: var(--text-3); }
+.project-row-status.done { background: rgba(29,158,117,0.12); color: #0F6E56; }
+.project-row-status.parked { background: var(--bg); color: var(--text-3); }
 /* Tasks filter chips (tiny pills above the tasks list) */
 .tf-chips { display: flex; gap: 4px; padding: 10px 12px 8px; border-bottom: 1px solid var(--border); overflow-x: auto; }
 .tf-chips::-webkit-scrollbar { display: none; }
@@ -2245,7 +2275,7 @@ body.dark {
         <button class="tab-btn" data-tab="tasks" onclick="switchTab('tasks', this)">
           Tasks <span class="tab-unread" id="tasks-badge" style="display:none">0</span>
         </button>
-        <button class="tab-btn" data-tab="projects" onclick="switchTab('projects', this)">Projects</button>
+        <button class="tab-btn" data-tab="projects" onclick="switchTab('projects', this)">Projects <span class="tab-unread" id="projects-badge" style="display:none">0</span></button>
         <button class="tab-btn" data-tab="comms" onclick="switchTab('comms', this)">
           Comms <span class="tab-unread" id="comms-badge" style="display:none">0</span>
         </button>
@@ -2764,6 +2794,7 @@ async function cosAction(action, el){
     try { if(typeof _fetchTicker === 'function') polls.push(_fetchTicker()); } catch(_){}
     try { if(typeof _fetchCopilotBrief === 'function') polls.push(_fetchCopilotBrief(true)); } catch(_){}
     try { if(typeof _fetchUnifiedSignals === 'function') polls.push(_fetchUnifiedSignals()); } catch(_){}
+    try { if(typeof _fetchProjects === 'function') polls.push(_fetchProjects()); } catch(_){}
     Promise.allSettled(polls).then(() => {
       try { if(typeof renderAll === 'function') renderAll(); } catch(_){}
       t.textContent = '✓ Refreshed';
@@ -4466,6 +4497,150 @@ async function _taskAction(action, pageId, label, extra){
     if(window.showToast) showToast('× ' + String(e).slice(0,80));
   }
 }
+
+// [session 54 Bite 4] Projects tab: fetch + render + 2-way drawer
+async function _fetchProjects(){
+  try {
+    const r = await postSync({action: 'projects_refresh', limit: 40});
+    if(!r || !r.success){
+      const host = document.getElementById('projects-body');
+      if(host) host.innerHTML = '<div class="empty-state">' + (r && r.error ? esc(r.error) : 'No projects') + '</div>';
+      return;
+    }
+    DD.projects = r.projects || [];
+    try { renderProjects(); } catch(e){ console.warn('renderProjects', e); }
+    const badge = document.getElementById('projects-badge');
+    if(badge){
+      const active = DD.projects.filter(p => (p.status || '') !== 'Done' && (p.status || '') !== 'Parked').length;
+      badge.textContent = active;
+      badge.style.display = active ? 'inline-block' : 'none';
+    }
+  } catch(e){ console.warn('projects fetch failed', e); }
+}
+
+function renderProjects(){
+  const host = document.getElementById('projects-body');
+  if(!host) return;
+  const projects = DD.projects || [];
+  if(!projects.length){
+    host.innerHTML = '<div class="empty-state">No active projects</div>';
+    return;
+  }
+  window.__PROJECTS = {};
+  const _ent = e => {
+    const s = String(e || '').toLowerCase();
+    if(s.includes('afsh')) return {k:'afsh', label:'AFSH'};
+    if(s.includes('illume')) return {k:'illume', label:'Illume'};
+    if(s.includes('spade')) return {k:'spade', label:'Spade'};
+    if(s.includes('logos')) return {k:'logos', label:'Logos'};
+    if(s.includes('personal')) return {k:'personal', label:'Personal'};
+    return {k:'personal', label: e || ''};
+  };
+  const _sc = s => {
+    const v = String(s || '').toLowerCase().replace(/\s+/g,'');
+    if(v === 'inprogress') return 'inprogress';
+    if(v === 'planning') return 'planning';
+    if(v === 'blocked') return 'blocked';
+    if(v === 'done') return 'done';
+    if(v === 'parked') return 'parked';
+    return 'notstarted';
+  };
+  host.innerHTML = projects.map((p, i) => {
+    const k = 'proj::' + i;
+    window.__PROJECTS[k] = p;
+    const e = _ent(p.entity);
+    const milestone = p.next_milestone ? (' · ' + esc(p.next_milestone.slice(0,60))) : '';
+    const tgt = p.target_date ? (' · target ' + esc(p.target_date)) : '';
+    return '<div class="project-row" data-k="' + k + '">' +
+      '<span class="project-row-entity ' + e.k + '">' + e.label + '</span>' +
+      '<div class="project-row-body">' +
+        '<div class="project-row-title">' + esc(p.title || '') + '</div>' +
+        '<div class="project-row-meta">' + esc(p.priority || '') + milestone + tgt + '</div>' +
+      '</div>' +
+      '<span class="project-row-status ' + _sc(p.status) + '">' + esc(p.status || 'Not started') + '</span>' +
+    '</div>';
+  }).join('');
+  host.querySelectorAll('.project-row').forEach(el => el.addEventListener('click', () => {
+    const p = window.__PROJECTS[el.dataset.k];
+    if(p) openProjectDrawer(p);
+  }));
+}
+
+function openProjectDrawer(project){
+  if(!project) return;
+  const p = project;
+  const pid = p.id || '';
+  const titleEl = document.getElementById('drawer-title');
+  const ctxEl = document.getElementById('drawer-context');
+  const detEl = document.getElementById('drawer-details');
+  if(!titleEl || !ctxEl || !detEl) return;
+
+  titleEl.textContent = p.title || '—';
+  const meta = [];
+  if(p.entity) meta.push('<span class="tdrawer-chip">' + esc(p.entity) + '</span>');
+  if(p.priority) meta.push('<span class="tdrawer-chip">' + esc(p.priority) + '</span>');
+  if(p.target_date) meta.push('<span class="tdrawer-chip">target ' + esc(p.target_date) + '</span>');
+  if(p.next_milestone) meta.push('<span class="tdrawer-chip">next: ' + esc(p.next_milestone.slice(0,50)) + '</span>');
+  ctxEl.innerHTML = meta.join(' ');
+
+  const statusOptions = ['Not started','Planning','In progress','Blocked','Done','Parked'];
+  const prioOptions = ['🔴 High','🟡 Normal','🟢 Low'];
+  const mkPillBtn = (s, cur, kind) => {
+    const active = s === (cur||'') ? ' active' : '';
+    const safeS = esc(s);
+    const safePid = esc(pid);
+    const safeLabel = esc((p.title||'').replace(/'/g,"\\'"));
+    return '<button class="pdrawer-pill' + active + '" onclick="_projectAction(\'' + safePid + '\',\'' + safeLabel + '\',{' + kind + ':\'' + safeS + '\'})">' + safeS + '</button>';
+  };
+  const statusPicker = '<div class="pdrawer-section"><div class="pdrawer-label">Status</div><div class="pdrawer-pills">' +
+    statusOptions.map(s => mkPillBtn(s, p.status, 'status')).join('') +
+    '</div></div>';
+  const prioPicker = '<div class="pdrawer-section"><div class="pdrawer-label">Priority</div><div class="pdrawer-pills">' +
+    prioOptions.map(s => mkPillBtn(s, p.priority, 'priority')).join('') +
+    '</div></div>';
+  const notesBox = '<div class="pdrawer-section"><div class="pdrawer-label">Next milestone / note</div>' +
+    '<textarea id="pdrawer-milestone" rows="2" placeholder="What is the next concrete step?" style="width:100%; box-sizing:border-box; font-family:inherit; font-size:12px; padding:8px 10px; border:0.5px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); resize:vertical;">' + esc(p.next_milestone || '') + '</textarea>' +
+    '<button class="tdrawer-btn tdrawer-btn-primary" style="margin-top:6px;" onclick="_saveProjectMilestone(\'' + esc(pid) + '\',\'' + esc((p.title||'').replace(/\'/g,"\\'")) + '\')">Save milestone</button>' +
+    '</div>';
+  const notionBtn = p.notion_url ? '<button class="tdrawer-btn" onclick="window.open(\'' + esc(p.notion_url) + '\',\'_blank\')">Open in Notion</button>' : '';
+  const linksBtn = p.links ? '<button class="tdrawer-btn" onclick="window.open(\'' + esc(p.links) + '\',\'_blank\')">Open link</button>' : '';
+
+  detEl.innerHTML = statusPicker + prioPicker + notesBox +
+    '<div class="tdrawer-actions" style="margin-top:12px;">' + notionBtn + linksBtn + '</div>' +
+    (p.notes ? ('<div class="tdrawer-notes" style="margin-top:10px;">' + esc(p.notes) + '</div>') : '');
+
+  const ov = document.getElementById('drawer-overlay');
+  const dr = document.getElementById('detail-drawer');
+  if(ov) ov.classList.add('open');
+  if(dr) dr.classList.add('open');
+}
+
+async function _projectAction(pageId, label, fields){
+  if(!pageId){ if(window.showToast) showToast('No project id'); return; }
+  try {
+    const body = Object.assign({action: 'update_project', page_id: pageId, label: label}, fields || {});
+    const r = await postSync(body);
+    if(r && (r.success || r.ok)){
+      if(window.showToast) showToast('✓ Project updated');
+      try { _fetchProjects(); } catch(_){}
+      try { if(typeof _fetchCopilotBrief === 'function') _fetchCopilotBrief(true); } catch(_){}
+    } else {
+      if(window.showToast) showToast('× ' + (r && r.error ? r.error : 'Failed'));
+    }
+  } catch(e){
+    if(window.showToast) showToast('× ' + String(e).slice(0,80));
+  }
+}
+
+async function _saveProjectMilestone(pageId, label){
+  const ta = document.getElementById('pdrawer-milestone');
+  const val = ta ? (ta.value || '').trim() : '';
+  if(!val){ if(window.showToast) showToast('Enter a milestone'); return; }
+  return _projectAction(pageId, label, {next_milestone: val});
+}
+
+try { _fetchProjects(); } catch(_){}
+setInterval(() => { try { _fetchProjects(); } catch(_){} }, 90 * 1000);
 
 // ── Live wiring (Bite 2): Tasks poll ────────────────────────────────────
 // 90s cadence. Diffs task IDs vs current DD.tasks, animates new rows in.

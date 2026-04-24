@@ -1749,6 +1749,46 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 .signals-row-title { font-size: 12px; line-height: 1.35; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .signals-row-meta { font-size: 10px; color: var(--text-3); margin-top: 1px; }
 .signals-empty { font-size: 11px; color: var(--text-3); padding: 8px 4px; }
+/* [session 54 Bite 9] Schedule v2 */
+.sched-next-banner { background: rgba(24,95,165,0.09); border-left: 3px solid var(--ink-navy,#1A3A5C); border-radius: 6px; padding: 10px 12px; margin-bottom: 10px; cursor: pointer; }
+.sched-next-banner:hover { background: rgba(24,95,165,0.14); }
+.sched-next-label { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--ink-navy, #1A3A5C); margin-bottom: 4px; }
+.sched-next-title { font-family: var(--font-serif); font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.3; }
+.sched-next-meta { font-size: 11px; color: var(--text-3); margin-top: 3px; display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+.sched-list { display: flex; flex-direction: column; }
+.sched-row { display: flex; gap: 10px; padding: 8px 4px; border-bottom: 0.5px solid var(--border); cursor: pointer; transition: background 0.12s; }
+.sched-row:hover { background: var(--bg); }
+.sched-row:last-child { border-bottom: 0; }
+.sched-row.past { opacity: 0.5; }
+.sched-row-time { flex-shrink: 0; width: 42px; font-size: 11px; color: var(--text-3); font-variant-numeric: tabular-nums; padding-top: 2px; }
+.sched-row-body { flex: 1; min-width: 0; }
+.sched-row-title { font-size: 13px; line-height: 1.35; color: var(--text); overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.sched-row-meta { font-size: 10px; color: var(--text-3); margin-top: 2px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.sched-day-hdr { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--text-3); padding: 10px 4px 4px; border-bottom: 0.5px solid var(--border); margin-bottom: 4px; }
+.sched-day-hdr:first-child { padding-top: 4px; }
+.sched-empty { font-size: 11px; color: var(--text-3); padding: 12px 4px; }
+/* Unified source pills */
+.sched-src-pill, .sig-src-pill { display: inline-block; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 1px 5px; border-radius: 3px; }
+.sched-src-pill.afsh, .sig-src-pill.afsh { background: #FAECE7; color: #4A1B0C; }
+.sched-src-pill.illume, .sig-src-pill.illume { background: #EAF3DE; color: #173404; }
+.sched-src-pill.icloud, .sig-src-pill.icloud { background: #F1EFE8; color: #2C2C2A; }
+.sched-src-pill.google, .sig-src-pill.google, .sig-src-pill.gmail { background: #FCEBEB; color: #501313; }
+.sched-src-pill.m365, .sig-src-pill.m365 { background: #E6F1FB; color: #042C53; }
+.sched-src-pill.tripit, .sig-src-pill.tripit { background: #FAEEDA; color: #412402; }
+.sched-src-pill.other, .sig-src-pill.other, .sig-src-pill.signal_log { background: #F1EFE8; color: #5F5E5A; }
+.sig-src-pill.whatsapp { background: #EAF3DE; color: #173404; }
+.sig-src-pill.reminder { background: #FAEEDA; color: #412402; }
+/* Signals v2 */
+.signals-rail-body { max-height: 500px; }
+.signals-row { display: flex; gap: 8px; align-items: flex-start; padding: 10px 8px; border-bottom: 0.5px solid var(--border); cursor: pointer; transition: background 0.12s; border-radius: 0; }
+.signals-row:last-child { border-bottom: 0; }
+.signals-row:hover { background: var(--bg); }
+.signals-row.urgent { border-left: 3px solid var(--red); padding-left: 10px; background: rgba(163,45,45,0.03); }
+.signals-row-dot { display: none; }
+.signals-row-body { flex: 1; min-width: 0; }
+.signals-row-head { display: flex; gap: 4px; align-items: center; margin-bottom: 3px; flex-wrap: wrap; }
+.signals-row-title { font-size: 13px; line-height: 1.35; color: var(--text); font-weight: 500; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.signals-row-meta { font-size: 10px; color: var(--text-3); margin-top: 2px; }
 /* [session 54 Bite 3] Task drawer action bar + meta */
 .tdrawer-chip { display: inline-block; background: var(--bg); border: 0.5px solid var(--border); color: var(--text-2); font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-right: 4px; }
 .tdrawer-ctx { margin-top: 10px; font-size: 13px; color: var(--text-2); line-height: 1.5; }
@@ -3596,156 +3636,198 @@ function _calDateCell(d, e){
 }
 
 function renderSchedule(){
+  // [session 54 Bite 9] List-first Schedule rail — readable in narrow right column.
   const host = document.getElementById('schedule-body'); if(!host) return;
-  const label = document.getElementById('cal-period-label');
   const badge = document.getElementById('sched-badge');
   const TZ = (typeof CURRENT_TZ !== 'undefined' && CURRENT_TZ) ? CURRENT_TZ : 'Europe/Madrid';
   window.__SP = {};
-  let totalMatched = 0;
 
-  // TZ-aware helpers — all date math runs in CURRENT_TZ so Madrid events land on Madrid days regardless of browser TZ.
-  function _partsInTZ(d){
+  const events = (DD.schedule || []).filter(e => {
+    if(!e || !e.start) return false;
+    if(CAL_ENTITY && _calEntityOf(e) !== CAL_ENTITY) return false;
+    const d = new Date(e.start);
+    return !isNaN(d.getTime());
+  }).map(e => ({...e, _date: new Date(e.start)}));
+  events.sort((a, b) => a._date - b._date);
+
+  const now = new Date();
+  const view = (typeof CAL_VIEW !== 'undefined' && CAL_VIEW) || 'day';
+  const anchor = CAL_ANCHOR || new Date();
+
+  // TZ-aware day key helper
+  function _ymdKeyTZ(d){
     try {
-      const f = new Intl.DateTimeFormat('en-US', {year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hour12:false, weekday:'short', timeZone: TZ});
-      const ps = {}; f.formatToParts(d).forEach(p => ps[p.type] = p.value);
-      return { y: +ps.year, mo: +ps.month, d: +ps.day, h: +ps.hour, mi: +ps.minute, wd: ps.weekday };
-    } catch(e) { return {y:d.getFullYear(), mo:d.getMonth()+1, d:d.getDate(), h:d.getHours(), mi:d.getMinutes(), wd:'?'}; }
+      const f = new Intl.DateTimeFormat('en-CA', {year:'numeric', month:'2-digit', day:'2-digit', timeZone: TZ});
+      return f.format(d);
+    } catch(e){ return d.toISOString().slice(0,10); }
   }
-  function _ymdKey(p){ return p.y + '-' + String(p.mo).padStart(2,'0') + '-' + String(p.d).padStart(2,'0'); }
-  function _hmStr(p){ return String(p.h).padStart(2,'0') + ':' + String(p.mi).padStart(2,'0'); }
-  // "TZ-local midnight of today" as a Date we can increment by days
-  function _tzMidnightToday(){
-    const p = _partsInTZ(new Date());
-    return new Date(Date.UTC(p.y, p.mo-1, p.d));  // treat as UTC midnight marker
+  function _timeTZ(d){
+    try {
+      return new Intl.DateTimeFormat('en-US', {hour:'2-digit', minute:'2-digit', hour12:false, timeZone: TZ}).format(d);
+    } catch(e){ return ''; }
   }
-  function _addDays(d, n){ const x = new Date(d); x.setUTCDate(x.getUTCDate() + n); return x; }
-  function _weekday0Mon(wd){ return ({Mon:0,Tue:1,Wed:2,Thu:3,Fri:4,Sat:5,Sun:6})[wd] ?? 0; }
+  function _dayLabelTZ(d){
+    try {
+      const today = _ymdKeyTZ(now);
+      const tomorrow = _ymdKeyTZ(new Date(now.getTime() + 864e5));
+      const k = _ymdKeyTZ(d);
+      if(k === today) return 'Today';
+      if(k === tomorrow) return 'Tomorrow';
+      return new Intl.DateTimeFormat('en-US', {weekday:'short', month:'short', day:'numeric', timeZone: TZ}).format(d);
+    } catch(e){ return ''; }
+  }
+  function _relTime(d){
+    const diff = d - now;
+    const abs = Math.abs(diff);
+    const mins = Math.round(abs / 60000);
+    if(mins < 1) return diff >= 0 ? 'now' : 'just now';
+    if(mins < 60) return (diff >= 0 ? 'in ' : '') + mins + 'm' + (diff < 0 ? ' ago' : '');
+    const hrs = Math.round(mins / 60);
+    if(hrs < 24) return (diff >= 0 ? 'in ' : '') + hrs + 'h' + (diff < 0 ? ' ago' : '');
+    const days = Math.round(hrs / 24);
+    return (diff >= 0 ? 'in ' : '') + days + 'd' + (diff < 0 ? ' ago' : '');
+  }
 
-  function _eventsFiltered(){
-    return (DD.schedule || []).filter(e => {
-      if(CAL_ENTITY && _calEntityOf(e) !== CAL_ENTITY) return false;
-      return e.start && !isNaN(new Date(e.start).getTime());
+  // Determine window based on view
+  let windowStart, windowEnd;
+  if(view === 'day'){
+    const y = _ymdKeyTZ(anchor);
+    windowStart = new Date(y + 'T00:00:00Z');
+    windowEnd = new Date(windowStart.getTime() + 864e5);
+  } else if(view === 'week'){
+    // Week = from anchor to +7d
+    windowStart = new Date(anchor); windowStart.setHours(0,0,0,0);
+    const wd = windowStart.getDay();
+    windowStart.setDate(windowStart.getDate() - (wd === 0 ? 6 : wd - 1)); // start Monday
+    windowEnd = new Date(windowStart.getTime() + 7*864e5);
+  } else if(view === 'month'){
+    windowStart = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
+    windowEnd = new Date(anchor.getFullYear(), anchor.getMonth()+1, 1);
+  } else {
+    windowStart = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
+    windowEnd = new Date(anchor.getFullYear(), anchor.getMonth()+3, 1);
+  }
+
+  const inWindow = events.filter(e => e._date >= windowStart && e._date < windowEnd);
+
+  // "Next up" — first event in future, regardless of window
+  const nextUp = events.find(e => e._date >= now);
+  const label = document.getElementById('cal-period-label');
+  if(label){
+    if(view === 'day') label.textContent = _dayLabelTZ(anchor) + ', ' + new Intl.DateTimeFormat('en-US', {month:'long', day:'numeric', timeZone: TZ}).format(anchor);
+    else if(view === 'week'){
+      const wsd = new Intl.DateTimeFormat('en-US', {month:'short', day:'numeric', timeZone: TZ}).format(windowStart);
+      const wed = new Intl.DateTimeFormat('en-US', {month:'short', day:'numeric', timeZone: TZ}).format(new Date(windowEnd.getTime() - 864e5));
+      label.textContent = wsd + ' — ' + wed;
+    } else if(view === 'month'){
+      label.textContent = new Intl.DateTimeFormat('en-US', {month:'long', year:'numeric', timeZone: TZ}).format(anchor);
+    } else {
+      label.textContent = 'Q' + (Math.floor(anchor.getMonth()/3)+1) + ' ' + anchor.getFullYear();
+    }
+  }
+
+  const _escS = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+  const _src = e => {
+    const raw = String(e.source_raw || e.source || '').toLowerCase();
+    if(raw.includes('outlook afsh')) return {k:'afsh', label:'AFSH'};
+    if(raw.includes('outlook illume')) return {k:'illume', label:'Illume'};
+    if(raw.includes('outlook personal')) return {k:'m365', label:'M365'};
+    if(raw.includes('google')) return {k:'google', label:'Google'};
+    if(raw.includes('icloud')) return {k:'icloud', label:'iCloud'};
+    if(raw.includes('tripit')) return {k:'tripit', label:'TripIt'};
+    return {k:'other', label: (e.source_raw || e.source || 'cal').slice(0,10)};
+  };
+  const _attCount = e => {
+    const a = e.attendees || '';
+    if(!a) return 0;
+    if(Array.isArray(a)) return a.length;
+    return String(a).split(',').filter(x => x.trim()).length;
+  };
+
+  let html = '';
+
+  // "Next up" banner — always visible if there's an upcoming event
+  if(nextUp){
+    window.__SP['next'] = nextUp;
+    const src = _src(nextUp);
+    html += '<div class="sched-next-banner" data-k="next">' +
+      '<div class="sched-next-label">NEXT · ' + _relTime(nextUp._date) + '</div>' +
+      '<div class="sched-next-title">' + _escS(nextUp.title || '') + '</div>' +
+      '<div class="sched-next-meta">' + _timeTZ(nextUp._date) + ' · ' +
+        '<span class="sched-src-pill ' + src.k + '">' + src.label + '</span>' +
+        (_attCount(nextUp) ? ' · ' + _attCount(nextUp) + ' attendees' : '') +
+      '</div>' +
+    '</div>';
+  }
+
+  // Group by day for week/month/quarter
+  if(view === 'day'){
+    if(inWindow.length === 0 && nextUp){
+      html += '<div class="sched-empty">Nothing else ' + (view === 'day' ? 'today' : 'in range') + '.</div>';
+    } else {
+      html += '<div class="sched-list">' + inWindow.map((e, i) => {
+        const k = 'ev::' + i; window.__SP[k] = e;
+        const src = _src(e);
+        const isPast = e._date < now;
+        const att = _attCount(e);
+        return '<div class="sched-row' + (isPast ? ' past' : '') + '" data-k="' + k + '">' +
+          '<div class="sched-row-time">' + _timeTZ(e._date) + '</div>' +
+          '<div class="sched-row-body">' +
+            '<div class="sched-row-title">' + _escS(e.title || '') + '</div>' +
+            '<div class="sched-row-meta">' +
+              '<span class="sched-src-pill ' + src.k + '">' + src.label + '</span>' +
+              (att ? ' · ' + att + ' att' : '') +
+              (e.location ? ' · ' + _escS(String(e.location).slice(0, 28)) : '') +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('') + '</div>';
+    }
+  } else {
+    // Week/Month/Quarter: group by day
+    const byDay = {};
+    inWindow.forEach(e => {
+      const k = _ymdKeyTZ(e._date);
+      if(!byDay[k]) byDay[k] = [];
+      byDay[k].push(e);
     });
-  }
-  function _eventsOnDay(ymdKey){
-    return _eventsFiltered().filter(e => _ymdKey(_partsInTZ(new Date(e.start))) === ymdKey);
-  }
-  function _eventsInRangeYmd(startYmd, endYmd){
-    return _eventsFiltered().filter(e => { const k = _ymdKey(_partsInTZ(new Date(e.start))); return k >= startYmd && k < endYmd; });
+    const dayKeys = Object.keys(byDay).sort();
+    if(dayKeys.length === 0){
+      html += '<div class="sched-empty">No events in range.</div>';
+    } else {
+      html += '<div class="sched-list">';
+      dayKeys.forEach(dk => {
+        const label = _dayLabelTZ(new Date(dk + 'T12:00:00Z'));
+        html += '<div class="sched-day-hdr">' + _escS(label) + '</div>';
+        byDay[dk].forEach((e, i) => {
+          const k = 'ev::' + dk + '::' + i; window.__SP[k] = e;
+          const src = _src(e);
+          const att = _attCount(e);
+          const isPast = e._date < now;
+          html += '<div class="sched-row' + (isPast ? ' past' : '') + '" data-k="' + k + '">' +
+            '<div class="sched-row-time">' + _timeTZ(e._date) + '</div>' +
+            '<div class="sched-row-body">' +
+              '<div class="sched-row-title">' + _escS(e.title || '') + '</div>' +
+              '<div class="sched-row-meta">' +
+                '<span class="sched-src-pill ' + src.k + '">' + src.label + '</span>' +
+                (att ? ' · ' + att + ' att' : '') +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        });
+      });
+      html += '</div>';
+    }
   }
 
-  const anchor = CAL_ANCHOR;
-  const anchorParts = _partsInTZ(anchor);
-  const todayParts = _partsInTZ(new Date());
-  const todayKey = _ymdKey(todayParts);
-
-  const mkCell = (p, e) => ({
-    title: String(e.title || '\u2014'),
-    src: e.source_raw || e.source || 'other',
-    src_chip: e.source || 'other',
-    ent: _calEntityOf(e),
-    t: _hmStr(p),
-    detail: [e.location, e.attendees, e.detail || e.summary || ''].filter(Boolean).join('\n')
-  });
-
-  if(CAL_VIEW === 'day'){
-    const dayKey = _ymdKey(anchorParts);
-    const events = _eventsOnDay(dayKey).sort((a,b) => new Date(a.start) - new Date(b.start));
-    totalMatched = events.length;
-    if(label){
-      const fmt = new Intl.DateTimeFormat('en-US', {weekday:'long', month:'short', day:'numeric', timeZone: TZ});
-      label.textContent = fmt.format(anchor);
-    }
-    host.innerHTML = events.length
-      ? '<div class="cal-day-view">' + events.map((e, i) => {
-          const p = _partsInTZ(new Date(e.start)); const c = mkCell(p, e); const k = 'd::' + i; window.__SP[k] = c;
-          return '<div class="cal-event-row" data-k="' + k + '"><div class="cal-event-time">' + c.t + '</div><div class="cal-event-body"><div class="cal-event-title">' + c.title + '</div>' + (e.location ? '<div class="cal-event-meta">' + String(e.location) + '</div>' : '') + '</div><span class="cal-event-tag ' + c.src_chip + '">' + c.ent + '</span></div>';
-        }).join('') + '</div>'
-      : '<div class="cal-empty">No events.</div>';
-  }
-  else if(CAL_VIEW === 'week'){
-    // Find Monday of anchor's week in TZ
-    const dow = _weekday0Mon(anchorParts.wd);  // 0=Mon..6=Sun
-    const weekStart = new Date(Date.UTC(anchorParts.y, anchorParts.mo-1, anchorParts.d));
-    weekStart.setUTCDate(weekStart.getUTCDate() - dow);
-    if(label){
-      const fmt = new Intl.DateTimeFormat('en-US', {month:'short', day:'numeric', timeZone: 'UTC'});
-      label.textContent = 'Week of ' + fmt.format(weekStart);
-    }
-    const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-    const cols = days.map((name, i) => {
-      const dcur = _addDays(weekStart, i);
-      const dcurYmd = dcur.toISOString().slice(0, 10);
-      const dcurNum = dcur.getUTCDate();
-      const isToday = dcurYmd === todayKey;
-      const evs = _eventsOnDay(dcurYmd).sort((a,b) => new Date(a.start) - new Date(b.start));
-      const items = evs.length ? evs.map((e, j) => {
-          const p = _partsInTZ(new Date(e.start)); const c = mkCell(p, e); const k = 'w::' + i + '::' + j; window.__SP[k] = c;
-          return '<div class="cal-week-event src-' + c.src_chip + '" data-k="' + k + '"><span class="cal-week-event-time">' + c.t + '</span> <span class="cal-week-event-title">' + c.title.slice(0, 32) + '</span></div>';
-        }).join('') : '<div class="cal-week-empty">\u2014</div>';
-      return '<div class="cal-week-col' + (isToday?' today':'') + '"><div class="cal-week-col-hdr"><span class="cal-dname">' + name + '</span><span class="cal-dnum">' + dcurNum + '</span></div>' + items + '</div>';
-    }).join('');
-    totalMatched = _eventsInRangeYmd(weekStart.toISOString().slice(0,10), _addDays(weekStart,7).toISOString().slice(0,10)).length;
-    host.innerHTML = '<div class="cal-week-view">' + cols + '</div>';
-  }
-  else if(CAL_VIEW === 'month'){
-    const firstOfMonth = new Date(Date.UTC(anchorParts.y, anchorParts.mo-1, 1));
-    if(label){
-      const fmt = new Intl.DateTimeFormat('en-US', {month:'long', year:'numeric', timeZone: 'UTC'});
-      label.textContent = fmt.format(firstOfMonth);
-    }
-    // Monday before/equal firstOfMonth
-    const fomWd = _weekday0Mon(_partsInTZ(firstOfMonth).wd);
-    const start = _addDays(firstOfMonth, -fomWd);
-    const hdrs = ['M','T','W','T','F','S','S'].map(s => '<div class="cal-month-col-hdr">' + s + '</div>').join('');
-    const cells = [];
-    for(let i = 0; i < 42; i++){
-      const dcur = _addDays(start, i);
-      const dcurYmd = dcur.toISOString().slice(0, 10);
-      const inMonth = dcur.getUTCMonth() === (anchorParts.mo - 1);
-      const isToday = dcurYmd === todayKey;
-      const evs = _eventsOnDay(dcurYmd);
-      const chips = evs.slice(0, 3).map((e, j) => {
-          const p = _partsInTZ(new Date(e.start)); const c = mkCell(p, e); const k = 'm::' + i + '::' + j; window.__SP[k] = c;
-          return '<div class="cal-month-chip src-' + c.src_chip + '" data-k="' + k + '" title="' + c.title.replace(/"/g,'&quot;') + '">' + c.title.slice(0, 14) + '</div>';
-        }).join('');
-      const more = evs.length > 3 ? '<span class="cal-month-more">+' + (evs.length-3) + '</span>' : '';
-      cells.push('<div class="cal-month-cell' + (inMonth?'':' out') + (isToday?' today':'') + '"><span class="cal-month-num">' + dcur.getUTCDate() + '</span>' + chips + more + '</div>');
-    }
-    totalMatched = _eventsInRangeYmd(start.toISOString().slice(0,10), _addDays(start,42).toISOString().slice(0,10)).length;
-    host.innerHTML = '<div class="cal-month-view"><div class="cal-month-hdrs">' + hdrs + '</div><div class="cal-month-grid">' + cells.join('') + '</div></div>';
-  }
-  else if(CAL_VIEW === 'quarter'){
-    const qMo = Math.floor((anchorParts.mo - 1) / 3) * 3;  // 0/3/6/9
-    const qStart = new Date(Date.UTC(anchorParts.y, qMo, 1));
-    const qNum = (qMo / 3) + 1;
-    if(label) label.textContent = 'Q' + qNum + ' ' + anchorParts.y;
-    const cols = [0,1,2].map(m => {
-      const monthDate = new Date(Date.UTC(anchorParts.y, qMo + m, 1));
-      const fomWd = _weekday0Mon(_partsInTZ(monthDate).wd);
-      const start = _addDays(monthDate, -fomWd);
-      const cells = [];
-      for(let i = 0; i < 42; i++){
-        const dcur = _addDays(start, i);
-        const dcurYmd = dcur.toISOString().slice(0,10);
-        const inMonth = dcur.getUTCMonth() === monthDate.getUTCMonth();
-        const isToday = dcurYmd === todayKey;
-        const n = _eventsOnDay(dcurYmd).length;
-        cells.push('<div class="cal-q-cell' + (inMonth?'':' out') + (isToday?' today':'') + (n>0?' has':'') + '" title="' + n + ' event' + (n===1?'':'s') + '"><span>' + dcur.getUTCDate() + '</span>' + (n>0 ? '<span class="cal-q-count">' + n + '</span>' : '') + '</div>');
-      }
-      const monthLabel = new Intl.DateTimeFormat('en-US',{month:'short', timeZone:'UTC'}).format(monthDate);
-      return '<div class="cal-q-month"><div class="cal-q-month-hdr">' + monthLabel + '</div><div class="cal-q-grid">' + cells.join('') + '</div></div>';
-    }).join('');
-    totalMatched = _eventsInRangeYmd(qStart.toISOString().slice(0,10), _addDays(qStart, 92).toISOString().slice(0,10)).length;
-    host.innerHTML = '<div class="cal-quarter-view">' + cols + '</div>';
-  }
-
-  host.querySelectorAll('[data-k]').forEach(el => el.addEventListener('click', (ev) => {
-    ev.stopPropagation();
-    const p = window.__SP[el.dataset.k];
-    if(p && window.openDrawer) openDrawer(p.title, p.src, p.t, p.detail);
+  host.innerHTML = html;
+  host.querySelectorAll('[data-k]').forEach(el => el.addEventListener('click', () => {
+    const ev = window.__SP[el.dataset.k];
+    if(ev && typeof openScheduleDrawer === 'function') openScheduleDrawer(ev);
+    else if(ev && window.openDrawer) openDrawer(ev.title || '', ev.source_raw || '', _timeTZ(ev._date), (ev.attendees || '') + (ev.location ? '\n' + ev.location : ''));
   }));
-  if(badge){ badge.textContent = totalMatched; badge.style.display = totalMatched ? 'inline-block' : 'none'; }
+
+  if(badge){ badge.textContent = inWindow.length; badge.style.display = inWindow.length ? 'inline-block' : 'none'; }
 }
 
 // Expose _fetchSchedule globally (originally scoped inside renderAll due to placement)
@@ -4525,7 +4607,7 @@ function _renderUnifiedSignals(d){
   if(sub) sub.textContent = d.urgent_count ? (d.urgent_count + ' urgent') : 'quiet';
   const sigs = d.signals || [];
   if(!sigs.length){
-    host.innerHTML = '<div class="signals-empty">No signals.</div>';
+    host.innerHTML = '<div class="signals-empty">All quiet. 🌴</div>';
     return;
   }
   const esc = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
@@ -4538,26 +4620,44 @@ function _renderUnifiedSignals(d){
     if(isNaN(diff)) return '';
     const mins = Math.round(diff / 60000);
     if(mins < 1) return 'just now';
-    if(mins < 60) return mins + 'm';
+    if(mins < 60) return mins + 'm ago';
     const hrs = Math.round(mins / 60);
-    if(hrs < 24) return hrs + 'h';
-    return Math.round(hrs / 24) + 'd';
+    if(hrs < 24) return hrs + 'h ago';
+    return Math.round(hrs / 24) + 'd ago';
+  };
+  const srcLabel = s => {
+    const v = String(s || '').toLowerCase();
+    if(v === 'gmail') return 'Gmail';
+    if(v === 'whatsapp') return 'WhatsApp';
+    if(v === 'm365') return 'Outlook';
+    if(v === 'reminder') return 'Reminder';
+    if(v === 'signal_log') return 'AI';
+    return v || 'signal';
   };
   window.__SIGNALS = {};
   host.innerHTML = sigs.slice(0, 20).map((s, i) => {
     const k = 'sig::' + i;
     window.__SIGNALS[k] = s;
-    const sev = s.severity || (s.kind === 'urgent_comm' ? 'red' : 'gray');
-    const srcLabel = s.source === 'gmail' ? 'Gmail' : s.source === 'whatsapp' ? 'WhatsApp' : (s.sender || s.source || '');
+    const isUrgent = (s.kind === 'urgent_comm' || s.kind === 'urgent_email' || (s.kind === 'reminder' && s.severity === 'red'));
+    const srcClass = (s.source || '').toLowerCase();
     const when = relTime(s.ts_epoch || s.ts_iso);
-    return `<div class="signals-row" data-k="${k}"><span class="signals-row-dot ${sev}"></span><div class="signals-row-body"><div class="signals-row-title">${esc(s.title || '')}</div><div class="signals-row-meta">${esc(srcLabel)}${when ? ' · ' + when : ''}${s.reason ? ' · ' + esc(s.reason.replace(/^kw:/,'')) : ''}</div></div></div>`;
+    const senderShort = s.sender ? esc(String(s.sender).slice(0, 28)) : '';
+    return '<div class="signals-row' + (isUrgent ? ' urgent' : '') + '" data-k="' + k + '">' +
+      '<div class="signals-row-body">' +
+        '<div class="signals-row-head">' +
+          '<span class="sig-src-pill ' + esc(srcClass) + '">' + esc(srcLabel(s.source)) + '</span>' +
+          (senderShort ? '<span style="font-size:10px; color: var(--text-3);">· ' + senderShort + '</span>' : '') +
+          (when ? '<span style="font-size:10px; color: var(--text-3);">· ' + when + '</span>' : '') +
+        '</div>' +
+        '<div class="signals-row-title">' + esc(s.title || '') + '</div>' +
+        (s.reason ? '<div class="signals-row-meta">' + esc(String(s.reason).replace(/^kw:/,'')) + '</div>' : '') +
+      '</div>' +
+    '</div>';
   }).join('');
   host.querySelectorAll('.signals-row').forEach(el => el.addEventListener('click', () => {
     const sig = window.__SIGNALS[el.dataset.k];
     if(!sig) return;
-    // [session 54 Bite 5] Signal drawer with channel-aware composer (WA send, read-only for others)
     if(typeof openSignalDrawer === 'function') openSignalDrawer(sig);
-    else if(window.openDrawer) openDrawer(sig.title || '', (sig.source || '') + (sig.sender ? ' · ' + sig.sender : ''), sig.reason || '', sig.body || '');
   }));
 }
 

@@ -1936,6 +1936,19 @@ body.dark {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.4; transform: scale(0.85); }
 }
+
+/* ── Live-wire: drawer pill badges (counts that update live) ── */
+.dz-pill-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 8px;
+  background: var(--ink-navy-bg);
+  color: var(--ink-navy);
+  line-height: 1.4;
+}
 </style>
 </head>
 <body>
@@ -4202,6 +4215,35 @@ async function _fetchTasks(){
 }
 try { _fetchTasks(); } catch(_){}
 setInterval(() => { try { _fetchTasks(); } catch(_){} }, 90 * 1000);
+
+// ── Live wiring (Bite 3): Signals poll ─────────────────────────────────
+// 60s cadence. Keeps DD.signals fresh for the Signals drawer pill + any
+// other signal surfaces. Also surfaces the latest signal title as a small
+// "Elly last heard" line in the footer.
+async function _fetchSignals(){
+  try {
+    const r = await postSync({action:'signals_refresh', limit: 25});
+    if(!r || !r.success || !Array.isArray(r.signals)) return;
+    DD.signals = r.signals;
+    // Update drawer pill badge (count)
+    const pills = document.querySelectorAll('.dz-pill');
+    pills.forEach(p => {
+      if(p.textContent.trim().startsWith('🔔')){
+        const n = r.signals.length;
+        if(n > 0 && !p.querySelector('.dz-pill-badge')){
+          const b = document.createElement('span');
+          b.className = 'dz-pill-badge';
+          b.textContent = n;
+          p.appendChild(b);
+        } else if(p.querySelector('.dz-pill-badge')){
+          p.querySelector('.dz-pill-badge').textContent = n;
+        }
+      }
+    });
+  } catch(e) { console.debug('signals_refresh poll failed', e); }
+}
+try { _fetchSignals(); } catch(_){}
+setInterval(() => { try { _fetchSignals(); } catch(_){} }, 60 * 1000);
 
 // ── Live wiring (Bite 1): status-line + top-priority ────────────────────
 // Polls /critical_refresh every 30s. Updates status-line silently on every

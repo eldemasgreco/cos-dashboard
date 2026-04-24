@@ -1827,6 +1827,12 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
   .col-right.mobile-open { display: block !important; position: fixed; inset: 0; background: var(--card); z-index: 9998; padding: 16px; overflow-y: auto; }
 }
 .mobile-rail-toggle { display: none; }
+/* [Bite 13] Source-health indicators */
+.source-health-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-left: 6px; vertical-align: middle; background: #D3D1C7; flex-shrink: 0; }
+.source-health-dot.ok { background: #5DCAA5; }
+.source-health-dot.warn { background: #EF9F27; }
+.source-health-dot.err { background: #E24B4A; cursor: help; }
+.source-health-dot.stale { background: #B4B2A9; }
 /* [session 54 Bite 3] Task drawer action bar + meta */
 .tdrawer-chip { display: inline-block; background: var(--bg); border: 0.5px solid var(--border); color: var(--text-2); font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-right: 4px; }
 .tdrawer-ctx { margin-top: 10px; font-size: 13px; color: var(--text-2); line-height: 1.5; }
@@ -3935,7 +3941,6 @@ function renderTopPriority(){
   pill.innerHTML = `<span class="tpp-dot"></span><span class="tpp-label">${tier==='amber'?'Watch':'Top'}</span><span class="tpp-title">${esc(_stripMd(found.title || found.subject || ''))}</span>`;
   pill._payload = found;
 }
-// [session 54 Bite 10] legacy function openTopPriority() removed — duplicate of newer definition
 function renderSignalTiles(){
   const host = $('signal-tiles');
   if(!host) return;
@@ -4344,7 +4349,6 @@ function renderTasks(){
   }
 }
 
-// [session 54 Bite 10] legacy function renderProjects() removed — duplicate of newer definition
 function commsSrcClass(src){
   const s=(src||'').toLowerCase();
   if(s.includes('gmail')) return 'gmail';
@@ -4467,6 +4471,94 @@ async function _fetchSchedule(){
 }
 try { _fetchSchedule(); } catch(_) {}
 setInterval(() => { try { _fetchSchedule(); } catch(_){} }, 5 * 60 * 1000);
+
+// [Bite 13] Unified /snapshot poll — replaces 8 separate polls with one coordinated fetch
+let _SNAPSHOT_HEALTH = {};
+let _SNAPSHOT_TICK = 0;
+async function _fetchSnapshot(forceRollup){
+  _SNAPSHOT_TICK += 1;
+  const includeRollup = !!forceRollup || (_SNAPSHOT_TICK % 20 === 1); // rollup every ~10min when polling at 30s
+  try {
+    const r = await postSync({action:'snapshot', include_rollup: includeRollup, copilot_force: false});
+    if(!r || !r.success) return;
+    _SNAPSHOT_HEALTH = r.health || {};
+    // Distribute into DD slots
+    if(r.tasks && Array.isArray(r.tasks.tasks)) { DD.tasks = r.tasks.tasks; }
+    if(r.schedule && Array.isArray(r.schedule.schedule)) { DD.schedule = r.schedule.schedule; }
+    if(r.projects && Array.isArray(r.projects.projects)) { DD.projects = r.projects.projects; }
+    // Re-render everything that was populated
+    try { if(typeof renderProjects === 'function') renderProjects(); } catch(e){ console.warn('renderProjects', e); }
+    try { if(typeof renderTasks === 'function') renderTasks(); } catch(e){ console.warn('renderTasks', e); }
+    try { if(typeof renderSchedule === 'function') renderSchedule(); } catch(e){ console.warn('renderSchedule', e); }
+    // Critical
+    if(r.critical && r.critical.success){ try { _renderCriticalFromSnapshot && _renderCriticalFromSnapshot(r.critical); } catch(_){} }
+    // Signals
+    if(r.signals && r.signals.success){ try { _renderUnifiedSignals(r.signals); } catch(e){ console.warn('renderSignals', e); } }
+    // Copilot
+    if(r.copilot && r.copilot.success){ try { _renderCopilotBrief(r.copilot); } catch(e){ console.warn('renderCopilot', e); } }
+    // Rollup (only if included this tick)
+    if(includeRollup && r.rollup && r.rollup.success){
+      const host = document.getElementById('rollup-card');
+      if(host){
+        host.style.display = 'block';
+        const esc = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+        const hn = document.getElementById('rollup-headline'); if(hn) hn.textContent = r.rollup.headline || '—';
+        const fillCol = (id, items, subKey) => {
+          const el = document.getElementById(id); if(!el) return;
+          if(!items || !items.length){ el.innerHTML = '<div class="rollup-item" style="opacity:0.45">—</div>'; return; }
+          el.innerHTML = items.slice(0, 5).map(it => {
+            const sub = esc(it[subKey] || '');
+            return '<div class="rollup-item">' + esc(it.title || '') + (sub ? '<div class="rollup-item-sub">' + sub + '</div>' : '') + '</div>';
+          }).join('');
+        };
+        fillCol('rollup-shipped', r.rollup.shipped || [], 'entity');
+        fillCol('rollup-slipped', r.rollup.slipped || [], 'why');
+        fillCol('rollup-focus', r.rollup.focus || [], 'so_what');
+        const nn = document.getElementById('rollup-note'); if(nn) nn.textContent = r.rollup.note || '';
+      }
+    }
+    // Paint source-health indicators
+    _renderSourceHealth();
+  } catch(e){ console.warn('snapshot fetch failed', e); }
+}
+
+function _renderSourceHealth(){
+  const health = _SNAPSHOT_HEALTH || {};
+  const paint = (elSel, key) => {
+    const header = document.querySelector(elSel);
+    if(!header) return;
+    let dot = header.querySelector('.source-health-dot');
+    if(!dot){
+      dot = document.createElement('span');
+      dot.className = 'source-health-dot';
+      header.appendChild(dot);
+    }
+    const h = health[key];
+    if(!h){ dot.className = 'source-health-dot stale'; dot.title = 'no data yet'; return; }
+    if(h.ok){ dot.className = 'source-health-dot ok'; dot.title = 'healthy' + (h.ms ? ' · ' + h.ms + 'ms' : ''); }
+    else { dot.className = 'source-health-dot err'; dot.title = (h.error || 'error'); }
+  };
+  paint('.copilot-eyebrow', 'copilot');
+  paint('#cockpit-projects .cockpit-card-title', 'projects');
+  paint('#cockpit-tasks .cockpit-card-title', 'tasks');
+  paint('.signals-rail-title', 'signals');
+  // Schedule header is inside the right column — target the cal-period-label container
+  const sched = document.getElementById('cal-period-label');
+  if(sched && sched.parentElement){
+    let dot = sched.parentElement.querySelector('.source-health-dot');
+    if(!dot){ dot = document.createElement('span'); dot.className = 'source-health-dot'; sched.parentElement.appendChild(dot); }
+    const h = health['schedule'];
+    if(h){
+      if(h.ok){ dot.className = 'source-health-dot ok'; dot.title = 'schedule healthy'; }
+      else { dot.className = 'source-health-dot err'; dot.title = h.error || 'error'; }
+    }
+  }
+}
+
+// Kick unified poll — replaces the old separate polls for critical/tasks/schedule/signals/projects/copilot
+try { _fetchSnapshot(true); } catch(_){}
+setInterval(() => { try { _fetchSnapshot(false); } catch(_){} }, 30 * 1000);
+
 
 // [Bite 9 RESTORED + Bite 11] Schedule event drawer + action helpers
 function openScheduleDrawer(ev){

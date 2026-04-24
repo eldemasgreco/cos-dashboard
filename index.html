@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-24T18:16:31.688503Z ts=53-tz-auto -->
+<!-- cache-buster: 2026-04-24T23:43:00Z -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,34 +21,34 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  /* v3 warm editorial palette — sienna primary, no sage */
-  --bg: #FAF6EE;
+  /* Bite 17 — sharpened editorial palette: richer ink + punchier chromatic accents on warm paper */
+  --bg: #F6F0E3;
   --card: #FFFFFF;
-  --card-2: #F1ECE1;
-  --border: rgba(26,20,16,0.06);
-  --border-med: rgba(26,20,16,0.10);
-  --text: #1A1712;
-  --text-2: #6B635A;
-  --text-3: #A8A094;
-  /* --green slot retained but re-valued to warm sienna so existing selectors just pick up the new accent */
-  --green: #9B5E2F;
-  --green-light: #B87541;
-  --green-bg: rgba(155,94,47,0.08);
-  --green-mid: rgba(155,94,47,0.14);
-  --green-vivid: #B87541;
-  --red: #A64D2F;
-  --red-bg: rgba(166,77,47,0.08);
-  --red-mid: rgba(166,77,47,0.14);
-  --amber: #B07318;
-  --amber-bg: rgba(176,115,24,0.08);
-  --amber-mid: rgba(176,115,24,0.16);
-  --blue: #345068;
-  --blue-bg: rgba(52,80,104,0.08);
-  --blue-mid: rgba(52,80,104,0.14);
-  --purple: #5E3652;
-  --purple-bg: rgba(94,54,82,0.08);
-  --teal: #2E6559;
-  --teal-bg: rgba(46,101,89,0.08);
+  --card-2: #EEE6D2;
+  --border: rgba(22,16,11,0.09);
+  --border-med: rgba(22,16,11,0.16);
+  --text: #15110B;
+  --text-2: #574E43;
+  --text-3: #8F867A;
+  /* --green slot is the primary sienna accent; sharper + more chromatic */
+  --green: #A0481C;
+  --green-light: #C4632B;
+  --green-bg: rgba(160,72,28,0.10);
+  --green-mid: rgba(160,72,28,0.20);
+  --green-vivid: #C4632B;
+  --red: #B53A18;
+  --red-bg: rgba(181,58,24,0.11);
+  --red-mid: rgba(181,58,24,0.22);
+  --amber: #BA7014;
+  --amber-bg: rgba(186,112,20,0.13);
+  --amber-mid: rgba(186,112,20,0.24);
+  --blue: #1C3E5E;
+  --blue-bg: rgba(28,62,94,0.11);
+  --blue-mid: rgba(28,62,94,0.20);
+  --purple: #5E2A4C;
+  --purple-bg: rgba(94,42,76,0.10);
+  --teal: #1A5A4C;
+  --teal-bg: rgba(26,90,76,0.10);
   --left-w: 208px;
   --right-w: 408px;
   --hdr-h: 52px;
@@ -1721,6 +1721,67 @@ body.dark .entity-filter-bar { background: var(--card); }
 .copilot-tile.amber .copilot-tile-label { color: var(--amber); }
 .copilot-tile.blue .copilot-tile-label { color: var(--ink-navy, #1A3A5C); }
 .copilot-tile.purple .copilot-tile-label { color: #534AB7; }
+
+/* ───────── Bite 17: Elly branding + sharper accents + interactive rows ─────── */
+.elly-hero { background: linear-gradient(180deg, var(--card) 0%, rgba(160,72,28,0.02) 100%); border: 0.5px solid var(--border-med); }
+.elly-pulse { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green-vivid); margin-right: 8px; position: relative; vertical-align: 1px; box-shadow: 0 0 0 0 rgba(196,99,43,0.55); animation: ellyPulse 2.1s cubic-bezier(0.4,0,0.2,1) infinite; }
+@keyframes ellyPulse { 0% { box-shadow: 0 0 0 0 rgba(196,99,43,0.45); } 70% { box-shadow: 0 0 0 8px rgba(196,99,43,0); } 100% { box-shadow: 0 0 0 0 rgba(196,99,43,0); } }
+.copilot-hero .copilot-eyebrow { display: inline-flex; align-items: center; color: var(--text-2); font-weight: 700; }
+.copilot-tile { position: relative; padding: 11px 13px 11px 14px; border-radius: 8px; border-left: 3px solid transparent; transition: background .18s var(--ease), transform .18s var(--ease); }
+.copilot-tile.red    { background: var(--red-bg);    border-left-color: var(--red); }
+.copilot-tile.amber  { background: var(--amber-bg);  border-left-color: var(--amber); }
+.copilot-tile.blue   { background: var(--blue-bg);   border-left-color: var(--blue); }
+.copilot-tile.purple { background: var(--purple-bg); border-left-color: var(--purple); }
+.copilot-tile .tile-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; margin-right: 7px; vertical-align: 2px; }
+.copilot-tile.red    .tile-dot { background: var(--red); }
+.copilot-tile.amber  .tile-dot { background: var(--amber); }
+.copilot-tile.blue   .tile-dot { background: var(--blue); }
+.copilot-tile.purple .tile-dot { background: var(--purple); }
+.copilot-tile-label { display: inline-flex; align-items: center; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; }
+.copilot-tile-body .copilot-item { cursor: pointer; padding: 4px 0; border-top: 0.5px dotted var(--border); font-size: 13px; line-height: 1.4; color: var(--text); display: flex; align-items: flex-start; gap: 7px; transition: transform .14s var(--ease); }
+.copilot-tile-body .copilot-item:first-child { border-top: none; padding-top: 2px; }
+.copilot-tile-body .copilot-item:hover { transform: translateX(2px); }
+.copilot-item-icon { flex: 0 0 auto; width: 14px; text-align: center; font-size: 11px; line-height: 1.5; color: var(--text-3); }
+.copilot-item-text { flex: 1 1 auto; min-width: 0; }
+.copilot-item-text b { font-weight: 600; color: var(--text); }
+.copilot-item-meta { font-size: 10px; color: var(--text-3); margin-top: 1px; letter-spacing: 0.2px; }
+.copilot-item-empty { font-size: 12px; color: var(--text-3); padding: 4px 0; font-style: italic; }
+.copilot-ask { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding: 8px 12px; background: rgba(22,16,11,0.035); border: 0.5px solid var(--border-med); border-radius: 8px; }
+.copilot-ask-prefix { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--green); flex: 0 0 auto; }
+.copilot-ask input { flex: 1 1 auto; border: none; background: transparent; font-size: 13px; color: var(--text); outline: none; padding: 4px 0; font-family: inherit; }
+.copilot-ask input::placeholder { color: var(--text-3); font-style: italic; }
+
+/* Rollup — Elly's Week styling */
+.elly-rollup { background: linear-gradient(135deg, rgba(160,72,28,0.05), rgba(28,62,94,0.04)); border: 0.5px solid var(--border-med); }
+.elly-rollup .rollup-eyebrow { display: inline-flex; align-items: center; color: var(--text-2); }
+.rollup-says { display: none; font-family: var(--font-serif); font-size: 13px; font-style: italic; line-height: 1.45; color: var(--text-2); padding: 8px 12px; margin: 4px 0 10px; border-left: 2px solid var(--green); background: rgba(160,72,28,0.055); border-radius: 0 6px 6px 0; cursor: pointer; transition: background .18s var(--ease); }
+.rollup-says.has-content { display: block; }
+.rollup-says:hover { background: rgba(160,72,28,0.085); }
+.rollup-says .rollup-says-prefix { display: inline; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-style: normal; font-size: 9px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--green); margin-right: 8px; vertical-align: 1px; }
+.rollup-col { padding: 11px 12px; border-radius: 8px; background: var(--card); border: 0.5px solid var(--border); transition: border-color .18s var(--ease); }
+.rollup-col:hover { border-color: var(--border-med); }
+.rollup-row { display: flex; align-items: flex-start; gap: 7px; padding: 5px 0; border-top: 0.5px dotted var(--border); cursor: pointer; font-size: 12px; line-height: 1.4; transition: transform .14s var(--ease); }
+.rollup-row:first-child { border-top: none; padding-top: 2px; }
+.rollup-row:hover { transform: translateX(2px); }
+.rollup-row-icon { flex: 0 0 auto; width: 12px; text-align: center; color: var(--text-3); font-size: 10px; line-height: 1.6; }
+.rollup-row-text { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rollup-row-meta { font-size: 10px; color: var(--text-3); flex: 0 0 auto; }
+
+/* Cockpit rows — entity-stripe + inline actions */
+.cockpit-card .right-row, .cockpit-card .project-row { position: relative; padding-left: 10px; border-left: 3px solid transparent; transition: border-color .15s var(--ease), background .15s var(--ease); }
+.cockpit-card .right-row:hover, .cockpit-card .project-row:hover { background: var(--card-2); }
+.cockpit-card .right-row.entity-afsh, .cockpit-card .project-row.entity-afsh { border-left-color: var(--green); }
+.cockpit-card .right-row.entity-illume, .cockpit-card .project-row.entity-illume { border-left-color: var(--blue); }
+.cockpit-card .right-row.entity-spade, .cockpit-card .project-row.entity-spade { border-left-color: var(--purple); }
+.cockpit-card .right-row.entity-personal, .cockpit-card .project-row.entity-personal { border-left-color: var(--teal); }
+.cockpit-card .row-actions { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: none; gap: 4px; background: var(--card); border-radius: 6px; padding: 2px 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.cockpit-card .right-row:hover .row-actions, .cockpit-card .project-row:hover .row-actions { display: flex; }
+.cockpit-card .row-action-btn { border: none; background: transparent; cursor: pointer; font-size: 11px; padding: 3px 6px; border-radius: 4px; color: var(--text-2); transition: background .12s var(--ease), color .12s var(--ease); font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+.cockpit-card .row-action-btn:hover { background: var(--green-bg); color: var(--green); }
+.cockpit-card .row-action-btn.danger:hover { background: var(--red-bg); color: var(--red); }
+.cockpit-card .proj-progress { display: block; height: 2px; background: var(--card-2); border-radius: 2px; margin-top: 4px; overflow: hidden; }
+.cockpit-card .proj-progress-fill { display: block; height: 100%; background: var(--green); border-radius: 2px; transition: width .3s var(--ease); }
+/* ───────── end Bite 17 ───────── */
 .copilot-item { font-size: 13px; line-height: 1.4; margin-bottom: 5px; color: var(--text); }
 .copilot-item-why { font-size: 11px; color: var(--text-2); margin-top: 1px; font-style: italic; }
 .copilot-insight { font-family: var(--font-serif); font-style: italic; font-size: 13px; color: var(--text-2); border-top: 0.5px solid var(--border); padding-top: 12px; margin: 4px 0 12px; }
@@ -2270,22 +2331,23 @@ body.dark {
   <!-- ═══ CENTER COLUMN ═══ -->
   <main class="col col-center">
 
-    <!-- [session 54] AI Copilot hero — Sonnet-powered decision set, replaces status line + brief + top-priority + metrics -->
-    <section class="copilot-hero" id="copilot-hero">
+    <!-- [Bite 17] Elly's Brief hero — Sonnet-powered decision set, bullet-first, icon-coded -->
+    <section class="copilot-hero elly-hero" id="copilot-hero">
       <div class="copilot-head">
-        <span class="copilot-eyebrow">AI Copilot · Sonnet</span>
-        <span class="copilot-meta" id="copilot-meta">reading your day…</span>
+        <span class="copilot-eyebrow"><span class="elly-pulse"></span>Elly &middot; your Brief</span>
+        <span class="copilot-meta" id="copilot-meta">reading your day&hellip;</span>
       </div>
-      <div class="copilot-headline" id="copilot-headline">Loading your decision set…</div>
+      <div class="copilot-headline" id="copilot-headline">Loading your decision set&hellip;</div>
       <div class="copilot-grid">
-        <div class="copilot-tile red" id="copilot-critical"><div class="copilot-tile-label">Critical · do now</div><div class="copilot-tile-body"><div class="copilot-item" style="opacity:0.5">—</div></div></div>
-        <div class="copilot-tile amber" id="copilot-today"><div class="copilot-tile-label">Finish today</div><div class="copilot-tile-body"><div class="copilot-item" style="opacity:0.5">—</div></div></div>
-        <div class="copilot-tile blue" id="copilot-tomorrow"><div class="copilot-tile-label">Tomorrow prep</div><div class="copilot-tile-body"><div class="copilot-item" style="opacity:0.5">—</div></div></div>
-        <div class="copilot-tile purple" id="copilot-week"><div class="copilot-tile-label">Week outlook</div><div class="copilot-tile-body"><div class="copilot-item" style="opacity:0.5">—</div></div></div>
+        <div class="copilot-tile red" id="copilot-critical"><div class="copilot-tile-label"><span class="tile-dot"></span>Do now</div><div class="copilot-tile-body"><div class="copilot-item" style="opacity:0.45">&mdash;</div></div></div>
+        <div class="copilot-tile amber" id="copilot-today"><div class="copilot-tile-label"><span class="tile-dot"></span>Today</div><div class="copilot-tile-body"><div class="copilot-item" style="opacity:0.45">&mdash;</div></div></div>
+        <div class="copilot-tile blue" id="copilot-tomorrow"><div class="copilot-tile-label"><span class="tile-dot"></span>Tomorrow</div><div class="copilot-tile-body"><div class="copilot-item" style="opacity:0.45">&mdash;</div></div></div>
+        <div class="copilot-tile purple" id="copilot-week"><div class="copilot-tile-label"><span class="tile-dot"></span>This week</div><div class="copilot-tile-body"><div class="copilot-item" style="opacity:0.45">&mdash;</div></div></div>
       </div>
       <div class="copilot-insight" id="copilot-insight"></div>
       <div class="copilot-ask">
-        <input type="text" id="copilot-ask-input" placeholder="Ask Elly — continue the conversation…" onkeydown="if(event.key===\'Enter\') _copilotAsk()" />
+        <span class="copilot-ask-prefix">Ask Elly</span>
+        <input type="text" id="copilot-ask-input" placeholder="anything &mdash; priorities, comms, schedule&hellip;" onkeydown="if(event.key===\'Enter\') _copilotAsk()" />
       </div>
     </section>
 
@@ -2306,16 +2368,17 @@ body.dark {
     </div>
     <div id="metrics-row" class="metrics-mini-row" style="display:none;"></div>
 
-    <section class="rollup-card" id="rollup-card" style="display:none;">
+    <section class="rollup-card elly-rollup" id="rollup-card" style="display:none;">
       <div class="rollup-head">
-        <span class="rollup-eyebrow">Weekly Rollup · Sonnet</span>
-        <span class="rollup-eyebrow" id="rollup-meta" style="opacity:0.7;"></span>
+        <span class="rollup-eyebrow"><span class="elly-pulse"></span>Elly&rsquo;s Week</span>
+        <span class="rollup-eyebrow" id="rollup-meta" style="opacity:0.65;"></span>
       </div>
-      <div class="rollup-headline" id="rollup-headline">Loading…</div>
+      <div class="rollup-says" id="rollup-says"></div>
+      <div class="rollup-headline" id="rollup-headline">Loading&hellip;</div>
       <div class="rollup-grid">
-        <div class="rollup-col shipped"><div class="rollup-col-label">Shipped · last 7d</div><div id="rollup-shipped"></div></div>
+        <div class="rollup-col shipped"><div class="rollup-col-label">Shipped &middot; last 7d</div><div id="rollup-shipped"></div></div>
         <div class="rollup-col slipped"><div class="rollup-col-label">Slipped</div><div id="rollup-slipped"></div></div>
-        <div class="rollup-col focus"><div class="rollup-col-label">Focus · next 7d</div><div id="rollup-focus"></div></div>
+        <div class="rollup-col focus"><div class="rollup-col-label">Focus &middot; next 7d</div><div id="rollup-focus"></div></div>
       </div>
       <div class="rollup-note" id="rollup-note"></div>
     </section>
@@ -4319,6 +4382,24 @@ function setTaskFilter(f){
     }
   }
 })();
+// Bite 17 — inline action helpers for cockpit Tasks rows.
+function _markTaskDone(x){
+  if(!x) return;
+  if(typeof _taskAction === 'function'){
+    _taskAction('complete_task', x.id || x.page_id || '', (x.title || '').slice(0, 60));
+  } else if(typeof openTaskDrawer === 'function'){
+    openTaskDrawer(x);
+  }
+}
+function _snoozeTask(x){
+  if(!x) return;
+  if(typeof _taskAction === 'function'){
+    _taskAction('defer_task', x.id || x.page_id || '', (x.title || '').slice(0, 60), {days: 1});
+  } else if(typeof openTaskDrawer === 'function'){
+    openTaskDrawer(x);
+  }
+}
+
 function renderTasks(){
   const t = DD.tasks || [];
   window.__TASKS = {};
@@ -4351,6 +4432,14 @@ function renderTasks(){
     midT.querySelectorAll('.right-row').forEach(el => el.addEventListener('click', () => {
       const x = window.__TASKS[el.dataset.k]; if(!x) return;
       if(typeof openTaskDrawer === 'function') openTaskDrawer(x);
+    }));
+    midT.querySelectorAll('.row-action-btn').forEach(btn => btn.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      const x = window.__TASKS[btn.dataset.k]; if(!x) return;
+      const act = btn.dataset.act;
+      if(act === 'done' && typeof _markTaskDone === 'function') _markTaskDone(x);
+      else if(act === 'snooze' && typeof _snoozeTask === 'function') _snoozeTask(x);
+      else if(typeof openTaskDrawer === 'function') openTaskDrawer(x);
     }));
   }
   const subT = document.getElementById('cockpit-tasks-sub');
@@ -4698,20 +4787,64 @@ async function _fetchWeeklyRollup(force){
     try { t = r.as_of ? new Date(r.as_of).toLocaleDateString('en-US', {month:'short', day:'numeric'}) : ''; } catch(_){}
     const mEl = document.getElementById('rollup-meta');
     if(mEl) mEl.textContent = (r.from_cache ? 'cached · ' : '') + t;
+    // Bite 17: Elly's take pulled from rollup.note or rollup.elly_says — italic quote line above the grid.
+    const saysEl = document.getElementById('rollup-says');
+    const saysText = (r.elly_says || r.note || '').trim();
+    if(saysEl){
+      if(saysText){
+        saysEl.innerHTML = '<span class="rollup-says-prefix">Elly says</span>' + esc(saysText);
+        saysEl.classList.add('has-content');
+        saysEl.onclick = () => { if(typeof _copilotAsk === 'function'){ const inp = document.getElementById('copilot-ask-input'); if(inp){ inp.value = 'Dig deeper on: ' + saysText.slice(0,120); inp.focus(); } } };
+      } else {
+        saysEl.classList.remove('has-content');
+        saysEl.innerHTML = '';
+        saysEl.onclick = null;
+      }
+    }
+    // Bite 17: interactive drill-in rows — icon + truncated title + entity meta, click routes to the appropriate drawer.
+    const iconFor = (id) => id === 'rollup-shipped' ? '\u2713' : (id === 'rollup-slipped' ? '\u25B2' : '\u25B8');
+    const openDrill = (id, item) => {
+      try {
+        if(!item) return;
+        if(id !== 'rollup-shipped' && window.__TASKS){
+          for(const k in window.__TASKS){
+            const t = window.__TASKS[k];
+            if(t && (t.title === item.title || t.id === item.id)) { if(typeof openTaskDrawer === 'function') return openTaskDrawer(t); }
+          }
+        }
+        if(window.__PROJECTS){
+          for(const k in window.__PROJECTS){
+            const p = window.__PROJECTS[k];
+            if(p && (p.title === item.title || p.id === item.id)) { if(typeof openProjectDrawer === 'function') return openProjectDrawer(p); }
+          }
+        }
+        if(typeof _copilotAsk === 'function'){
+          const inp = document.getElementById('copilot-ask-input');
+          if(inp){ inp.value = 'Tell me more about: ' + (item.title || ''); inp.focus(); }
+        }
+      } catch(_){}
+    };
     const fillCol = (id, items, subKey) => {
       const el = document.getElementById(id);
       if(!el) return;
-      if(!items || !items.length){ el.innerHTML = '<div class="rollup-item" style="opacity:0.45">—</div>'; return; }
-      el.innerHTML = items.slice(0, 5).map(it => {
-        const sub = esc(it[subKey] || '');
-        return '<div class="rollup-item">' + esc(it.title || '') + (sub ? '<div class="rollup-item-sub">' + sub + '</div>' : '') + '</div>';
+      if(!items || !items.length){ el.innerHTML = '<div class="copilot-item-empty">nothing here</div>'; return; }
+      window.__ROLLUP_ITEMS = window.__ROLLUP_ITEMS || {};
+      el.innerHTML = items.slice(0, 4).map((it, i) => {
+        const k = id + '::' + i;
+        window.__ROLLUP_ITEMS[k] = it;
+        const title = esc(it.title || '');
+        const meta  = esc((it[subKey] || it.entity || '').slice(0, 24));
+        return '<div class="rollup-row" data-k="' + esc(k) + '"><span class="rollup-row-icon">' + iconFor(id) + '</span><span class="rollup-row-text">' + title + '</span>' + (meta ? '<span class="rollup-row-meta">' + meta + '</span>' : '') + '</div>';
       }).join('');
+      el.querySelectorAll('.rollup-row').forEach(row => {
+        row.addEventListener('click', () => openDrill(id, window.__ROLLUP_ITEMS[row.dataset.k]));
+      });
     };
     fillCol('rollup-shipped', r.shipped || [], 'entity');
     fillCol('rollup-slipped', r.slipped || [], 'why');
-    fillCol('rollup-focus', r.focus || [], 'so_what');
+    fillCol('rollup-focus',   r.focus   || [], 'so_what');
     const nn = document.getElementById('rollup-note');
-    if(nn) nn.textContent = r.note || '';
+    if(nn) nn.textContent = (saysText && !r.elly_says) ? '' : (r.note || '');
   } catch(e){ console.warn('rollup fetch failed', e); }
 }
 try { _fetchWeeklyRollup(false); } catch(_){}
@@ -4825,20 +4958,50 @@ function _renderCopilotBrief(d){
     if(d.input_counts) bits.push(`${d.input_counts.tasks}t · ${d.input_counts.schedule}s`);
     meta.textContent = bits.join(' · ');
   }
+  // Bite 17: scannable bullet rows — icon + short text + tiny meta line.
+  const iconFor = (tileId, item) => {
+    const src = String(item.source || item.type || '').toLowerCase();
+    if(src.includes('whatsapp') || src === 'wa') return '\u2709';
+    if(src.includes('gmail') || src.includes('mail') || src.includes('outlook')) return '\u2709';
+    if(src.includes('meet') || src.includes('cal') || src.includes('schedule')) return '\u25C6';
+    if(src.includes('task') || src.includes('todo')) return '\u25A0';
+    if(src.includes('project')) return '\u25B2';
+    if(tileId === 'copilot-critical') return '\u25CF';
+    if(tileId === 'copilot-today')    return '\u25B8';
+    if(tileId === 'copilot-tomorrow') return '\u25B7';
+    if(tileId === 'copilot-week')     return '\u2605';
+    return '\u00B7';
+  };
+  const shortMeta = (item) => {
+    const bits = [];
+    if(item.entity) bits.push(String(item.entity));
+    if(item.due)    bits.push('due ' + String(item.due).slice(0,10));
+    else if(item.when) bits.push(String(item.when).slice(0,16).replace('T',' '));
+    if(item.source && !bits.some(b => String(b).toLowerCase().includes(String(item.source).toLowerCase())))
+      bits.push(String(item.source));
+    return bits.slice(0, 2).join(' \u00B7 ');
+  };
   const renderTile = (id, items, subField) => {
     const body = document.querySelector('#' + id + ' .copilot-tile-body');
     if(!body) return;
     if(!Array.isArray(items) || items.length === 0){
-      body.innerHTML = '<div class="copilot-item" style="opacity:0.45">—</div>';
+      body.innerHTML = '<div class="copilot-item-empty">nothing queued</div>';
       return;
     }
     window.__COPILOT_ITEMS = window.__COPILOT_ITEMS || {};
     body.innerHTML = items.slice(0, 3).map((it, i) => {
       const k = id + '::' + i;
       window.__COPILOT_ITEMS[k] = it;
-      const title = esc(it.title || '');
-      const sub = esc(it[subField] || '');
-      return '<div class="copilot-item clickable" data-k="' + esc(k) + '">' + title + (sub ? '<div class="copilot-item-why">' + sub + '</div>' : '') + '</div>';
+      const title = esc(it.title || it.text || '');
+      const sub   = esc(it[subField] || '');
+      const meta  = esc(shortMeta(it));
+      const icn   = iconFor(id, it);
+      let inner = '<span class="copilot-item-icon">' + icn + '</span>';
+      inner += '<span class="copilot-item-text"><b>' + title + '</b>';
+      if(sub)  inner += ' <span style="color:var(--text-2)">&mdash; ' + sub + '</span>';
+      if(meta) inner += '<div class="copilot-item-meta">' + meta + '</div>';
+      inner += '</span>';
+      return '<div class="copilot-item clickable" data-k="' + esc(k) + '">' + inner + '</div>';
     }).join('');
     body.querySelectorAll('.copilot-item.clickable').forEach(el => {
       el.addEventListener('click', (ev) => {
@@ -4849,9 +5012,9 @@ function _renderCopilotBrief(d){
     });
   };
   renderTile('copilot-critical', d.critical || [], 'why');
-  renderTile('copilot-today', d.today || [], 'action');
+  renderTile('copilot-today',    d.today    || [], 'action');
   renderTile('copilot-tomorrow', d.tomorrow || [], 'prep');
-  renderTile('copilot-week', d.week || [], 'strategic');
+  renderTile('copilot-week',     d.week     || [], 'strategic');
   const ins = document.getElementById('copilot-insight');
   if(ins) ins.textContent = d.insight || '';
 }
@@ -5140,18 +5303,34 @@ function renderProjects(){
     const e = _ent(p.entity);
     const milestone = p.next_milestone ? (' · ' + esc(p.next_milestone.slice(0,60))) : '';
     const tgt = p.target_date ? (' · target ' + esc(p.target_date)) : '';
-    return '<div class="project-row" data-k="' + k + '">' +
+    // Bite 17 — inline progress bar derived from p.progress|0..100, fallback to status heuristic.
+    let pct = (typeof p.progress === 'number') ? Math.max(0, Math.min(100, p.progress)) : null;
+    if(pct === null){
+      const sc = _sc(p.status);
+      pct = sc === 'done' ? 100 : sc === 'inprogress' ? 55 : sc === 'planning' ? 25 : sc === 'blocked' ? 35 : sc === 'parked' ? 0 : 10;
+    }
+    const entCls = 'entity-' + e.k;
+    return '<div class="project-row ' + entCls + '" data-k="' + k + '">' +
       '<span class="project-row-entity ' + e.k + '">' + e.label + '</span>' +
       '<div class="project-row-body">' +
         '<div class="project-row-title">' + esc(p.title || '') + '</div>' +
         '<div class="project-row-meta">' + esc(p.priority || '') + milestone + tgt + '</div>' +
+        '<span class="proj-progress"><span class="proj-progress-fill" style="width:' + pct + '%"></span></span>' +
       '</div>' +
       '<span class="project-row-status ' + _sc(p.status) + '">' + esc(p.status || 'Not started') + '</span>' +
+      '<div class="row-actions"><button class="row-action-btn" data-act="nudge" data-k="' + k + '" title="Nudge owner">✎</button><button class="row-action-btn" data-act="openurl" data-k="' + k + '" title="Open in Notion">⧉</button></div>' +
     '</div>';
   }).join('');
   host.querySelectorAll('.project-row').forEach(el => el.addEventListener('click', () => {
     const p = window.__PROJECTS[el.dataset.k];
     if(p) openProjectDrawer(p);
+  }));
+  host.querySelectorAll('.project-row .row-action-btn').forEach(btn => btn.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    const p = window.__PROJECTS[btn.dataset.k]; if(!p) return;
+    const act = btn.dataset.act;
+    if(act === 'openurl' && p.url){ try { window.open(p.url, '_blank', 'noopener'); } catch(_){ } return; }
+    if(act === 'nudge' && typeof openProjectDrawer === 'function'){ openProjectDrawer(p); return; }
   }));
   // [session 54 Bite 8] mirror into center peer card
   const mid = document.getElementById('cockpit-projects-body');
@@ -5160,6 +5339,13 @@ function renderProjects(){
     mid.querySelectorAll('.project-row').forEach(el => el.addEventListener('click', () => {
       const p = window.__PROJECTS[el.dataset.k];
       if(p) openProjectDrawer(p);
+    }));
+    mid.querySelectorAll('.project-row .row-action-btn').forEach(btn => btn.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      const p = window.__PROJECTS[btn.dataset.k]; if(!p) return;
+      const act = btn.dataset.act;
+      if(act === 'openurl' && p.url){ try { window.open(p.url, '_blank', 'noopener'); } catch(_){ } return; }
+      if(typeof openProjectDrawer === 'function') openProjectDrawer(p);
     }));
   }
   const sub = document.getElementById('cockpit-projects-sub');

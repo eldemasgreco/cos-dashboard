@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- cache-buster: 2026-04-24T18:16:31.688503Z ts=53-tz-auto -->
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nick's Daily Dashboard</title>
@@ -2385,6 +2387,8 @@ async function selectTz(tz){
   $('tz-dropdown').classList.remove('visible');
   $('tz-pill').classList.remove('open');
   renderClock();
+  // Session 53: record a 6h manual-lock so IP auto-detect doesn't immediately override
+  try { localStorage.setItem('cos.tz.manual.lock', String(Date.now())); } catch(_){}
   // Phase-3: refresh travel-weather card for the new TZ (clears if back to home).
   try{ fetchTravelWeather(); }catch(_){}
   const r = await postSync({ action:'set_timezone', timezone: tz });
@@ -4388,7 +4392,63 @@ renderAll();
   try{ fetchTravelWeather(); }catch(_){}
   // Session 50 follow-on: render focus chip if focus_areas is set
   try{ renderFocusChip(); }catch(_){}
+  // Session 53: auto-detect timezone from IP (kicks off after pref hydration).
+  try { _autoDetectTz(); } catch(_){}
 })();
+
+// Session 53: IP-based timezone auto-detect. Runs once on load after get_prefs.
+// If the detected TZ differs from CURRENT_TZ and no manual lock is set in the
+// last 6 hours, updates CURRENT_TZ + persists to backend via set_timezone so
+// Elly + cron scenarios pick it up from user_prefs.json. IP lookup uses
+// ipapi.co (free, no-auth, CORS-enabled, 1000/day). Falls back to the
+// browser/OS Intl TZ if IP call fails or times out.
+async function _autoDetectTz(){
+  try {
+    const lockTs = Number(localStorage.getItem('cos.tz.manual.lock') || 0);
+    if(lockTs && Date.now() - lockTs < 6 * 3600 * 1000){
+      console.debug('Auto-TZ: skipped (manual lock active)');
+      return;
+    }
+    // Try IP-based lookup first (handles travel). Short timeout so we never
+    // block the dashboard if the API is down.
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 2500);
+    let detected = null;
+    let source = null;
+    try {
+      const r = await fetch('https://ipapi.co/json/', { signal: ctrl.signal, mode: 'cors' });
+      clearTimeout(t);
+      if(r.ok){
+        const j = await r.json();
+        if(j && j.timezone && /^[A-Za-z_]+\/[A-Za-z_0-9_+-]+/.test(j.timezone)){
+          detected = j.timezone;
+          source = 'ip:' + (j.city || j.country_code || '?');
+        }
+      }
+    } catch(_) { clearTimeout(t); }
+    // Fallback: browser/OS TZ
+    if(!detected){
+      try {
+        detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        source = 'browser';
+      } catch(_) {}
+    }
+    if(!detected) return;
+    if(detected === CURRENT_TZ){
+      console.debug('Auto-TZ: already', detected, '(' + source + ')');
+      return;
+    }
+    console.log('Auto-TZ:', CURRENT_TZ, '->', detected, '(' + source + ')');
+    CURRENT_TZ = detected;
+    buildTzDropdown();
+    renderClock();
+    try{ fetchTravelWeather(); }catch(_){}
+    try { await postSync({ action:'set_timezone', timezone: detected }); } catch(_){}
+    if(typeof showToast === 'function'){
+      showToast('Timezone: ' + detected + ' (' + source + ')');
+    }
+  } catch(e){ console.debug('Auto-TZ failed', e); }
+}
 
 // Hydrate Elly pause state so the Live pill shows truth, not a client-only
 // guess. Timed-pause countdown then ticks from applyPauseUI.

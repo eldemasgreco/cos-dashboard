@@ -1727,6 +1727,83 @@ header { background: var(--bg) !important; border-bottom: 1px solid var(--border
 .cal-q-cell.today { background: var(--green) !important; color: #fff !important; }
 /* Right-col tab active bar */
 .tab-btn.active { border-bottom-color: var(--green) !important; background: transparent !important; color: var(--text) !important; }
+
+/* ── v3 finishing sweep: kill residual green gradient + header sizing + softer status line ────── */
+
+/* Hero brief card — clean white surface, ink text, serif title */
+.center-hero {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  margin: 14px 0 18px !important;
+  padding: 22px 26px 20px !important;
+  box-shadow: none !important;
+  overflow: hidden;
+}
+.center-hero::before, .center-hero::after { display: none !important; }
+.hero-eyebrow {
+  font-size: 10px !important; font-weight: 700 !important; letter-spacing: 0.14em !important;
+  text-transform: uppercase; color: var(--text-3) !important; margin-bottom: 10px !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif !important;
+}
+.hero-title {
+  font-family: var(--font-serif) !important;
+  font-size: 28px !important; font-weight: 500 !important;
+  letter-spacing: -0.015em !important; line-height: 1.2 !important;
+  color: var(--text) !important; margin-bottom: 12px !important;
+}
+.hero-lead {
+  color: var(--text-2) !important; font-size: 14px !important; line-height: 1.65 !important;
+  font-weight: 400 !important;
+}
+.hero-lead strong { color: var(--text) !important; font-weight: 600 !important; }
+.hero-body-ext { color: var(--text-2) !important; }
+.hero-expand-hint { color: var(--text-3) !important; }
+.hero-btn {
+  border: 1px solid var(--border-med) !important; background: transparent !important;
+  color: var(--text) !important; padding: 6px 14px !important; font-weight: 500 !important;
+  border-radius: var(--radius-sm) !important;
+}
+.hero-btn:hover { background: var(--card-2) !important; border-color: var(--text-3) !important; }
+
+/* Header sizing — prevent wrap overlap, clean brand */
+header { padding: 0 18px !important; height: var(--hdr-h) !important; }
+.hdr-brand { gap: 10px !important; min-width: 0; }
+.hdr-wordmark { line-height: 1.1 !important; }
+.hdr-logo-text { font-size: 12px !important; letter-spacing: -0.3px !important; color: var(--text) !important; }
+.hdr-wordmark > div:last-child { font-size: 9px !important; color: var(--text-3) !important; font-weight: 500 !important; }
+.hdr-date-block { margin-left: 14px !important; white-space: nowrap; }
+.hdr-date { font-size: 11px !important; font-weight: 500 !important; color: var(--text-2) !important; }
+.hdr-weekday { font-size: 9px !important; color: var(--text-3) !important; letter-spacing: 0.5px; text-transform: uppercase; }
+.hdr-status-pill { font-size: 10px !important; padding: 3px 9px !important; font-weight: 600 !important; }
+
+/* Status line — softer, more editorial, less banner */
+.status-line {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  margin: 10px 0 6px !important;
+  padding: 14px 18px 13px !important;
+}
+.status-line-lbl { font-size: 9.5px !important; letter-spacing: 0.18em !important; }
+.status-line-msg { font-size: 16px !important; font-weight: 500 !important; }
+
+/* Tasks This Week block — a bit more air */
+.tw-section { padding-top: 18px !important; }
+.tw-title { font-size: 10px !important; letter-spacing: 0.18em !important; }
+.tw-row { padding: 13px 2px !important; }
+
+/* Drawer pills — quieter */
+.dz-pills { padding: 18px 0 28px !important; }
+.dz-pill { padding: 7px 13px !important; font-size: 11px !important; letter-spacing: 0.01em; }
+
+/* Col-center inner padding tighten */
+.col-center { padding: 0 32px 120px !important; }
+
+/* Remove hero mobile overrides that force full-bleed */
+@media (max-width: 900px) {
+  .center-hero { margin: 14px 0 18px !important; border-radius: var(--radius) !important; }
+}
 </style>
 </head>
 <body>

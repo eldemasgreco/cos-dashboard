@@ -19,43 +19,46 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #F4EFE7;
+  /* v3 warm editorial palette — sienna primary, no sage */
+  --bg: #FAF6EE;
   --card: #FFFFFF;
-  --card-2: #EFE8DC;
-  --border: rgba(26,20,16,0.08);
-  --border-med: rgba(26,20,16,0.14);
-  --text: #1A1410;
-  --text-2: #5A4E42;
-  --text-3: #8F8577;
-  --green: #3F6B4E;
-  --green-light: #568A68;
-  --green-bg: rgba(63,107,78,0.08);
-  --green-mid: rgba(63,107,78,0.16);
-  --green-vivid: #4F8A5E;
-  --red: #B85438;
-  --red-bg: rgba(184,84,56,0.08);
-  --red-mid: rgba(184,84,56,0.16);
-  --amber: #C8891F;
-  --amber-bg: rgba(200,137,31,0.09);
-  --amber-mid: rgba(200,137,31,0.17);
-  --blue: #3A5578;
-  --blue-bg: rgba(58,85,120,0.08);
-  --blue-mid: rgba(58,85,120,0.16);
-  --purple: #6B3E5E;
-  --purple-bg: rgba(107,62,94,0.08);
-  --teal: #2F6B5E;
-  --teal-bg: rgba(47,107,94,0.08);
+  --card-2: #F1ECE1;
+  --border: rgba(26,20,16,0.06);
+  --border-med: rgba(26,20,16,0.10);
+  --text: #1A1712;
+  --text-2: #6B635A;
+  --text-3: #A8A094;
+  /* --green slot retained but re-valued to warm sienna so existing selectors just pick up the new accent */
+  --green: #9B5E2F;
+  --green-light: #B87541;
+  --green-bg: rgba(155,94,47,0.08);
+  --green-mid: rgba(155,94,47,0.14);
+  --green-vivid: #B87541;
+  --red: #A64D2F;
+  --red-bg: rgba(166,77,47,0.08);
+  --red-mid: rgba(166,77,47,0.14);
+  --amber: #B07318;
+  --amber-bg: rgba(176,115,24,0.08);
+  --amber-mid: rgba(176,115,24,0.16);
+  --blue: #345068;
+  --blue-bg: rgba(52,80,104,0.08);
+  --blue-mid: rgba(52,80,104,0.14);
+  --purple: #5E3652;
+  --purple-bg: rgba(94,54,82,0.08);
+  --teal: #2E6559;
+  --teal-bg: rgba(46,101,89,0.08);
   --left-w: 208px;
   --right-w: 408px;
   --hdr-h: 52px;
   --banner-h: 108px;   /* 2 banner rows × 52px + 4px borders */
-  --radius: 16px;
-  --radius-sm: 10px;
-  --radius-xs: 7px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 20px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
-  --shadow-lg: 0 16px 48px rgba(0,0,0,0.14), 0 4px 16px rgba(0,0,0,0.07);
-  --shadow-green: 0 8px 32px rgba(63,107,78,0.28);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+  --shadow: none;
+  --shadow-md: 0 2px 10px rgba(0,0,0,0.04);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,0.10);
+  --shadow-green: none;
+  --font-serif: 'Iowan Old Style', 'Charter', Georgia, 'Times New Roman', serif;
   --ease: cubic-bezier(0.4,0,0.2,1);
   --spring: cubic-bezier(0.34,1.56,0.64,1);
   --t: 0.22s;
@@ -1240,20 +1243,31 @@ body.dark .qc-mode-btn.active { background: var(--card-2); }
 
 /* ── Dark mode: warm dark tones, same sage/terracotta accent palette ── */
 body.dark {
-  --bg: #2A2620;
-  --card: #342F27;
-  --card-2: #3E3830;
-  --border: rgba(244,239,231,0.12);
-  --border-med: rgba(244,239,231,0.20);
-  --text: #F4EFE7;
-  --text-2: #D4CBBC;
-  --text-3: #A89F8F;
-  --green-bg: rgba(63,107,78,0.22);
-  --red-bg: rgba(184,84,56,0.22);
-  --amber-bg: rgba(200,137,31,0.22);
-  --blue-bg: rgba(58,85,120,0.24);
-  --purple-bg: rgba(107,62,94,0.24);
-  --teal-bg: rgba(47,107,94,0.24);
+  --bg: #1F1B16;
+  --card: #2A2520;
+  --card-2: #352F27;
+  --border: rgba(245,238,226,0.08);
+  --border-med: rgba(245,238,226,0.14);
+  --text: #F5EEE2;
+  --text-2: #C4BBA9;
+  --text-3: #8F8677;
+  --green: #C17A3F;
+  --green-light: #D48C52;
+  --green-bg: rgba(193,122,63,0.16);
+  --green-mid: rgba(193,122,63,0.24);
+  --green-vivid: #D48C52;
+  --red: #CA6344;
+  --red-bg: rgba(202,99,68,0.16);
+  --red-mid: rgba(202,99,68,0.24);
+  --amber: #D09335;
+  --amber-bg: rgba(208,147,53,0.16);
+  --amber-mid: rgba(208,147,53,0.24);
+  --blue: #5A7C9D;
+  --blue-bg: rgba(90,124,157,0.18);
+  --purple: #855A7A;
+  --purple-bg: rgba(133,90,122,0.18);
+  --teal: #4F8F82;
+  --teal-bg: rgba(79,143,130,0.18);
 }
 body.dark .news-banner { background: linear-gradient(180deg, var(--card-2) 0%, var(--card) 100%); }
 body.dark .entity-filter-bar { background: var(--card); }
@@ -1686,6 +1700,33 @@ body.dark .entity-filter-bar { background: var(--card); }
 .tab-sec-badge.red { background: var(--red-bg); color: var(--red); }
 
 .tab-sec-badge.amber { background: var(--amber-bg); color: var(--amber); }
+
+/* ── v3 editorial typography + finishing polish ────────────────────────── */
+.hero-title, .hero-eyebrow ~ .hero-title, #brief-title { font-family: var(--font-serif); font-weight: 500; letter-spacing: -0.01em; }
+.status-line-msg { font-family: var(--font-serif); font-weight: 500; letter-spacing: -0.005em; font-size: 15px; }
+.cal-period-label { font-family: var(--font-serif); font-weight: 500; }
+.tw-title, .sec-label, .status-line-lbl { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; }
+/* Quiet dividers */
+.tw-row, .cal-event-row, .sched-event, .alert-item { border-bottom-color: rgba(26,20,16,0.05); }
+body.dark .tw-row, body.dark .cal-event-row, body.dark .sched-event, body.dark .alert-item { border-bottom-color: rgba(245,238,226,0.07); }
+/* Quiet card surfaces — no shadow, hair border only */
+.metric-tile, .schedule-card, .alert-cluster, .center-hero, .weather-instrument, .col-right .tab-panel, .cal-q-month { box-shadow: none !important; }
+.metric-tile { border: 1px solid var(--border) !important; }
+/* Brief card: remove heavy green gradient, keep warm cream */
+.center-hero { background: var(--card) !important; border: 1px solid var(--border); }
+body.dark .center-hero { background: var(--card-2) !important; }
+/* Header: cleaner */
+header { background: var(--bg) !important; border-bottom: 1px solid var(--border); }
+/* Tab active underline — sienna not sage (inherits --green) */
+/* Status line dot shadow: switch to accent-based glow on green (sienna) */
+.status-line.green .status-line-dot { box-shadow: 0 0 0 4px var(--green-bg); }
+/* Soften the primary action buttons */
+.hero-btn, .qc-btn, button { transition: all 0.15s ease; }
+/* Today highlight in calendar: use accent instead of hard green */
+.cal-week-col.today .cal-dnum, .cal-month-cell.today .cal-month-num { background: var(--green) !important; color: #fff !important; }
+.cal-q-cell.today { background: var(--green) !important; color: #fff !important; }
+/* Right-col tab active bar */
+.tab-btn.active { border-bottom-color: var(--green) !important; background: transparent !important; color: var(--text) !important; }
 </style>
 </head>
 <body>

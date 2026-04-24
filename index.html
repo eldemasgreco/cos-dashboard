@@ -1704,6 +1704,30 @@ body.dark .entity-filter-bar { background: var(--card); }
 .tab-sec-badge.amber { background: var(--amber-bg); color: var(--amber); }
 
 /* ── v3 editorial typography + finishing polish ────────────────────────── */
+/* [session 54] AI Copilot hero */
+.copilot-hero { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin: 16px 0; }
+.copilot-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px; flex-wrap: wrap; }
+.copilot-eyebrow { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); }
+.copilot-meta { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; color: var(--text-3); }
+.copilot-headline { font-family: var(--font-serif); font-size: 24px; font-weight: 500; letter-spacing: -0.015em; line-height: 1.2; margin-bottom: 16px; color: var(--text); }
+.copilot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.copilot-tile { padding: 12px 14px; border-radius: 8px; }
+.copilot-tile.red { background: rgba(163,45,45,0.07); }
+.copilot-tile.amber { background: rgba(186,117,23,0.08); }
+.copilot-tile.blue { background: rgba(24,95,165,0.08); }
+.copilot-tile.purple { background: rgba(82,74,183,0.08); }
+.copilot-tile-label { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; }
+.copilot-tile.red .copilot-tile-label { color: var(--red); }
+.copilot-tile.amber .copilot-tile-label { color: var(--amber); }
+.copilot-tile.blue .copilot-tile-label { color: var(--ink-navy, #1A3A5C); }
+.copilot-tile.purple .copilot-tile-label { color: #534AB7; }
+.copilot-item { font-size: 13px; line-height: 1.4; margin-bottom: 5px; color: var(--text); }
+.copilot-item-why { font-size: 11px; color: var(--text-2); margin-top: 1px; font-style: italic; }
+.copilot-insight { font-family: var(--font-serif); font-style: italic; font-size: 13px; color: var(--text-2); border-top: 0.5px solid var(--border); padding-top: 12px; margin: 4px 0 12px; }
+.copilot-ask input { width: 100%; font-size: 13px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); box-sizing: border-box; font-family: inherit; }
+.copilot-ask input:focus { outline: none; border-color: var(--text-3); }
+@media (max-width: 900px) { .copilot-grid { grid-template-columns: 1fr; } .copilot-headline { font-size: 20px; } }
+
 .hero-title, .hero-eyebrow ~ .hero-title, #brief-title { font-family: var(--font-serif); font-weight: 500; letter-spacing: -0.01em; }
 .status-line-msg { font-family: var(--font-serif); font-weight: 500; letter-spacing: -0.005em; font-size: 15px; }
 /* v3+ live-push source chip + LIVE pill (session 53) */
@@ -2068,17 +2092,33 @@ body.dark {
   <!-- ═══ CENTER COLUMN ═══ -->
   <main class="col col-center">
 
-    <div class="status-line green" id="status-line">
+    <!-- [session 54] AI Copilot hero — Sonnet-powered decision set, replaces status line + brief + top-priority + metrics -->
+    <section class="copilot-hero" id="copilot-hero">
+      <div class="copilot-head">
+        <span class="copilot-eyebrow">AI Copilot · Sonnet</span>
+        <span class="copilot-meta" id="copilot-meta">reading your day…</span>
+      </div>
+      <div class="copilot-headline" id="copilot-headline">Loading your decision set…</div>
+      <div class="copilot-grid">
+        <div class="copilot-tile red" id="copilot-critical"><div class="copilot-tile-label">Critical · do now</div><div class="copilot-tile-body"><div class="copilot-item" style="opacity:0.5">—</div></div></div>
+        <div class="copilot-tile amber" id="copilot-today"><div class="copilot-tile-label">Finish today</div><div class="copilot-tile-body"><div class="copilot-item" style="opacity:0.5">—</div></div></div>
+        <div class="copilot-tile blue" id="copilot-tomorrow"><div class="copilot-tile-label">Tomorrow prep</div><div class="copilot-tile-body"><div class="copilot-item" style="opacity:0.5">—</div></div></div>
+        <div class="copilot-tile purple" id="copilot-week"><div class="copilot-tile-label">Week outlook</div><div class="copilot-tile-body"><div class="copilot-item" style="opacity:0.5">—</div></div></div>
+      </div>
+      <div class="copilot-insight" id="copilot-insight"></div>
+      <div class="copilot-ask">
+        <input type="text" id="copilot-ask-input" placeholder="Ask Elly — continue the conversation…" onkeydown="if(event.key===\'Enter\') _copilotAsk()" />
+      </div>
+    </section>
+
+    <!-- Legacy sections — hidden, preserved for rollback. New Copilot hero above replaces them. -->
+    <div class="status-line green" id="status-line" style="display:none;">
       <span class="status-line-dot"></span>
       <span class="status-line-lbl" id="status-line-lbl">On track</span>
       <span class="status-line-msg" id="status-line-msg" onclick="openTopPriority()"></span>
     </div>
-
-    <!-- Top priority pill — single most urgent item, extracted from DD.priorities / DD.alerts -->
     <div class="top-priority-pill" id="top-priority-pill" onclick="openTopPriority()" style="display:none;"></div>
-
-    <!-- Hero brief -->
-    <div class="center-hero" id="hero-brief" onclick="toggleHero()">
+    <div class="center-hero" id="hero-brief" onclick="toggleHero()" style="display:none;">
       <div class="hero-eyebrow" id="brief-eyebrow">Morning Brief</div>
       <div class="hero-title" id="brief-title">Loading…</div>
       <div class="hero-lead" id="brief-lead"></div>
@@ -2086,9 +2126,7 @@ body.dark {
       <div class="hero-body-ext"><div class="hero-ext-text" id="brief-ext-text"></div></div>
       <div class="hero-expand-hint" id="hero-hint">tap to expand</div>
     </div>
-
-    <!-- Metrics mini-row -->
-    <div id="metrics-row" class="metrics-mini-row"></div>
+    <div id="metrics-row" class="metrics-mini-row" style="display:none;"></div>
 
     <div class="tw-section" id="tw-section">
       <div class="tw-header">
@@ -2688,6 +2726,7 @@ async function cosAction(action, el){
     try { if(typeof _fetchCritical === 'function') polls.push(_fetchCritical()); } catch(_){}
     try { if(typeof _fetchSignals === 'function') polls.push(_fetchSignals()); } catch(_){}
     try { if(typeof _fetchTicker === 'function') polls.push(_fetchTicker()); } catch(_){}
+    try { if(typeof _fetchCopilotBrief === 'function') polls.push(_fetchCopilotBrief(true)); } catch(_){}
     Promise.allSettled(polls).then(() => {
       try { if(typeof renderAll === 'function') renderAll(); } catch(_){}
       t.textContent = '✓ Refreshed';
@@ -4180,6 +4219,80 @@ async function _fetchSchedule(){
 }
 try { _fetchSchedule(); } catch(_) {}
 setInterval(() => { try { _fetchSchedule(); } catch(_){} }, 5 * 60 * 1000);
+
+// [session 54] AI Copilot hero — Sonnet-powered decision set
+async function _fetchCopilotBrief(force){
+  try {
+    const r = await postSync({action: 'copilot_brief', force: !!force, lookahead_days: 7});
+    const head = document.getElementById('copilot-headline');
+    const meta = document.getElementById('copilot-meta');
+    if(!r){ if(head) head.textContent = 'Copilot offline'; return; }
+    if(!r.success){
+      if(head) head.textContent = 'Copilot error';
+      if(meta) meta.textContent = String(r.error || '').slice(0, 80);
+      console.warn('[copilot_brief] error', r);
+      return;
+    }
+    _renderCopilotBrief(r);
+  } catch(e){ console.warn('copilot_brief fetch failed', e); }
+}
+
+function _renderCopilotBrief(d){
+  const esc = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+  const head = document.getElementById('copilot-headline');
+  if(head) head.textContent = d.headline || '—';
+  const meta = document.getElementById('copilot-meta');
+  if(meta){
+    let t = '';
+    try { t = d.as_of ? new Date(d.as_of).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:false, timeZone: (typeof CURRENT_TZ !== 'undefined' && CURRENT_TZ) || 'UTC'}) : ''; } catch(_){}
+    const bits = [];
+    if(d.from_cache) bits.push('cached');
+    if(t) bits.push('refreshed ' + t);
+    if(d.input_counts) bits.push(`${d.input_counts.tasks}t · ${d.input_counts.schedule}s`);
+    meta.textContent = bits.join(' · ');
+  }
+  const renderTile = (id, items, subField) => {
+    const body = document.querySelector('#' + id + ' .copilot-tile-body');
+    if(!body) return;
+    if(!Array.isArray(items) || items.length === 0){
+      body.innerHTML = '<div class="copilot-item" style="opacity:0.45">—</div>';
+      return;
+    }
+    body.innerHTML = items.slice(0, 3).map(it => {
+      const title = esc(it.title || '');
+      const sub = esc(it[subField] || '');
+      return `<div class="copilot-item">${title}${sub ? `<div class="copilot-item-why">${sub}</div>` : ''}</div>`;
+    }).join('');
+  };
+  renderTile('copilot-critical', d.critical || [], 'why');
+  renderTile('copilot-today', d.today || [], 'action');
+  renderTile('copilot-tomorrow', d.tomorrow || [], 'prep');
+  renderTile('copilot-week', d.week || [], 'strategic');
+  const ins = document.getElementById('copilot-insight');
+  if(ins) ins.textContent = d.insight || '';
+}
+
+async function _copilotAsk(){
+  const input = document.getElementById('copilot-ask-input');
+  if(!input) return;
+  const text = (input.value || '').trim();
+  if(!text) return;
+  input.value = '';
+  // Route to the existing Elly panel so the conversation thread is preserved
+  if(typeof toggleElly === 'function'){
+    try { toggleElly(); } catch(_){}
+    const ellyInput = document.getElementById('elly-input');
+    if(ellyInput){
+      ellyInput.value = text;
+      if(typeof ellySend === 'function') setTimeout(() => ellySend(), 50);
+    }
+  } else if(window.showToast) {
+    showToast('Elly panel not ready');
+  }
+}
+
+try { _fetchCopilotBrief(false); } catch(_){}
+setInterval(() => { try { _fetchCopilotBrief(false); } catch(_){} }, 10 * 60 * 1000);
 
 // ── Live wiring (Bite 2): Tasks poll ────────────────────────────────────
 // 90s cadence. Diffs task IDs vs current DD.tasks, animates new rows in.

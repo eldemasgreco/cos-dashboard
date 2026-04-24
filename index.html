@@ -1743,6 +1743,15 @@ body.dark .entity-filter-bar { background: var(--card); }
 .signals-row-title { font-size: 12px; line-height: 1.35; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .signals-row-meta { font-size: 10px; color: var(--text-3); margin-top: 1px; }
 .signals-empty { font-size: 11px; color: var(--text-3); padding: 8px 4px; }
+/* [session 54 Bite 3] Task drawer action bar + meta */
+.tdrawer-chip { display: inline-block; background: var(--bg); border: 0.5px solid var(--border); color: var(--text-2); font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-right: 4px; }
+.tdrawer-ctx { margin-top: 10px; font-size: 13px; color: var(--text-2); line-height: 1.5; }
+.tdrawer-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 0.5px solid var(--border); }
+.tdrawer-btn { font-size: 11px; padding: 6px 12px; border: 0.5px solid var(--border); background: var(--card); color: var(--text); border-radius: 6px; cursor: pointer; font-family: inherit; font-weight: 500; }
+.tdrawer-btn:hover { background: var(--bg); border-color: var(--text-3); }
+.tdrawer-btn-primary { background: var(--ink-navy, #1A3A5C); color: #fff; border-color: var(--ink-navy, #1A3A5C); }
+.tdrawer-btn-primary:hover { background: #0E2848; }
+.tdrawer-notes { font-size: 12px; color: var(--text-2); line-height: 1.5; white-space: pre-wrap; }
 
 .hero-title, .hero-eyebrow ~ .hero-title, #brief-title { font-family: var(--font-serif); font-weight: 500; letter-spacing: -0.01em; }
 .status-line-msg { font-family: var(--font-serif); font-weight: 500; letter-spacing: -0.005em; font-size: 15px; }
@@ -3433,7 +3442,9 @@ function renderTasksThisWeek(){
   }).join('') + (tasks.length > 10 ? '<div class="tw-more-link" onclick="switchTab(\'tasks\', document.querySelector(\'.tab-btn[data-tab=tasks]\'))">See all ' + tasks.length + ' →</div>' : '');
   host.querySelectorAll('.tw-row').forEach(el => el.addEventListener('click', () => {
     const t = window.__TW[el.dataset.k]; if(!t) return;
-    if(window.openDrawer) openDrawer(strip(t.task || t.title || '—'), t.entity || '', String(t.priority || ''), String(t.notes || t.detail || t.context || ''));
+    // [session 54] 2-way task drawer with Complete / Defer / Cancel buttons
+    if(typeof openTaskDrawer === 'function') openTaskDrawer(t);
+    else if(window.openDrawer) openDrawer(strip(t.task || t.title || '—'), t.entity || '', String(t.priority || ''), String(t.notes || t.detail || t.context || ''));
   }));
 }
 function openDzDrawer(kind){
@@ -4072,11 +4083,13 @@ function setTaskFilter(f){
 })();
 function renderTasks(){
   const t = DD.tasks || [];
-  $('tasks-body').innerHTML = t.map(x=>{
+  window.__TASKS = {};
+  $('tasks-body').innerHTML = t.map((x, i)=>{
+    const k = 'task::' + i; window.__TASKS[k] = x;
     const avColor = x.avatar_color || avatarClassFor(x.owner||x.title);
     const chipCls = x.chip_class || x.status || 'todo';
     const ent = _normEntity(x.entity || x.owner || '');
-    return `<div class="right-row" data-entity="${esc(ent)}" onclick="openDrawer('${esc(x.title||'')}', '${esc(x.owner||'')}', '${esc(x.context||'')}', '${esc(x.detail||'')}')">
+    return `<div class="right-row" data-entity="${esc(ent)}" data-k="${k}">
       <div class="avatar ${avColor}">${esc(initials(x.owner||x.title))}</div>
       <div class="right-row-body">
         <div class="right-row-title">${esc(x.title||'')}</div>
@@ -4088,6 +4101,11 @@ function renderTasks(){
       </div>
     </div>`;
   }).join('') || '<div class="empty-state">No tasks</div>';
+  // [session 54] 2-way task drawer on click
+  document.querySelectorAll('#tasks-body .right-row').forEach(el => el.addEventListener('click', () => {
+    const x = window.__TASKS[el.dataset.k]; if(!x) return;
+    if(typeof openTaskDrawer === 'function') openTaskDrawer(x);
+  }));
   const badge=$('tasks-badge');
   if(badge){
     const n=(DD.tasks||[]).filter(x=>x.overdue||x.chip_class==='blocked').length;
@@ -4376,6 +4394,78 @@ function _renderUnifiedSignals(d){
 
 try { _fetchUnifiedSignals(); } catch(_){}
 setInterval(() => { try { _fetchUnifiedSignals(); } catch(_){} }, 30 * 1000);
+
+// [session 54 Bite 3] Enhanced Task drawer with 2-way sync action bar
+function openTaskDrawer(task){
+  if(!task) return;
+  const t = task;
+  const esc = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+  const pid = t.id || t.page_id || '';
+  const title = _stripMd(t.task || t.title || t.subject || '—');
+  const entity = t.entity || t.owner || '';
+  const priority = String(t.priority || t.chip_label || '');
+  const due = String(t.due_date || t.due || '');
+  const context = t.context || t.sub || '';
+  const notes = t.notes || t.detail || '';
+  const notionUrl = t.notion_url || (pid ? 'https://www.notion.so/' + String(pid).replace(/-/g,'') : '');
+
+  const titleEl = document.getElementById('drawer-title');
+  const ctxEl = document.getElementById('drawer-context');
+  const detEl = document.getElementById('drawer-details');
+  if(!titleEl || !ctxEl || !detEl) return;
+
+  titleEl.textContent = title;
+  const meta = [];
+  if(entity) meta.push(`<span class="tdrawer-chip">${esc(entity)}</span>`);
+  if(priority) meta.push(`<span class="tdrawer-chip">${esc(priority)}</span>`);
+  if(due) meta.push(`<span class="tdrawer-chip">due ${esc(due)}</span>`);
+  ctxEl.innerHTML = meta.join(' ') + (context ? ('<div class="tdrawer-ctx">'+esc(context)+'</div>') : '');
+
+  // Action bar — these hit the new 2-way endpoints
+  const safeLabel = title.slice(0, 60).replace(/\'/g, "'");
+  const actionBar = `<div class="tdrawer-actions">
+    <button class="tdrawer-btn tdrawer-btn-primary" onclick="_taskAction('complete_task', '${esc(pid)}', '${esc(safeLabel)}')">✓ Complete</button>
+    <button class="tdrawer-btn" onclick="_taskAction('defer_task', '${esc(pid)}', '${esc(safeLabel)}', {days:1})">Defer 1d</button>
+    <button class="tdrawer-btn" onclick="_taskAction('defer_task', '${esc(pid)}', '${esc(safeLabel)}', {days:7})">Defer 1w</button>
+    <button class="tdrawer-btn" onclick="_taskAction('cancel_task', '${esc(pid)}', '${esc(safeLabel)}')">Cancel</button>
+    ${notionUrl ? `<button class="tdrawer-btn" onclick="window.open('${esc(notionUrl)}','_blank')">Open in Notion</button>` : ''}
+  </div>`;
+
+  detEl.innerHTML = actionBar + (notes ? ('<div class="tdrawer-notes">'+esc(notes)+'</div>') : '<div class="tdrawer-notes" style="opacity:0.4">No notes yet.</div>');
+
+  const ov = document.getElementById('drawer-overlay');
+  const dr = document.getElementById('detail-drawer');
+  if(ov) ov.classList.add('open');
+  if(dr) dr.classList.add('open');
+}
+
+async function _taskAction(action, pageId, label, extra){
+  if(!pageId){ if(window.showToast) showToast('No task id'); return; }
+  try {
+    const body = Object.assign({action, page_id: pageId, label}, extra || {});
+    const r = await postSync(body);
+    if(r && (r.success || r.ok)){
+      if(window.showToast) showToast(
+        action === 'complete_task' ? '✓ Marked done' :
+        action === 'defer_task' ? ('→ Deferred' + (extra && extra.days ? ' +' + extra.days + 'd' : '')) :
+        action === 'cancel_task' ? 'Cancelled' : 'Updated'
+      );
+      // Close drawer
+      const ov = document.getElementById('drawer-overlay');
+      const dr = document.getElementById('detail-drawer');
+      if(ov) ov.classList.remove('open');
+      if(dr) dr.classList.remove('open');
+      // Refresh live data so the task disappears/moves on the dashboard
+      try { if(typeof _fetchTasks === 'function') _fetchTasks(); } catch(_){}
+      try { if(typeof _fetchCritical === 'function') _fetchCritical(); } catch(_){}
+      try { if(typeof _fetchCopilotBrief === 'function') _fetchCopilotBrief(true); } catch(_){}
+    } else {
+      if(window.showToast) showToast('× ' + (r && r.error ? r.error : 'Failed'));
+    }
+  } catch(e){
+    if(window.showToast) showToast('× ' + String(e).slice(0,80));
+  }
+}
 
 // ── Live wiring (Bite 2): Tasks poll ────────────────────────────────────
 // 90s cadence. Diffs task IDs vs current DD.tasks, animates new rows in.

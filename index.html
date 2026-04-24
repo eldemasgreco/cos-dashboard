@@ -4656,11 +4656,13 @@ function openSignalDrawer(sig){
   const src = String(s.source || '').toLowerCase();
   const isWA = src === 'whatsapp';
   const isGmail = src === 'gmail';
+  const isM365 = src === 'm365';
+  const isEmail = isGmail || isM365;
   const isReminder = src === 'reminder' || s.kind === 'reminder';
 
   titleEl.textContent = s.title || s.sender || '—';
   const meta = [];
-  const srcLabel = isWA ? 'WhatsApp' : isGmail ? 'Gmail' : isReminder ? 'Reminder' : (s.source || 'signal');
+  const srcLabel = isWA ? 'WhatsApp' : isGmail ? 'Gmail' : isM365 ? ('Outlook ' + (s.m365_account || '').replace(/^\w/,c=>c.toUpperCase())) : isReminder ? 'Reminder' : (s.source || 'signal');
   meta.push('<span class="tdrawer-chip">' + esc(srcLabel) + '</span>');
   if(s.sender) meta.push('<span class="tdrawer-chip">' + esc(s.sender) + '</span>');
   if(s.reason) meta.push('<span class="tdrawer-chip">' + esc(String(s.reason).replace(/^kw:/, '')) + '</span>');
@@ -4687,14 +4689,36 @@ function openSignalDrawer(sig){
       '</div>' +
       '<div id="sig-draft-hint" style="font-size:10px; color:var(--text-3); margin-top:6px;">Elly can draft a reply in your voice using shared memory.</div>' +
     '</div>';
-  } else if(isGmail){
-    composer = '<div class="tdrawer-actions" style="margin-top:12px;">' +
-      (s.link ? '<button class="tdrawer-btn" onclick="window.open(\'' + esc(s.link) + '\',\'_blank\')">Open in Gmail</button>' : '') +
-      '<button class="tdrawer-btn" onclick="if(typeof toggleElly===\'function\'){toggleElly(); const i=document.getElementById(\'elly-input\'); if(i){i.value=\'Draft a reply to this: \' + ' + JSON.stringify(String(s.body || s.title || '').slice(0, 200)) + '; if(typeof ellySend===\'function\') setTimeout(ellySend, 50);}}">Ask Elly to draft</button>' +
+  } else if(isEmail){
+    // Parse sender email out of "Name <addr@x>" or plain "addr@x"
+    const senderRaw = String(s.sender || '');
+    const emailMatch = senderRaw.match(/<([^>]+)>/) || senderRaw.match(/[\w.+-]+@[\w.-]+/);
+    const senderEmail = emailMatch ? (emailMatch[1] || emailMatch[0]) : senderRaw;
+    const accountKey = isGmail ? 'gmail' : (s.m365_account || 'personal');
+    const subj = s.title || '';
+    const replySubj = subj && !/^re:/i.test(subj) ? ('Re: ' + subj) : subj;
+    composer = '<div class="pdrawer-section" style="margin-top:12px;">' +
+      '<div class="pdrawer-label">Reply via ' + (isGmail ? 'Gmail' : 'Outlook ' + accountKey) + '</div>' +
+      '<input id="sig-reply-to" type="text" value="' + esc(senderEmail) + '" placeholder="To" style="width:100%; box-sizing:border-box; font-size:12px; padding:7px 10px; border:0.5px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); margin-bottom:6px;" />' +
+      '<input id="sig-reply-subj" type="text" value="' + esc(replySubj) + '" placeholder="Subject" style="width:100%; box-sizing:border-box; font-size:12px; padding:7px 10px; border:0.5px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); margin-bottom:6px;" />' +
+      '<textarea id="sig-reply-text" rows="4" placeholder="Type your reply…" style="width:100%; box-sizing:border-box; font-family:inherit; font-size:13px; padding:10px 12px; border:0.5px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); resize:vertical;"></textarea>' +
+      '<div class="tdrawer-actions" style="margin-top:8px;">' +
+        '<button class="tdrawer-btn tdrawer-btn-primary" onclick="_signalEmailSend(\'' + esc(accountKey) + '\')">Send</button>' +
+        '<button class="tdrawer-btn" onclick="_signalDraftReply(\'' + esc(senderEmail) + '\',\'' + esc((s.body||s.title||'').replace(/\'/g,"\\'")) + '\',\'email\')">Draft with Elly</button>' +
+        (s.link ? '<button class="tdrawer-btn" onclick="window.open(\'' + esc(s.link) + '\',\'_blank\')">Open thread</button>' : '') +
+      '</div>' +
+      '<div id="sig-draft-hint" style="font-size:10px; color:var(--text-3); margin-top:6px;">Elly drafts with your shared memory. Send routes via ' + (isGmail ? 'Gmail' : 'M365 ' + accountKey) + '.</div>' +
     '</div>';
   } else if(isReminder){
-    composer = '<div class="tdrawer-actions" style="margin-top:12px;">' +
-      '<button class="tdrawer-btn tdrawer-btn-primary" onclick="if(window.showToast)showToast(\'iCloud reminder actions coming\'); const ov=document.getElementById(\'drawer-overlay\'); const dr=document.getElementById(\'detail-drawer\'); if(ov)ov.classList.remove(\'open\'); if(dr)dr.classList.remove(\'open\');">Got it</button>' +
+    const uid = s.id || '';
+    composer = '<div class="pdrawer-section" style="margin-top:12px;">' +
+      '<div class="pdrawer-label">Reminder actions</div>' +
+      '<div class="tdrawer-actions">' +
+        '<button class="tdrawer-btn tdrawer-btn-primary" onclick="_reminderAction(\'' + esc(uid) + '\',\'complete\',\'' + esc((s.title||'').replace(/\'/g,"\\'")) + '\')">✓ Complete</button>' +
+        '<button class="tdrawer-btn" onclick="_reminderAction(\'' + esc(uid) + '\',\'snooze\',\'' + esc((s.title||'').replace(/\'/g,"\\'")) + '\',{hours:3})">Snooze 3h</button>' +
+        '<button class="tdrawer-btn" onclick="_reminderAction(\'' + esc(uid) + '\',\'snooze\',\'' + esc((s.title||'').replace(/\'/g,"\\'")) + '\',{hours:24})">Snooze 1d</button>' +
+        '<button class="tdrawer-btn" onclick="_reminderAction(\'' + esc(uid) + '\',\'snooze\',\'' + esc((s.title||'').replace(/\'/g,"\\'")) + '\',{hours:168})">Snooze 1w</button>' +
+      '</div>' +
     '</div>';
   } else {
     composer = '';
@@ -4740,6 +4764,49 @@ async function _signalDraftReply(phone, message, channel){
     if(hint) hint.textContent = reply ? 'Elly drafted — edit as needed, then Send.' : 'Elly could not draft. Try again or type manually.';
   } catch(e){
     if(hint) hint.textContent = 'Draft failed: ' + String(e).slice(0,60);
+  }
+}
+
+async function _signalEmailSend(accountKey){
+  const to = (document.getElementById('sig-reply-to') || {}).value || '';
+  const subj = (document.getElementById('sig-reply-subj') || {}).value || '';
+  const text = (document.getElementById('sig-reply-text') || {}).value || '';
+  if(!to.trim() || !text.trim()){ if(window.showToast) showToast('To + body required'); return; }
+  try {
+    const r = await postSync({action:'send_email_reply', account: accountKey, to: to.trim(), subject: subj.trim(), body: text});
+    if(r && (r.success || r.ok)){
+      if(window.showToast) showToast('✓ Email reply sent via ' + accountKey);
+      const ov = document.getElementById('drawer-overlay');
+      const dr = document.getElementById('detail-drawer');
+      if(ov) ov.classList.remove('open');
+      if(dr) dr.classList.remove('open');
+      try { if(typeof _fetchUnifiedSignals === 'function') _fetchUnifiedSignals(); } catch(_){}
+    } else {
+      if(window.showToast) showToast('× ' + (r && r.error ? r.error : 'Send failed'));
+    }
+  } catch(e){
+    if(window.showToast) showToast('× ' + String(e).slice(0,80));
+  }
+}
+
+async function _reminderAction(uid, action, label, extra){
+  if(!uid){ if(window.showToast) showToast('No reminder id'); return; }
+  const actionName = action === 'complete' ? 'complete_reminder' : 'snooze_reminder';
+  try {
+    const body = Object.assign({action: actionName, uid: uid, label: label || ''}, extra || {});
+    const r = await postSync(body);
+    if(r && (r.success || r.ok)){
+      if(window.showToast) showToast(action === 'complete' ? '✓ Reminder completed' : '→ Reminder snoozed');
+      const ov = document.getElementById('drawer-overlay');
+      const dr = document.getElementById('detail-drawer');
+      if(ov) ov.classList.remove('open');
+      if(dr) dr.classList.remove('open');
+      try { if(typeof _fetchUnifiedSignals === 'function') _fetchUnifiedSignals(); } catch(_){}
+    } else {
+      if(window.showToast) showToast('× ' + (r && r.error ? r.error : 'Action failed'));
+    }
+  } catch(e){
+    if(window.showToast) showToast('× ' + String(e).slice(0,80));
   }
 }
 

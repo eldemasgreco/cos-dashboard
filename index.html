@@ -1884,6 +1884,27 @@ header { padding: 0 18px !important; height: var(--hdr-h) !important; }
 }
 /* Session 54 Bite 4: This Week section hidden — Tasks tab + drawer replace it */
 .tw-section { display: none !important; }
+/* [session 54 Bite 8] Hide legacy center sections — Cockpit B2 locks layout to Copilot + peer row */
+.dz-pills { display: none !important; }
+#alerts-section { display: none !important; }
+.col-center > .center-section { display: none !important; }
+/* Cockpit mid peer row */
+.cockpit-mid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+.cockpit-card { background: var(--card); border: 0.5px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow: hidden; }
+.cockpit-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.cockpit-card-title { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); }
+.cockpit-card-sub { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; color: var(--text-3); }
+.cockpit-card-body { display: flex; flex-direction: column; gap: 4px; max-height: 420px; overflow-y: auto; }
+.cockpit-card-body .project-row { padding: 8px 6px; border-bottom: 0.5px solid var(--border); }
+.cockpit-card-body .project-row:last-child { border-bottom: 0; }
+.cockpit-card-body .right-row { padding: 8px 6px; border-bottom: 0.5px solid var(--border); display: flex; gap: 8px; align-items: flex-start; cursor: pointer; }
+.cockpit-card-body .right-row:last-child { border-bottom: 0; }
+.cockpit-card-body .right-row:hover { background: var(--bg); }
+@media (max-width: 900px) { .cockpit-mid { grid-template-columns: 1fr; } }
+/* Hide right-col Tasks/Projects tab buttons — they live in center now */
+.tab-btn[data-tab="tasks"], .tab-btn[data-tab="projects"] { display: none !important; }
+/* Right-col tab panels for tasks+projects also hidden (kept in DOM to avoid null-ref) */
+#tab-tasks, #tab-projects { display: none !important; }
 /* Project rows */
 .project-row { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-bottom: 0.5px solid var(--border); cursor: pointer; }
 .project-row:hover { background: var(--bg); }
@@ -2188,6 +2209,28 @@ body.dark {
       <div class="hero-expand-hint" id="hero-hint">tap to expand</div>
     </div>
     <div id="metrics-row" class="metrics-mini-row" style="display:none;"></div>
+
+    <!-- [session 54 Bite 8] Cockpit B2 mid row: Projects + Tasks peers, center column -->
+    <section class="cockpit-mid" id="cockpit-mid">
+      <div class="cockpit-card" id="cockpit-projects">
+        <div class="cockpit-card-head">
+          <span class="cockpit-card-title">Projects</span>
+          <span class="cockpit-card-sub" id="cockpit-projects-sub">—</span>
+        </div>
+        <div class="cockpit-card-body" id="cockpit-projects-body">
+          <div class="empty-state" style="font-size:11px; color:var(--text-3); padding:8px 4px;">Loading projects…</div>
+        </div>
+      </div>
+      <div class="cockpit-card" id="cockpit-tasks">
+        <div class="cockpit-card-head">
+          <span class="cockpit-card-title">Tasks</span>
+          <span class="cockpit-card-sub" id="cockpit-tasks-sub">—</span>
+        </div>
+        <div class="cockpit-card-body" id="cockpit-tasks-body">
+          <div class="empty-state" style="font-size:11px; color:var(--text-3); padding:8px 4px;">Loading tasks…</div>
+        </div>
+      </div>
+    </section>
 
     <div class="tw-section" id="tw-section">
       <div class="tw-header">
@@ -4138,11 +4181,26 @@ function renderTasks(){
       </div>
     </div>`;
   }).join('') || '<div class="empty-state">No tasks</div>';
-  // [session 54] 2-way task drawer on click
+  // [session 54] 2-way task drawer on click (right-col tab, hidden in Bite 8)
   document.querySelectorAll('#tasks-body .right-row').forEach(el => el.addEventListener('click', () => {
     const x = window.__TASKS[el.dataset.k]; if(!x) return;
     if(typeof openTaskDrawer === 'function') openTaskDrawer(x);
   }));
+  // [session 54 Bite 8] mirror into center peer card
+  const midT = document.getElementById('cockpit-tasks-body');
+  if(midT){
+    midT.innerHTML = $('tasks-body').innerHTML;
+    midT.querySelectorAll('.right-row').forEach(el => el.addEventListener('click', () => {
+      const x = window.__TASKS[el.dataset.k]; if(!x) return;
+      if(typeof openTaskDrawer === 'function') openTaskDrawer(x);
+    }));
+  }
+  const subT = document.getElementById('cockpit-tasks-sub');
+  if(subT){
+    const n = (DD.tasks || []).length;
+    const overdue = (DD.tasks || []).filter(x => x.overdue || x.chip_class === 'blocked').length;
+    subT.textContent = overdue ? (overdue + ' overdue · ' + n + ' total') : (n + ' total');
+  }
   const badge=$('tasks-badge');
   if(badge){
     const n=(DD.tasks||[]).filter(x=>x.overdue||x.chip_class==='blocked').length;
@@ -4644,6 +4702,20 @@ function renderProjects(){
     const p = window.__PROJECTS[el.dataset.k];
     if(p) openProjectDrawer(p);
   }));
+  // [session 54 Bite 8] mirror into center peer card
+  const mid = document.getElementById('cockpit-projects-body');
+  if(mid){
+    mid.innerHTML = host.innerHTML;
+    mid.querySelectorAll('.project-row').forEach(el => el.addEventListener('click', () => {
+      const p = window.__PROJECTS[el.dataset.k];
+      if(p) openProjectDrawer(p);
+    }));
+  }
+  const sub = document.getElementById('cockpit-projects-sub');
+  if(sub){
+    const active = projects.filter(p => (p.status || '') !== 'Done' && (p.status || '') !== 'Parked').length;
+    sub.textContent = active + ' active';
+  }
 }
 
 function openProjectDrawer(project){

@@ -1833,6 +1833,18 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 .source-health-dot.warn { background: #EF9F27; }
 .source-health-dot.err { background: #E24B4A; cursor: help; }
 .source-health-dot.stale { background: #B4B2A9; }
+/* [Bite 14] Schedule rail — explicit scroll + taller default so events don't get clipped */
+#tab-schedule { max-height: none !important; }
+#schedule-body { max-height: calc(100vh - 360px); overflow-y: auto; padding-right: 4px; }
+.col-right .tab-panels-area { max-height: none; overflow: visible; }
+.sched-row { padding: 10px 4px; }
+.sched-row-title { font-size: 13.5px; -webkit-line-clamp: unset; line-clamp: unset; display: block; white-space: normal; }
+.sched-row-time { font-size: 11.5px; font-weight: 500; width: 46px; }
+.sched-day-hdr { padding: 14px 4px 6px; font-size: 10.5px; }
+.sched-next-banner { padding: 12px 14px; }
+.sched-next-title { font-size: 16px; line-height: 1.25; }
+/* view-label badge shows current view + count */
+.sched-view-label { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: baseline; }
 /* [session 54 Bite 3] Task drawer action bar + meta */
 .tdrawer-chip { display: inline-block; background: var(--bg); border: 0.5px solid var(--border); color: var(--text-2); font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-right: 4px; }
 .tdrawer-ctx { margin-top: 10px; font-size: 13px; color: var(--text-2); line-height: 1.5; }
@@ -3749,8 +3761,8 @@ function renderSchedule(){
   // Determine window based on view
   let windowStart, windowEnd;
   if(view === 'day'){
-    const y = _ymdKeyTZ(anchor);
-    windowStart = new Date(y + 'T00:00:00Z');
+    // [Bite 14] use local-TZ midnight so events w/ UTC start stamps bucket into today correctly
+    windowStart = new Date(anchor); windowStart.setHours(0,0,0,0);
     windowEnd = new Date(windowStart.getTime() + 864e5);
   } else if(view === 'week'){
     // Week = from anchor to +7d
@@ -3771,18 +3783,19 @@ function renderSchedule(){
   // "Next up" — first event in future, regardless of window
   const nextUp = events.find(e => e._date >= now);
   const label = document.getElementById('cal-period-label');
-  if(label){
-    if(view === 'day') label.textContent = _dayLabelTZ(anchor) + ', ' + new Intl.DateTimeFormat('en-US', {month:'long', day:'numeric', timeZone: TZ}).format(anchor);
-    else if(view === 'week'){
-      const wsd = new Intl.DateTimeFormat('en-US', {month:'short', day:'numeric', timeZone: TZ}).format(windowStart);
-      const wed = new Intl.DateTimeFormat('en-US', {month:'short', day:'numeric', timeZone: TZ}).format(new Date(windowEnd.getTime() - 864e5));
-      label.textContent = wsd + ' — ' + wed;
-    } else if(view === 'month'){
-      label.textContent = new Intl.DateTimeFormat('en-US', {month:'long', year:'numeric', timeZone: TZ}).format(anchor);
-    } else {
-      label.textContent = 'Q' + (Math.floor(anchor.getMonth()/3)+1) + ' ' + anchor.getFullYear();
-    }
+  let viewTitle = '';
+  if(view === 'day'){
+    viewTitle = _dayLabelTZ(anchor) + ', ' + new Intl.DateTimeFormat('en-US', {month:'long', day:'numeric', timeZone: TZ}).format(anchor);
+  } else if(view === 'week'){
+    const wsd = new Intl.DateTimeFormat('en-US', {month:'short', day:'numeric', timeZone: TZ}).format(windowStart);
+    const wed = new Intl.DateTimeFormat('en-US', {month:'short', day:'numeric', timeZone: TZ}).format(new Date(windowEnd.getTime() - 864e5));
+    viewTitle = 'Week of ' + wsd + ' — ' + wed;
+  } else if(view === 'month'){
+    viewTitle = new Intl.DateTimeFormat('en-US', {month:'long', year:'numeric', timeZone: TZ}).format(anchor);
+  } else {
+    viewTitle = 'Q' + (Math.floor(anchor.getMonth()/3)+1) + ' ' + anchor.getFullYear();
   }
+  if(label) label.textContent = viewTitle;
 
   const _escS = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
   const _src = e => {
@@ -3811,6 +3824,9 @@ function renderSchedule(){
 
   let html = '';
 
+  // [Bite 14] View-label badge at top so Nick can see what view is active + event count
+  html += '<div class="sched-view-label"><span>' + _escS(viewTitle) + '</span><span>' + inWindow.length + ' event' + (inWindow.length !== 1 ? 's' : '') + '</span></div>';
+
   // "Next up" banner — always visible if there's an upcoming event
   if(nextUp){
     window.__SP['next'] = nextUp;
@@ -3827,8 +3843,9 @@ function renderSchedule(){
 
   // Group by day for week/month/quarter
   if(view === 'day'){
-    if(inWindow.length === 0 && nextUp){
-      html += '<div class="sched-empty">Nothing else ' + (view === 'day' ? 'today' : 'in range') + '.</div>';
+    // [Bite 14] Always show the list of today's events. NEXT banner highlights the first future one.
+    if(inWindow.length === 0){
+      html += '<div class="sched-empty">Nothing scheduled today. ' + (nextUp ? 'Next up: ' + _escS(nextUp.title || '') : '') + '</div>';
     } else {
       html += '<div class="sched-list">' + inWindow.map((e, i) => {
         const k = 'ev::' + i; window.__SP[k] = e;

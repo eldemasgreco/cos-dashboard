@@ -1818,6 +1818,105 @@ header { padding: 0 18px !important; height: var(--hdr-h) !important; }
 }
 .tf-chip:hover { border-color: var(--text-3); color: var(--text); }
 .tf-chip.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+/* ── v4 QC pass: header layout fix + WSJ editorial polish ───────────────── */
+
+/* 1. Add signature ink-navy accent alongside sienna */
+:root {
+  --ink-navy: #1A3A5C;
+  --ink-navy-bg: rgba(26,58,92,0.06);
+  --ink-navy-mid: rgba(26,58,92,0.14);
+  --kicker-red: #B03A2E;
+}
+body.dark {
+  --ink-navy: #7C9CBF;
+  --ink-navy-bg: rgba(124,156,191,0.14);
+  --ink-navy-mid: rgba(124,156,191,0.22);
+  --kicker-red: #D06758;
+}
+
+/* 2. HEADER — fix overlap. .hdr-brand was using var(--left-w) which is now 0px. */
+.hdr-brand {
+  width: 260px !important;
+  padding: 0 16px !important;
+  gap: 10px !important;
+  border-right: 1px solid var(--border);
+}
+.hdr-wordmark { min-width: 0; }
+.hdr-logo-text {
+  font-size: 13px !important; font-weight: 700 !important;
+  color: var(--text) !important; letter-spacing: -0.2px !important;
+  white-space: nowrap;
+}
+.hdr-wordmark > div:last-child { font-size: 9px !important; color: var(--text-3) !important; white-space: nowrap; }
+.hdr-date-block { flex-shrink: 0; }
+.hdr-date { color: var(--text) !important; }
+.hdr-weekday { text-transform: uppercase; letter-spacing: 0.08em; }
+.hdr-logo-mark { background: var(--ink-navy) !important; }  /* navy mark = editorial masthead */
+
+/* 3. Pills — smaller, refined, WSJ-style */
+.hdr-status-pill { font-size: 10px !important; padding: 3px 9px !important; }
+.hdr-status-pill.critical { background: var(--red-bg); color: var(--red); border-color: transparent; }
+.hdr-status-pill.warning { background: var(--amber-bg); color: var(--amber); border-color: transparent; }
+.hdr-status-pill.ok { background: var(--ink-navy-bg); color: var(--ink-navy); border-color: transparent; }
+
+/* 4. Right-side TZ / clock — quieter */
+.tz-pill { background: var(--ink-navy-bg) !important; color: var(--ink-navy) !important; border-color: var(--ink-navy-mid) !important; font-size: 10px !important; }
+.hdr-time { font-size: 20px !important; font-weight: 300 !important; letter-spacing: -0.5px !important; }
+.hdr-tz { font-size: 8.5px !important; letter-spacing: 0.1em !important; color: var(--text-3) !important; }
+
+/* 5. WSJ polish: section labels in ink navy caps, with a thin rule */
+.sec-label, .tw-title { color: var(--ink-navy) !important; letter-spacing: 0.2em !important; font-size: 10px !important; font-weight: 700 !important; }
+.sec-hdr { border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 10px; }
+.tw-header { border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 14px !important; }
+
+/* 6. Hero eyebrow: tiny red kicker stripe before the label (WSJ-style section marker) */
+.hero-eyebrow {
+  color: var(--ink-navy) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.16em !important;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 10.5px !important;
+}
+.hero-eyebrow::before {
+  content: ''; display: inline-block;
+  width: 22px; height: 2px;
+  background: var(--kicker-red);
+  flex-shrink: 0;
+}
+
+/* 7. Hero title — bolder, more confident */
+.hero-title {
+  font-weight: 600 !important;
+  font-size: 30px !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.15 !important;
+  color: var(--text) !important;
+}
+
+/* 8. Status line — lead with a small red kicker stripe matching hero, ink-navy for green state */
+.status-line { border-radius: var(--radius-sm) !important; padding: 13px 18px !important; }
+.status-line-lbl { color: var(--ink-navy) !important; }
+.status-line.red .status-line-lbl { color: var(--red) !important; }
+.status-line.amber .status-line-lbl { color: var(--amber) !important; }
+.status-line-msg { font-size: 15.5px !important; font-weight: 500 !important; font-family: var(--font-serif) !important; color: var(--text) !important; }
+.status-line.green .status-line-dot { background: var(--ink-navy) !important; box-shadow: 0 0 0 4px var(--ink-navy-bg) !important; }
+
+/* 9. Tab active: ink navy underline + bolder text (replaces sienna for nav) */
+.tab-btn.active { border-bottom: 2px solid var(--ink-navy) !important; color: var(--ink-navy) !important; font-weight: 700 !important; background: transparent !important; }
+
+/* 10. Tasks this week — pull-quote style dot, tight rule separators */
+.tw-row-dot { width: 6px !important; height: 6px !important; }
+.tw-row { padding: 12px 4px !important; border-bottom-color: rgba(26,58,92,0.07) !important; }
+.tw-row-title { font-size: 13.5px !important; }
+.tw-row-meta { color: var(--text-3) !important; font-size: 10.5px !important; letter-spacing: 0.05em; text-transform: uppercase; }
+
+/* 11. Drawer pills — navy icon hue for consistency */
+.dz-pill { color: var(--text-2) !important; }
+.dz-pill:hover { color: var(--ink-navy) !important; border-color: var(--ink-navy-mid) !important; }
+
+/* 12. Ask Elly / FAB — keep warm sienna (warm voice) */
+.elly-fab, .fab { background: var(--green) !important; }  /* sienna */
 </style>
 </head>
 <body>

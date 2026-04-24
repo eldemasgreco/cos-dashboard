@@ -1789,6 +1789,44 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 .signals-row-head { display: flex; gap: 4px; align-items: center; margin-bottom: 3px; flex-wrap: wrap; }
 .signals-row-title { font-size: 13px; line-height: 1.35; color: var(--text); font-weight: 500; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .signals-row-meta { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+/* [Bite 11] Weekly Rollup */
+.rollup-card { background: linear-gradient(135deg, rgba(155,94,47,0.04), rgba(26,58,92,0.04)); border: 0.5px solid var(--border); border-radius: 12px; padding: 16px 18px; margin: 0 0 16px; }
+.rollup-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.rollup-eyebrow { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); }
+.rollup-headline { font-family: var(--font-serif); font-size: 17px; font-weight: 500; line-height: 1.3; margin-bottom: 12px; }
+.rollup-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px; }
+.rollup-col { background: var(--card); border-radius: 8px; padding: 10px 12px; }
+.rollup-col-label { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; }
+.rollup-col.shipped .rollup-col-label { color: #0F6E56; }
+.rollup-col.slipped .rollup-col-label { color: var(--red); }
+.rollup-col.focus .rollup-col-label { color: var(--ink-navy, #1A3A5C); }
+.rollup-item { font-size: 12px; line-height: 1.4; margin-bottom: 5px; }
+.rollup-item-sub { font-size: 10px; color: var(--text-3); font-style: italic; margin-top: 1px; }
+.rollup-note { font-family: var(--font-serif); font-style: italic; font-size: 12px; color: var(--text-2); border-top: 0.5px solid var(--border); padding-top: 10px; margin-top: 8px; }
+/* CmdK */
+.cmdk-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 10000; align-items: flex-start; justify-content: center; padding-top: 15vh; }
+.cmdk-overlay.open { display: flex; }
+.cmdk { background: var(--card); border-radius: 12px; width: min(620px, 92vw); max-height: 70vh; display: flex; flex-direction: column; box-shadow: 0 24px 80px rgba(0,0,0,0.3); }
+.cmdk input { border: none; border-bottom: 0.5px solid var(--border); padding: 16px 18px; font-size: 15px; outline: none; background: transparent; color: var(--text); border-radius: 12px 12px 0 0; }
+.cmdk-results { flex: 1; overflow-y: auto; padding: 8px 0; }
+.cmdk-item { padding: 10px 18px; font-size: 13px; cursor: pointer; display: flex; gap: 10px; align-items: center; }
+.cmdk-item:hover, .cmdk-item.selected { background: var(--bg); }
+.cmdk-item-kind { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-3); min-width: 70px; }
+.cmdk-item-title { flex: 1; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cmdk-empty { font-size: 12px; color: var(--text-3); padding: 20px; text-align: center; }
+/* Mobile */
+@media (max-width: 900px) {
+  .col-left, .col-right { display: none !important; }
+  .col-center { width: 100% !important; max-width: 100% !important; padding: 12px !important; }
+  .cockpit-mid { grid-template-columns: 1fr !important; }
+  .copilot-grid { grid-template-columns: 1fr !important; }
+  .rollup-grid { grid-template-columns: 1fr !important; }
+  .copilot-headline { font-size: 18px !important; }
+  .rollup-headline { font-size: 15px !important; }
+  .mobile-rail-toggle { display: block !important; position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background: var(--ink-navy,#1A3A5C); color: #fff; font-size: 20px; border: none; cursor: pointer; box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 9999; }
+  .col-right.mobile-open { display: block !important; position: fixed; inset: 0; background: var(--card); z-index: 9998; padding: 16px; overflow-y: auto; }
+}
+.mobile-rail-toggle { display: none; }
 /* [session 54 Bite 3] Task drawer action bar + meta */
 .tdrawer-chip { display: inline-block; background: var(--bg); border: 0.5px solid var(--border); color: var(--text-2); font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-right: 4px; }
 .tdrawer-ctx { margin-top: 10px; font-size: 13px; color: var(--text-2); line-height: 1.5; }
@@ -2250,7 +2288,21 @@ body.dark {
     </div>
     <div id="metrics-row" class="metrics-mini-row" style="display:none;"></div>
 
-    <!-- [session 54 Bite 8] Cockpit B2 mid row: Projects + Tasks peers, center column -->
+    <section class="rollup-card" id="rollup-card" style="display:none;">
+      <div class="rollup-head">
+        <span class="rollup-eyebrow">Weekly Rollup · Sonnet</span>
+        <span class="rollup-eyebrow" id="rollup-meta" style="opacity:0.7;"></span>
+      </div>
+      <div class="rollup-headline" id="rollup-headline">Loading…</div>
+      <div class="rollup-grid">
+        <div class="rollup-col shipped"><div class="rollup-col-label">Shipped · last 7d</div><div id="rollup-shipped"></div></div>
+        <div class="rollup-col slipped"><div class="rollup-col-label">Slipped</div><div id="rollup-slipped"></div></div>
+        <div class="rollup-col focus"><div class="rollup-col-label">Focus · next 7d</div><div id="rollup-focus"></div></div>
+      </div>
+      <div class="rollup-note" id="rollup-note"></div>
+    </section>
+
+        <!-- [session 54 Bite 8] Cockpit B2 mid row: Projects + Tasks peers, center column -->
     <section class="cockpit-mid" id="cockpit-mid">
       <div class="cockpit-card" id="cockpit-projects">
         <div class="cockpit-card-head">
@@ -4416,6 +4468,223 @@ async function _fetchSchedule(){
 try { _fetchSchedule(); } catch(_) {}
 setInterval(() => { try { _fetchSchedule(); } catch(_){} }, 5 * 60 * 1000);
 
+// [Bite 9 RESTORED + Bite 11] Schedule event drawer + action helpers
+function openScheduleDrawer(ev){
+  if(!ev) return;
+  const titleEl = document.getElementById('drawer-title');
+  const ctxEl = document.getElementById('drawer-context');
+  const detEl = document.getElementById('drawer-details');
+  if(!titleEl || !ctxEl || !detEl) return;
+  const esc1 = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+  const TZ = (typeof CURRENT_TZ !== 'undefined' && CURRENT_TZ) ? CURRENT_TZ : 'Europe/Madrid';
+  const d = new Date(ev.start);
+  const whenStr = isNaN(d) ? (ev.start || '') :
+    new Intl.DateTimeFormat('en-US', {weekday:'long', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', hour12:false, timeZone: TZ}).format(d);
+
+  titleEl.textContent = ev.title || 'Event';
+  const meta = [];
+  if(ev.source_raw) meta.push('<span class="tdrawer-chip">' + esc1(ev.source_raw) + '</span>');
+  if(ev.entity) meta.push('<span class="tdrawer-chip">' + esc1(ev.entity) + '</span>');
+  meta.push('<span class="tdrawer-chip">' + esc1(whenStr) + '</span>');
+  ctxEl.innerHTML = meta.join(' ');
+
+  const blob = String(ev.location || '') + ' ' + String(ev.attendees || '') + ' ' + String(ev.notion_url || '');
+  const m = blob.match(/https?:\/\/[^\s,;]*(zoom\.us|teams\.microsoft\.com|meet\.google\.com)[^\s,;]*/i);
+  const joinLink = m ? m[0] : null;
+
+  // Source key for reschedule routing
+  const raw = String(ev.source_raw || ev.source || '').toLowerCase();
+  let srcKey = '';
+  if(raw.includes('outlook afsh')) srcKey = 'afsh';
+  else if(raw.includes('outlook illume')) srcKey = 'illume';
+  else if(raw.includes('outlook personal')) srcKey = 'personal';
+  else if(raw.includes('google')) srcKey = 'google';
+  const canReschedule = !!(srcKey && ev.id);
+
+  let html = '';
+  if(ev.location){
+    html += '<div class="pdrawer-section"><div class="pdrawer-label">Location</div><div style="font-size:13px;">' + esc1(ev.location) + '</div></div>';
+  }
+  if(ev.attendees){
+    const attArr = Array.isArray(ev.attendees) ? ev.attendees : String(ev.attendees).split(',').map(x=>x.trim()).filter(Boolean);
+    html += '<div class="pdrawer-section"><div class="pdrawer-label">Attendees · ' + attArr.length + '</div>' +
+      '<div style="font-size:12px; color: var(--text-2); line-height:1.5;">' + attArr.slice(0,20).map(a => esc1(a)).join(', ') + '</div></div>';
+  }
+  const safeTitle = esc1((ev.title || '').replace(/'/g,"\\'"));
+  html += '<div class="tdrawer-actions" style="margin-top:12px;">' +
+    (joinLink ? '<button class="tdrawer-btn tdrawer-btn-primary" onclick="window.open(\'' + esc1(joinLink) + '\',\'_blank\')">Join now</button>' : '') +
+    (ev.notion_url ? '<button class="tdrawer-btn" onclick="window.open(\'' + esc1(ev.notion_url) + '\',\'_blank\')">Open source</button>' : '') +
+    '<button class="tdrawer-btn" onclick="_schedulePrepTask(\'' + safeTitle + '\',\'' + esc1(ev.entity || 'Personal') + '\')">+ Prep task</button>' +
+    '<button class="tdrawer-btn" onclick="_scheduleAskElly(\'' + safeTitle + '\')">Ask Elly</button>' +
+    (canReschedule ? '<button class="tdrawer-btn" onclick="_scheduleReschedulePrompt(\'' + esc1(srcKey) + '\',\'' + esc1(ev.id) + '\')">Reschedule</button>' : '') +
+  '</div>';
+
+  detEl.innerHTML = html;
+  const ov = document.getElementById('drawer-overlay');
+  const dr = document.getElementById('detail-drawer');
+  if(ov) ov.classList.add('open');
+  if(dr) dr.classList.add('open');
+}
+
+async function _schedulePrepTask(title, entity){
+  if(!title){ if(window.showToast) showToast('No title'); return; }
+  try {
+    const r = await postSync({action:'capture', text: 'Prep for: ' + title, entity: entity || 'Personal'});
+    if(r && (r.success || r.ok)){
+      if(window.showToast) showToast('✓ Prep task created');
+      try { if(typeof _fetchTasks === 'function') _fetchTasks(); } catch(_){}
+      try { if(typeof _fetchCopilotBrief === 'function') _fetchCopilotBrief(true); } catch(_){}
+    } else if(window.showToast){
+      showToast('× ' + (r && r.error ? r.error : 'Failed'));
+    }
+  } catch(e){ if(window.showToast) showToast('× ' + String(e).slice(0,80)); }
+}
+
+function _scheduleAskElly(title){
+  if(typeof toggleElly !== 'function') return;
+  try { toggleElly(); } catch(_){}
+  const inp = document.getElementById('elly-input');
+  if(inp){
+    inp.value = 'Tell me about the meeting: ' + title;
+    if(typeof ellySend === 'function') setTimeout(ellySend, 50);
+  }
+}
+
+async function _scheduleReschedulePrompt(source, eventId){
+  const when = prompt('New start time (ISO e.g. 2026-04-27T15:00:00 or just 15:30 for today)');
+  if(!when) return;
+  let iso = when;
+  if(/^\d{1,2}:\d{2}$/.test(when)){
+    const now = new Date();
+    now.setHours(+when.split(':')[0], +when.split(':')[1], 0, 0);
+    iso = now.toISOString();
+  }
+  try {
+    const r = await postSync({action:'reschedule_event', source: source, event_id: eventId, new_start: iso});
+    if(r && (r.success || r.ok)){
+      if(window.showToast) showToast('✓ Rescheduled');
+      const ov = document.getElementById('drawer-overlay');
+      const dr = document.getElementById('detail-drawer');
+      if(ov) ov.classList.remove('open');
+      if(dr) dr.classList.remove('open');
+      try { if(typeof _fetchSchedule === 'function') _fetchSchedule(); } catch(_){}
+    } else if(window.showToast){
+      showToast('× ' + (r && r.error ? r.error : 'Reschedule failed'));
+    }
+  } catch(e){ if(window.showToast) showToast('× ' + String(e).slice(0,80)); }
+}
+
+// [Bite 11] Weekly Rollup
+async function _fetchWeeklyRollup(force){
+  try {
+    const r = await postSync({action:'weekly_rollup', force: !!force});
+    if(!r || !r.success) return;
+    const host = document.getElementById('rollup-card');
+    if(!host) return;
+    host.style.display = 'block';
+    const esc = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+    const h = document.getElementById('rollup-headline');
+    if(h) h.textContent = r.headline || '—';
+    let t = '';
+    try { t = r.as_of ? new Date(r.as_of).toLocaleDateString('en-US', {month:'short', day:'numeric'}) : ''; } catch(_){}
+    const mEl = document.getElementById('rollup-meta');
+    if(mEl) mEl.textContent = (r.from_cache ? 'cached · ' : '') + t;
+    const fillCol = (id, items, subKey) => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      if(!items || !items.length){ el.innerHTML = '<div class="rollup-item" style="opacity:0.45">—</div>'; return; }
+      el.innerHTML = items.slice(0, 5).map(it => {
+        const sub = esc(it[subKey] || '');
+        return '<div class="rollup-item">' + esc(it.title || '') + (sub ? '<div class="rollup-item-sub">' + sub + '</div>' : '') + '</div>';
+      }).join('');
+    };
+    fillCol('rollup-shipped', r.shipped || [], 'entity');
+    fillCol('rollup-slipped', r.slipped || [], 'why');
+    fillCol('rollup-focus', r.focus || [], 'so_what');
+    const nn = document.getElementById('rollup-note');
+    if(nn) nn.textContent = r.note || '';
+  } catch(e){ console.warn('rollup fetch failed', e); }
+}
+try { _fetchWeeklyRollup(false); } catch(_){}
+setInterval(() => { try { _fetchWeeklyRollup(false); } catch(_){} }, 60 * 60 * 1000);
+
+// [Bite 11] Command palette
+function _openCmdK(){
+  const ov = document.getElementById('cmdk-overlay');
+  if(!ov) return;
+  ov.classList.add('open');
+  const inp = document.getElementById('cmdk-input');
+  if(inp){ inp.value = ''; setTimeout(() => inp.focus(), 50); _runCmdK(); }
+}
+function _closeCmdK(){
+  const ov = document.getElementById('cmdk-overlay');
+  if(ov) ov.classList.remove('open');
+}
+function _cmdkIndex(){
+  const out = [];
+  (DD.tasks || []).forEach(t => out.push({
+    kind: 'task', title: t.title || t.task || '', entity: t.entity || '',
+    onSelect: () => { if(typeof openTaskDrawer === 'function') openTaskDrawer(t); }
+  }));
+  (DD.projects || []).forEach(p => out.push({
+    kind: 'project', title: p.title || '', entity: p.entity || '',
+    onSelect: () => { if(typeof openProjectDrawer === 'function') openProjectDrawer(p); }
+  }));
+  (DD.schedule || []).forEach(e => out.push({
+    kind: 'event', title: e.title || '', entity: e.entity || '',
+    onSelect: () => { if(typeof openScheduleDrawer === 'function') openScheduleDrawer(e); }
+  }));
+  return out;
+}
+let _CMDK_SELECTED = 0;
+function _runCmdK(){
+  const q = (document.getElementById('cmdk-input') || {}).value || '';
+  const results = document.getElementById('cmdk-results');
+  if(!results) return;
+  const idx = _cmdkIndex();
+  const qLower = q.toLowerCase().trim();
+  const matches = qLower ? idx.filter(x => (x.title + ' ' + x.entity).toLowerCase().includes(qLower)) : idx.slice(0, 40);
+  window.__CMDK_MATCHES = matches;
+  _CMDK_SELECTED = 0;
+  const esc = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+  if(!matches.length){ results.innerHTML = '<div class="cmdk-empty">No matches.</div>'; return; }
+  results.innerHTML = matches.slice(0, 50).map((m, i) =>
+    '<div class="cmdk-item' + (i === 0 ? ' selected' : '') + '" data-i="' + i + '"><span class="cmdk-item-kind">' + esc(m.kind) + '</span><span class="cmdk-item-title">' + esc(m.title) + '</span>' + (m.entity ? '<span class="cmdk-item-kind">' + esc(m.entity) + '</span>' : '') + '</div>'
+  ).join('');
+  results.querySelectorAll('.cmdk-item').forEach(el => el.addEventListener('click', () => {
+    const i = parseInt(el.dataset.i, 10);
+    const m = matches[i];
+    if(m && m.onSelect){ _closeCmdK(); m.onSelect(); }
+  }));
+}
+function _cmdKeys(ev){
+  const matches = window.__CMDK_MATCHES || [];
+  if(ev.key === 'Escape'){ ev.preventDefault(); _closeCmdK(); return; }
+  if(ev.key === 'Enter'){
+    ev.preventDefault();
+    const m = matches[_CMDK_SELECTED];
+    if(m && m.onSelect){ _closeCmdK(); m.onSelect(); }
+    return;
+  }
+  if(ev.key === 'ArrowDown' || ev.key === 'ArrowUp'){
+    ev.preventDefault();
+    const n = Math.min(matches.length, 50);
+    if(!n) return;
+    _CMDK_SELECTED = (ev.key === 'ArrowDown' ? _CMDK_SELECTED + 1 : _CMDK_SELECTED - 1 + n) % n;
+    document.querySelectorAll('#cmdk-results .cmdk-item').forEach((el, i) => {
+      el.classList.toggle('selected', i === _CMDK_SELECTED);
+      if(i === _CMDK_SELECTED) el.scrollIntoView({block:'nearest'});
+    });
+  }
+}
+document.addEventListener('keydown', (ev) => {
+  if((ev.metaKey || ev.ctrlKey) && ev.key.toLowerCase() === 'k'){
+    ev.preventDefault();
+    _openCmdK();
+  }
+});
+
+
 // [session 54] AI Copilot hero — Sonnet-powered decision set
 async function _fetchCopilotBrief(force){
   try {
@@ -5305,5 +5574,12 @@ restoreTab();
 // Expose for debugging
 window.COS = { renderAll, postSync, cosAction, DD };
 </script>
+<div class="cmdk-overlay" id="cmdk-overlay" onclick="if(event.target===this)_closeCmdK()">
+  <div class="cmdk">
+    <input type="text" id="cmdk-input" placeholder="Search tasks, projects, meetings…" oninput="_runCmdK()" onkeydown="_cmdKeys(event)" />
+    <div class="cmdk-results" id="cmdk-results"><div class="cmdk-empty">Start typing to search across everything.</div></div>
+  </div>
+</div>
+<button class="mobile-rail-toggle" id="mobile-rail-toggle" onclick="document.querySelector('.col-right').classList.toggle('mobile-open')" title="Schedule + Signals">☰</button>
 </body>
 </html>

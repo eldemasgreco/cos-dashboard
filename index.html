@@ -2347,6 +2347,14 @@ window.DASHBOARD_DATA = {"generated_at": "2026-04-24T07:55:36.470576+00:00", "gr
 </script>
 <script>
 const DD = window.DASHBOARD_DATA || {};
+// [session 53] S21 embeds DD.schedule as a dict {today, day, week, ...} with items that
+// lack `start` ISO datetime — incompatible with the Fantastical renderer which expects
+// an array of {start, title, entity, source, ...}. Coerce to [] on init so the direct-
+// aggregator /schedule_refresh call populates cleanly a moment later.
+if(DD.schedule && !Array.isArray(DD.schedule)){
+  console.log('[init] discarding S21 schedule dict — direct aggregator will populate');
+  DD.schedule = [];
+}
 const CFG = DD.config || {};
 const SYNC_URL = DD.sync_url || '';
 const SYNC_KEY = DD.sync_key || '';

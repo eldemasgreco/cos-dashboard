@@ -3014,126 +3014,152 @@ function renderSchedule(){
   const host = document.getElementById('schedule-body'); if(!host) return;
   const label = document.getElementById('cal-period-label');
   const badge = document.getElementById('sched-badge');
-  const anchor = CAL_ANCHOR;
+  const TZ = (typeof CURRENT_TZ !== 'undefined' && CURRENT_TZ) ? CURRENT_TZ : 'Europe/Madrid';
   window.__SP = {};
   let totalMatched = 0;
 
+  // TZ-aware helpers — all date math runs in CURRENT_TZ so Madrid events land on Madrid days regardless of browser TZ.
+  function _partsInTZ(d){
+    try {
+      const f = new Intl.DateTimeFormat('en-US', {year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hour12:false, weekday:'short', timeZone: TZ});
+      const ps = {}; f.formatToParts(d).forEach(p => ps[p.type] = p.value);
+      return { y: +ps.year, mo: +ps.month, d: +ps.day, h: +ps.hour, mi: +ps.minute, wd: ps.weekday };
+    } catch(e) { return {y:d.getFullYear(), mo:d.getMonth()+1, d:d.getDate(), h:d.getHours(), mi:d.getMinutes(), wd:'?'}; }
+  }
+  function _ymdKey(p){ return p.y + '-' + String(p.mo).padStart(2,'0') + '-' + String(p.d).padStart(2,'0'); }
+  function _hmStr(p){ return String(p.h).padStart(2,'0') + ':' + String(p.mi).padStart(2,'0'); }
+  // "TZ-local midnight of today" as a Date we can increment by days
+  function _tzMidnightToday(){
+    const p = _partsInTZ(new Date());
+    return new Date(Date.UTC(p.y, p.mo-1, p.d));  // treat as UTC midnight marker
+  }
+  function _addDays(d, n){ const x = new Date(d); x.setUTCDate(x.getUTCDate() + n); return x; }
+  function _weekday0Mon(wd){ return ({Mon:0,Tue:1,Wed:2,Thu:3,Fri:4,Sat:5,Sun:6})[wd] ?? 0; }
+
+  function _eventsFiltered(){
+    return (DD.schedule || []).filter(e => {
+      if(CAL_ENTITY && _calEntityOf(e) !== CAL_ENTITY) return false;
+      return e.start && !isNaN(new Date(e.start).getTime());
+    });
+  }
+  function _eventsOnDay(ymdKey){
+    return _eventsFiltered().filter(e => _ymdKey(_partsInTZ(new Date(e.start))) === ymdKey);
+  }
+  function _eventsInRangeYmd(startYmd, endYmd){
+    return _eventsFiltered().filter(e => { const k = _ymdKey(_partsInTZ(new Date(e.start))); return k >= startYmd && k < endYmd; });
+  }
+
+  const anchor = CAL_ANCHOR;
+  const anchorParts = _partsInTZ(anchor);
+  const todayParts = _partsInTZ(new Date());
+  const todayKey = _ymdKey(todayParts);
+
+  const mkCell = (p, e) => ({
+    title: String(e.title || '\u2014'),
+    src: e.source_raw || e.source || 'other',
+    src_chip: e.source || 'other',
+    ent: _calEntityOf(e),
+    t: _hmStr(p),
+    detail: [e.location, e.attendees, e.detail || e.summary || ''].filter(Boolean).join('\n')
+  });
+
   if(CAL_VIEW === 'day'){
-    const d0 = new Date(anchor); d0.setHours(0,0,0,0);
-    const d1 = new Date(d0); d1.setDate(d1.getDate()+1);
-    const events = _calEventsInRange(d0, d1).sort((a,b)=> new Date(a.start) - new Date(b.start));
+    const dayKey = _ymdKey(anchorParts);
+    const events = _eventsOnDay(dayKey).sort((a,b) => new Date(a.start) - new Date(b.start));
     totalMatched = events.length;
-    if(label) label.textContent = d0.toLocaleDateString('en-US', {weekday:'long', month:'short', day:'numeric'});
-    if(!events.length){ host.innerHTML = '<div class="cal-empty">No events.</div>'; }
-    else {
-      host.innerHTML = '<div class="cal-day-view">' + events.map((e, i) => {
-        const k = 'd::' + i; const c = _calDateCell(new Date(e.start), e); window.__SP[k] = c;
-        return '<div class="cal-event-row" data-k="' + k + '">' +
-          '<div class="cal-event-time">' + c.t + '</div>' +
-          '<div class="cal-event-body">' +
-            '<div class="cal-event-title">' + c.title + '</div>' +
-            (e.location ? '<div class="cal-event-meta">' + String(e.location) + '</div>' : '') +
-          '</div>' +
-          '<span class="cal-event-tag ' + c.src_chip + '">' + c.ent + '</span>' +
-        '</div>';
-      }).join('') + '</div>';
+    if(label){
+      const fmt = new Intl.DateTimeFormat('en-US', {weekday:'long', month:'short', day:'numeric', timeZone: TZ});
+      label.textContent = fmt.format(anchor);
     }
+    host.innerHTML = events.length
+      ? '<div class="cal-day-view">' + events.map((e, i) => {
+          const p = _partsInTZ(new Date(e.start)); const c = mkCell(p, e); const k = 'd::' + i; window.__SP[k] = c;
+          return '<div class="cal-event-row" data-k="' + k + '"><div class="cal-event-time">' + c.t + '</div><div class="cal-event-body"><div class="cal-event-title">' + c.title + '</div>' + (e.location ? '<div class="cal-event-meta">' + String(e.location) + '</div>' : '') + '</div><span class="cal-event-tag ' + c.src_chip + '">' + c.ent + '</span></div>';
+        }).join('') + '</div>'
+      : '<div class="cal-empty">No events.</div>';
   }
   else if(CAL_VIEW === 'week'){
-    const d0 = new Date(anchor); d0.setHours(0,0,0,0);
-    d0.setDate(d0.getDate() - ((d0.getDay()+6)%7));  // monday
-    const d1 = new Date(d0); d1.setDate(d1.getDate()+7);
-    if(label) label.textContent = 'Week of ' + d0.toLocaleDateString('en-US', {month:'short', day:'numeric'});
-    const events = _calEventsInRange(d0, d1);
-    totalMatched = events.length;
-    const byDay = [[],[],[],[],[],[],[]];
-    events.forEach(e => { const d = new Date(e.start); const idx = Math.floor((d - d0) / 86400000); if(idx>=0&&idx<7) byDay[idx].push(e); });
-    const today = new Date(); today.setHours(0,0,0,0);
+    // Find Monday of anchor's week in TZ
+    const dow = _weekday0Mon(anchorParts.wd);  // 0=Mon..6=Sun
+    const weekStart = new Date(Date.UTC(anchorParts.y, anchorParts.mo-1, anchorParts.d));
+    weekStart.setUTCDate(weekStart.getUTCDate() - dow);
+    if(label){
+      const fmt = new Intl.DateTimeFormat('en-US', {month:'short', day:'numeric', timeZone: 'UTC'});
+      label.textContent = 'Week of ' + fmt.format(weekStart);
+    }
     const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
     const cols = days.map((name, i) => {
-      const dcur = new Date(d0); dcur.setDate(dcur.getDate()+i);
-      const isToday = dcur.getTime() === today.getTime();
-      const evs = byDay[i].sort((a,b)=>new Date(a.start)-new Date(b.start));
+      const dcur = _addDays(weekStart, i);
+      const dcurYmd = dcur.toISOString().slice(0, 10);
+      const dcurNum = dcur.getUTCDate();
+      const isToday = dcurYmd === todayKey;
+      const evs = _eventsOnDay(dcurYmd).sort((a,b) => new Date(a.start) - new Date(b.start));
       const items = evs.length ? evs.map((e, j) => {
-        const k = 'w::' + i + '::' + j; const c = _calDateCell(new Date(e.start), e); window.__SP[k] = c;
-        return '<div class="cal-week-event src-' + c.src_chip + '" data-k="' + k + '">' +
-          '<span class="cal-week-event-time">' + c.t + '</span> ' +
-          '<span class="cal-week-event-title">' + c.title.slice(0, 32) + '</span>' +
-        '</div>';
-      }).join('') : '<div class="cal-week-empty">—</div>';
-      return '<div class="cal-week-col' + (isToday?' today':'') + '">' +
-        '<div class="cal-week-col-hdr"><span class="cal-dname">' + name + '</span><span class="cal-dnum">' + dcur.getDate() + '</span></div>' +
-        items +
-      '</div>';
+          const p = _partsInTZ(new Date(e.start)); const c = mkCell(p, e); const k = 'w::' + i + '::' + j; window.__SP[k] = c;
+          return '<div class="cal-week-event src-' + c.src_chip + '" data-k="' + k + '"><span class="cal-week-event-time">' + c.t + '</span> <span class="cal-week-event-title">' + c.title.slice(0, 32) + '</span></div>';
+        }).join('') : '<div class="cal-week-empty">\u2014</div>';
+      return '<div class="cal-week-col' + (isToday?' today':'') + '"><div class="cal-week-col-hdr"><span class="cal-dname">' + name + '</span><span class="cal-dnum">' + dcurNum + '</span></div>' + items + '</div>';
     }).join('');
+    totalMatched = _eventsInRangeYmd(weekStart.toISOString().slice(0,10), _addDays(weekStart,7).toISOString().slice(0,10)).length;
     host.innerHTML = '<div class="cal-week-view">' + cols + '</div>';
   }
   else if(CAL_VIEW === 'month'){
-    const first = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
-    if(label) label.textContent = first.toLocaleDateString('en-US', {month:'long', year:'numeric'});
-    const start = new Date(first); start.setDate(1 - ((first.getDay()+6)%7));
-    const end = new Date(start); end.setDate(start.getDate() + 42);
-    const events = _calEventsInRange(start, end);
-    totalMatched = events.length;
-    const byKey = {};
-    events.forEach(e => { const d = new Date(e.start); const k = d.toDateString(); (byKey[k] = byKey[k] || []).push(e); });
-    const today = new Date(); today.setHours(0,0,0,0);
+    const firstOfMonth = new Date(Date.UTC(anchorParts.y, anchorParts.mo-1, 1));
+    if(label){
+      const fmt = new Intl.DateTimeFormat('en-US', {month:'long', year:'numeric', timeZone: 'UTC'});
+      label.textContent = fmt.format(firstOfMonth);
+    }
+    // Monday before/equal firstOfMonth
+    const fomWd = _weekday0Mon(_partsInTZ(firstOfMonth).wd);
+    const start = _addDays(firstOfMonth, -fomWd);
     const hdrs = ['M','T','W','T','F','S','S'].map(s => '<div class="cal-month-col-hdr">' + s + '</div>').join('');
     const cells = [];
     for(let i = 0; i < 42; i++){
-      const dcur = new Date(start); dcur.setDate(start.getDate() + i);
-      const inMonth = dcur.getMonth() === anchor.getMonth();
-      const isToday = dcur.toDateString() === today.toDateString();
-      const evs = byKey[dcur.toDateString()] || [];
+      const dcur = _addDays(start, i);
+      const dcurYmd = dcur.toISOString().slice(0, 10);
+      const inMonth = dcur.getUTCMonth() === (anchorParts.mo - 1);
+      const isToday = dcurYmd === todayKey;
+      const evs = _eventsOnDay(dcurYmd);
       const chips = evs.slice(0, 3).map((e, j) => {
-        const k = 'm::' + i + '::' + j; const c = _calDateCell(new Date(e.start), e); window.__SP[k] = c;
-        return '<div class="cal-month-chip src-' + c.src_chip + '" data-k="' + k + '" title="' + c.title.replace(/"/g,'&quot;') + '">' + c.title.slice(0, 14) + '</div>';
-      }).join('');
+          const p = _partsInTZ(new Date(e.start)); const c = mkCell(p, e); const k = 'm::' + i + '::' + j; window.__SP[k] = c;
+          return '<div class="cal-month-chip src-' + c.src_chip + '" data-k="' + k + '" title="' + c.title.replace(/"/g,'&quot;') + '">' + c.title.slice(0, 14) + '</div>';
+        }).join('');
       const more = evs.length > 3 ? '<span class="cal-month-more">+' + (evs.length-3) + '</span>' : '';
-      cells.push('<div class="cal-month-cell' + (inMonth?'':' out') + (isToday?' today':'') + '">' +
-        '<span class="cal-month-num">' + dcur.getDate() + '</span>' + chips + more + '</div>');
+      cells.push('<div class="cal-month-cell' + (inMonth?'':' out') + (isToday?' today':'') + '"><span class="cal-month-num">' + dcur.getUTCDate() + '</span>' + chips + more + '</div>');
     }
+    totalMatched = _eventsInRangeYmd(start.toISOString().slice(0,10), _addDays(start,42).toISOString().slice(0,10)).length;
     host.innerHTML = '<div class="cal-month-view"><div class="cal-month-hdrs">' + hdrs + '</div><div class="cal-month-grid">' + cells.join('') + '</div></div>';
   }
   else if(CAL_VIEW === 'quarter'){
-    const qStart = new Date(anchor.getFullYear(), Math.floor(anchor.getMonth()/3)*3, 1);
-    const qNum = Math.floor(anchor.getMonth()/3) + 1;
-    if(label) label.textContent = 'Q' + qNum + ' ' + anchor.getFullYear();
-    const qEnd = new Date(qStart); qEnd.setMonth(qStart.getMonth()+3);
-    const allEvents = _calEventsInRange(qStart, qEnd);
-    totalMatched = allEvents.length;
+    const qMo = Math.floor((anchorParts.mo - 1) / 3) * 3;  // 0/3/6/9
+    const qStart = new Date(Date.UTC(anchorParts.y, qMo, 1));
+    const qNum = (qMo / 3) + 1;
+    if(label) label.textContent = 'Q' + qNum + ' ' + anchorParts.y;
     const cols = [0,1,2].map(m => {
-      const monthDate = new Date(qStart); monthDate.setMonth(qStart.getMonth()+m);
-      const first = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
-      const start = new Date(first); start.setDate(1 - ((first.getDay()+6)%7));
-      const monthEvents = _calEventsInRange(start, new Date(start.getTime()+42*86400000));
-      const byKey = {};
-      monthEvents.forEach(e => { const d = new Date(e.start); const k = d.toDateString(); (byKey[k] = byKey[k] || []).push(e); });
-      const today = new Date(); today.setHours(0,0,0,0);
+      const monthDate = new Date(Date.UTC(anchorParts.y, qMo + m, 1));
+      const fomWd = _weekday0Mon(_partsInTZ(monthDate).wd);
+      const start = _addDays(monthDate, -fomWd);
       const cells = [];
       for(let i = 0; i < 42; i++){
-        const dcur = new Date(start); dcur.setDate(start.getDate() + i);
-        const inMonth = dcur.getMonth() === monthDate.getMonth();
-        const isToday = dcur.toDateString() === today.toDateString();
-        const n = (byKey[dcur.toDateString()] || []).length;
-        cells.push('<div class="cal-q-cell' + (inMonth?'':' out') + (isToday?' today':'') + (n>0?' has':'') + '" title="' + n + ' event' + (n===1?'':'s') + '">' +
-          '<span>' + dcur.getDate() + '</span>' + (n>0 ? '<span class="cal-q-count">' + n + '</span>' : '') + '</div>');
+        const dcur = _addDays(start, i);
+        const dcurYmd = dcur.toISOString().slice(0,10);
+        const inMonth = dcur.getUTCMonth() === monthDate.getUTCMonth();
+        const isToday = dcurYmd === todayKey;
+        const n = _eventsOnDay(dcurYmd).length;
+        cells.push('<div class="cal-q-cell' + (inMonth?'':' out') + (isToday?' today':'') + (n>0?' has':'') + '" title="' + n + ' event' + (n===1?'':'s') + '"><span>' + dcur.getUTCDate() + '</span>' + (n>0 ? '<span class="cal-q-count">' + n + '</span>' : '') + '</div>');
       }
-      return '<div class="cal-q-month">' +
-        '<div class="cal-q-month-hdr">' + monthDate.toLocaleDateString('en-US',{month:'short'}) + '</div>' +
-        '<div class="cal-q-grid">' + cells.join('') + '</div>' +
-      '</div>';
+      const monthLabel = new Intl.DateTimeFormat('en-US',{month:'short', timeZone:'UTC'}).format(monthDate);
+      return '<div class="cal-q-month"><div class="cal-q-month-hdr">' + monthLabel + '</div><div class="cal-q-grid">' + cells.join('') + '</div></div>';
     }).join('');
+    totalMatched = _eventsInRangeYmd(qStart.toISOString().slice(0,10), _addDays(qStart, 92).toISOString().slice(0,10)).length;
     host.innerHTML = '<div class="cal-quarter-view">' + cols + '</div>';
   }
 
-  // Wire click handlers on any rendered event/chip
   host.querySelectorAll('[data-k]').forEach(el => el.addEventListener('click', (ev) => {
     ev.stopPropagation();
     const p = window.__SP[el.dataset.k];
     if(p && window.openDrawer) openDrawer(p.title, p.src, p.t, p.detail);
   }));
-
   if(badge){ badge.textContent = totalMatched; badge.style.display = totalMatched ? 'inline-block' : 'none'; }
 }
 

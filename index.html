@@ -3735,6 +3735,13 @@ function renderSchedule(){
     if(raw.includes('google')) return {k:'google', label:'Google'};
     if(raw.includes('icloud')) return {k:'icloud', label:'iCloud'};
     if(raw.includes('tripit')) return {k:'tripit', label:'TripIt'};
+    // [session 54 Bite 10] fallback to entity when source_raw is generic 'Calendar'/'Email'
+    const sk = String(e.source || '').toLowerCase();
+    const ent = String(e.entity || '').toLowerCase();
+    if(sk === 'afsh' || ent.includes('afsh')) return {k:'afsh', label:'AFSH'};
+    if(sk === 'illume' || ent.includes('illume')) return {k:'illume', label:'Illume'};
+    if(sk === 'spade' || ent.includes('spade')) return {k:'afsh', label:'Spade'};
+    if(sk === 'icloud' || ent.includes('personal')) return {k:'icloud', label:'iCloud'};
     return {k:'other', label: (e.source_raw || e.source || 'cal').slice(0,10)};
   };
   const _attCount = e => {
@@ -3876,12 +3883,7 @@ function renderTopPriority(){
   pill.innerHTML = `<span class="tpp-dot"></span><span class="tpp-label">${tier==='amber'?'Watch':'Top'}</span><span class="tpp-title">${esc(_stripMd(found.title || found.subject || ''))}</span>`;
   pill._payload = found;
 }
-function openTopPriority(){
-  const pill = $('top-priority-pill');
-  const p = pill && pill._payload; if(!p) return;
-  openDrawer(_stripMd(p.title || ''), p.source || p.entity || '', p.context || p.meta_line || '', p.detail || p.summary || '');
-}
-
+// [session 54 Bite 10] legacy function openTopPriority() removed — duplicate of newer definition
 function renderSignalTiles(){
   const host = $('signal-tiles');
   if(!host) return;
@@ -4290,36 +4292,7 @@ function renderTasks(){
   }
 }
 
-function renderProjects(){
-  const pr = DD.projects || [];
-  // mock-v6-refined layout: compact right-row per project with a circular progress arc
-  // in the end slot. Arc stroke-dasharray is 2π·r = 2π·14 ≈ 87.96; offset = circumference × (1 − pct/100).
-  const CIRC = 87.96;
-  $('projects-body').innerHTML = pr.map(p=>{
-    const pct = Math.max(0, Math.min(100, p.progress||0));
-    const offset = (CIRC * (1 - pct/100)).toFixed(2);
-    const h = p.health || 'green';
-    const avColor = p.avatar_color || avatarClassFor(p.title||p.code||'');
-    const badge = p.code || initials(p.title);
-    return `<div class="right-row" onclick="openDrawer('${esc(p.title||'')}', '${esc(p.owner||'')}', '${esc(p.context||'')}', '${esc(p.detail||'')}')">
-      <div class="avatar ${avColor}">${esc(badge)}</div>
-      <div class="right-row-body">
-        <div class="right-row-title">${esc(p.title||'')}</div>
-        <div class="right-row-sub">${esc(p.meta||p.sub||'')}</div>
-      </div>
-      <div class="right-row-end">
-        <div class="arc-wrap" title="${pct}% complete">
-          <svg width="36" height="36" viewBox="0 0 36 36">
-            <circle class="arc-bg" cx="18" cy="18" r="14"/>
-            <circle class="arc-fill ${h}" cx="18" cy="18" r="14" stroke-dasharray="${CIRC}" stroke-dashoffset="${offset}"/>
-          </svg>
-          <div class="arc-label">${pct}%</div>
-        </div>
-      </div>
-    </div>`;
-  }).join('') || '<div class="empty-state">No projects</div>';
-}
-
+// [session 54 Bite 10] legacy function renderProjects() removed — duplicate of newer definition
 function commsSrcClass(src){
   const s=(src||'').toLowerCase();
   if(s.includes('gmail')) return 'gmail';

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-24T18:16:31.688503Z ts=53-tz-auto -->
+<!-- cache-buster: 2026-04-25T06:00:58Z -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1816,18 +1816,41 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 .sched-next-label { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--ink-navy, #1A3A5C); margin-bottom: 4px; }
 .sched-next-title { font-family: var(--font-serif); font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.3; }
 .sched-next-meta { font-size: 11px; color: var(--text-3); margin-top: 3px; display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
-.sched-list { display: flex; flex-direction: column; }
-.sched-row { display: flex; gap: 10px; padding: 8px 4px; border-bottom: 0.5px solid var(--border); cursor: pointer; transition: background 0.12s; }
-.sched-row:hover { background: var(--bg); }
+.sched-list { display: flex; flex-direction: column; gap: 0; padding: 2px 0; }
+.sched-row { position: relative; display: flex; align-items: stretch; gap: 11px; padding: 11px 12px 11px 11px; border-bottom: 0.5px solid var(--border); cursor: pointer; transition: background .14s var(--ease), transform .14s var(--ease); border-left: 3px solid transparent; border-radius: 0 6px 6px 0; }
+.sched-row:hover { background: var(--card-2); transform: translateX(1px); }
 .sched-row:last-child { border-bottom: 0; }
-.sched-row.past { opacity: 0.5; }
-.sched-row-time { flex-shrink: 0; width: 42px; font-size: 11px; color: var(--text-3); font-variant-numeric: tabular-nums; padding-top: 2px; }
-.sched-row-body { flex: 1; min-width: 0; }
-.sched-row-title { font-size: 13px; line-height: 1.35; color: var(--text); overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-.sched-row-meta { font-size: 10px; color: var(--text-3); margin-top: 2px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
-.sched-day-hdr { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--text-3); padding: 10px 4px 4px; border-bottom: 0.5px solid var(--border); margin-bottom: 4px; }
-.sched-day-hdr:first-child { padding-top: 4px; }
-.sched-empty { font-size: 11px; color: var(--text-3); padding: 12px 4px; }
+.sched-row.past { opacity: 0.48; }
+.sched-row.entity-afsh    { border-left-color: var(--green); }
+.sched-row.entity-illume  { border-left-color: var(--blue); }
+.sched-row.entity-spade   { border-left-color: var(--purple); }
+.sched-row.entity-personal{ border-left-color: var(--teal); }
+.sched-row.entity-other   { border-left-color: var(--text-3); }
+.sched-row.now { background: rgba(181,58,24,0.05); }
+.sched-row-time { flex: 0 0 auto; width: 50px; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; padding-top: 1px; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.sched-row-time .t-start { font-size: 13px; font-weight: 600; color: var(--text); }
+.sched-row-time .t-end   { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+.sched-row-time .t-allday{ font-size: 10px; font-weight: 700; letter-spacing: 1.2px; color: var(--text-3); text-transform: uppercase; }
+.sched-row-body { flex: 1 1 auto; min-width: 0; }
+.sched-row-title { font-size: 14.5px; font-weight: 500; line-height: 1.32; color: var(--text); overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.sched-row-meta { font-size: 11px; color: var(--text-2); margin-top: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.sched-row-meta .meta-loc { color: var(--text-3); }
+.sched-row-actions { position: absolute; right: 6px; top: 8px; display: none; gap: 3px; background: var(--card); border-radius: 6px; padding: 2px 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.10); }
+.sched-row:hover .sched-row-actions { display: flex; }
+.sched-row-actions .row-action-btn { border: none; background: transparent; cursor: pointer; font-size: 11px; padding: 3px 6px; border-radius: 4px; color: var(--text-2); font-family: -apple-system, BlinkMacSystemFont, sans-serif; transition: background .12s var(--ease), color .12s var(--ease); }
+.sched-row-actions .row-action-btn:hover { background: var(--green-bg); color: var(--green); }
+.sched-day-hdr { display: flex; align-items: baseline; gap: 8px; padding: 18px 6px 6px; margin-top: 4px; border-bottom: 0.5px solid var(--border-med); }
+.sched-day-hdr:first-child { padding-top: 4px; margin-top: 0; }
+.sched-day-hdr .dh-weekday { font-family: var(--font-serif); font-size: 17px; font-style: italic; color: var(--text); letter-spacing: 0.2px; }
+.sched-day-hdr .dh-date    { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--text-3); }
+.sched-day-hdr .dh-count   { margin-left: auto; font-size: 10px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+.sched-day-hdr.is-today .dh-weekday { color: var(--green); font-style: normal; font-weight: 600; }
+.sched-day-hdr.is-today .dh-date { color: var(--green); }
+.sched-now-line { display: flex; align-items: center; gap: 6px; margin: 6px 0 6px 4px; padding-left: 4px; border-left: 3px solid var(--red); }
+.sched-now-line::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 0 rgba(181,58,24,0.45); animation: ellyPulse 2.1s cubic-bezier(0.4,0,0.2,1) infinite; }
+.sched-now-line span { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--red); }
+.sched-now-line::after { content: ""; flex: 1 1 auto; height: 1px; background: var(--red); opacity: 0.32; }
+.sched-empty { font-size: 12px; color: var(--text-3); padding: 18px 4px; font-style: italic; text-align: center; }
 /* Unified source pills */
 .sched-src-pill, .sig-src-pill { display: inline-block; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 1px 5px; border-radius: 3px; }
 .sched-src-pill.afsh, .sig-src-pill.afsh { background: #FAECE7; color: #4A1B0C; }
@@ -3769,18 +3792,37 @@ function _calDateCell(d, e){
 }
 
 function renderSchedule(){
-  // [session 54 Bite 9] List-first Schedule rail — readable in narrow right column.
+  // [Bite 18] Fantastical-grade Schedule — bigger type, entity stripes, time start+end, day headers, now-line.
   const host = document.getElementById('schedule-body'); if(!host) return;
   const badge = document.getElementById('sched-badge');
   const TZ = (typeof CURRENT_TZ !== 'undefined' && CURRENT_TZ) ? CURRENT_TZ : 'Europe/Madrid';
   window.__SP = {};
 
+  // Bite 18: derive end-time + entity normalization on each event up-front.
+  const _entKey = e => {
+    const x = (typeof _calEntityOf === 'function') ? (_calEntityOf(e) || '') : (e.entity || '');
+    const v = String(x).toLowerCase();
+    if(v.includes('afsh'))    return 'afsh';
+    if(v.includes('illume'))  return 'illume';
+    if(v.includes('spade'))   return 'spade';
+    if(v.includes('personal'))return 'personal';
+    return 'other';
+  };
+  const _endOf = e => {
+    if(e.end){ const d = new Date(e.end); if(!isNaN(d.getTime())) return d; }
+    if(typeof e.duration_min === 'number') return new Date(new Date(e.start).getTime() + e.duration_min*60000);
+    if(typeof e.duration === 'number')     return new Date(new Date(e.start).getTime() + e.duration*60000);
+    return new Date(new Date(e.start).getTime() + 60*60000);
+  };
   const events = (DD.schedule || []).filter(e => {
     if(!e || !e.start) return false;
     if(CAL_ENTITY && _calEntityOf(e) !== CAL_ENTITY) return false;
     const d = new Date(e.start);
     return !isNaN(d.getTime());
-  }).map(e => ({...e, _date: new Date(e.start)}));
+  }).map(e => {
+    const _date = new Date(e.start);
+    return {...e, _date, _end: _endOf(e), _entKey: _entKey(e), _allDay: !!(e.all_day || e.allDay)};
+  });
   events.sort((a, b) => a._date - b._date);
 
   const now = new Date();
@@ -3885,51 +3927,99 @@ function renderSchedule(){
     return String(a).split(',').filter(x => x.trim()).length;
   };
 
+  // Bite 18: Fantastical-style rendering — entity stripes, time start+end, weekday headers, now-line.
   let html = '';
-
-  // [Bite 14] View-label badge at top so Nick can see what view is active + event count
   html += '<div class="sched-view-label"><span>' + _escS(viewTitle) + '</span><span>' + inWindow.length + ' event' + (inWindow.length !== 1 ? 's' : '') + '</span></div>';
 
-  // "Next up" banner — always visible if there's an upcoming event
   if(nextUp){
     window.__SP['next'] = nextUp;
     const src = _src(nextUp);
     html += '<div class="sched-next-banner" data-k="next">' +
       '<div class="sched-next-label">NEXT · ' + _relTime(nextUp._date) + '</div>' +
       '<div class="sched-next-title">' + _escS(nextUp.title || '') + '</div>' +
-      '<div class="sched-next-meta">' + _timeTZ(nextUp._date) + ' · ' +
+      '<div class="sched-next-meta">' + _timeTZ(nextUp._date) + '–' + _timeTZ(nextUp._end) + ' · ' +
         '<span class="sched-src-pill ' + src.k + '">' + src.label + '</span>' +
         (_attCount(nextUp) ? ' · ' + _attCount(nextUp) + ' attendees' : '') +
       '</div>' +
     '</div>';
   }
 
-  // Group by day for week/month/quarter
+  // Build a Fantastical-style day header for a given Date.
+  const _dayHeader = (d, count) => {
+    const todayKey = _ymdKeyTZ(now);
+    const isToday = _ymdKeyTZ(d) === todayKey;
+    const tomorrowKey = _ymdKeyTZ(new Date(now.getTime() + 864e5));
+    let weekday;
+    try {
+      const wf = new Intl.DateTimeFormat('en-US', {weekday:'long', timeZone: TZ});
+      weekday = wf.format(d);
+    } catch(_){ weekday = ''; }
+    if(isToday) weekday = 'Today';
+    else if(_ymdKeyTZ(d) === tomorrowKey) weekday = 'Tomorrow';
+    let datePart = '';
+    try {
+      datePart = new Intl.DateTimeFormat('en-US', {month:'short', day:'numeric', timeZone: TZ}).format(d).toUpperCase();
+    } catch(_){ datePart = ''; }
+    return '<div class="sched-day-hdr' + (isToday ? ' is-today' : '') + '">' +
+      '<span class="dh-weekday">' + _escS(weekday) + '</span>' +
+      '<span class="dh-date">' + _escS(datePart) + '</span>' +
+      '<span class="dh-count">' + count + ' event' + (count !== 1 ? 's' : '') + '</span>' +
+    '</div>';
+  };
+
+  // Build a single event row.
+  const _row = (e, k) => {
+    window.__SP[k] = e;
+    const src = _src(e);
+    const att = _attCount(e);
+    const isPast = e._end < now;
+    const isNow  = e._date <= now && e._end > now;
+    const entCls = ' entity-' + (e._entKey || 'other');
+    const cls = 'sched-row' + entCls + (isPast ? ' past' : '') + (isNow ? ' now' : '');
+    const startTxt = e._allDay ? '' : _timeTZ(e._date);
+    const endTxt   = e._allDay ? '' : _timeTZ(e._end);
+    const timeBlock = e._allDay
+      ? '<div class="sched-row-time"><span class="t-allday">All day</span></div>'
+      : '<div class="sched-row-time"><span class="t-start">' + startTxt + '</span><span class="t-end">' + endTxt + '</span></div>';
+    const meta = '<span class="sched-src-pill ' + src.k + '">' + src.label + '</span>' +
+                 (att ? ' · ' + att + ' att' : '') +
+                 (e.location ? ' · <span class="meta-loc">' + _escS(String(e.location).slice(0, 32)) + '</span>' : '');
+    return '<div class="' + cls + '" data-k="' + k + '">' +
+      timeBlock +
+      '<div class="sched-row-body">' +
+        '<div class="sched-row-title">' + _escS(e.title || '') + '</div>' +
+        '<div class="sched-row-meta">' + meta + '</div>' +
+      '</div>' +
+      '<div class="sched-row-actions">' +
+        '<button class="row-action-btn" data-act="open" title="Open in source">⧉</button>' +
+        '<button class="row-action-btn" data-act="reschedule" title="Reschedule">⏱</button>' +
+      '</div>' +
+    '</div>';
+  };
+
   if(view === 'day'){
-    // [Bite 14] Always show the list of today's events. NEXT banner highlights the first future one.
     if(inWindow.length === 0){
-      html += '<div class="sched-empty">Nothing scheduled today. ' + (nextUp ? 'Next up: ' + _escS(nextUp.title || '') : '') + '</div>';
+      html += '<div class="sched-empty">Nothing scheduled. ' + (nextUp ? 'Next up: ' + _escS(nextUp.title || '') : '') + '</div>';
     } else {
-      html += '<div class="sched-list">' + inWindow.map((e, i) => {
-        const k = 'ev::' + i; window.__SP[k] = e;
-        const src = _src(e);
-        const isPast = e._date < now;
-        const att = _attCount(e);
-        return '<div class="sched-row' + (isPast ? ' past' : '') + '" data-k="' + k + '">' +
-          '<div class="sched-row-time">' + _timeTZ(e._date) + '</div>' +
-          '<div class="sched-row-body">' +
-            '<div class="sched-row-title">' + _escS(e.title || '') + '</div>' +
-            '<div class="sched-row-meta">' +
-              '<span class="sched-src-pill ' + src.k + '">' + src.label + '</span>' +
-              (att ? ' · ' + att + ' att' : '') +
-              (e.location ? ' · ' + _escS(String(e.location).slice(0, 28)) : '') +
-            '</div>' +
-          '</div>' +
-        '</div>';
-      }).join('') + '</div>';
+      const sameDayAsAnchor = _ymdKeyTZ(anchor) === _ymdKeyTZ(now);
+      html += '<div class="sched-list">';
+      html += _dayHeader(anchor, inWindow.length);
+      let nowIdx = -1;
+      if(sameDayAsAnchor){
+        for(let i = 0; i < inWindow.length; i++){ if(inWindow[i]._date >= now){ nowIdx = i; break; } }
+      }
+      inWindow.forEach((e, i) => {
+        if(sameDayAsAnchor && i === nowIdx && i > 0){
+          html += '<div class="sched-now-line"><span>Now</span></div>';
+        }
+        html += _row(e, 'ev::' + i);
+      });
+      if(sameDayAsAnchor && nowIdx === -1 && inWindow.length > 0 && now > inWindow[inWindow.length-1]._end){
+        html += '<div class="sched-now-line"><span>Now</span></div>';
+      }
+      html += '</div>';
     }
   } else {
-    // Week/Month/Quarter: group by day
     const byDay = {};
     inWindow.forEach(e => {
       const k = _ymdKeyTZ(e._date);
@@ -3941,24 +4031,20 @@ function renderSchedule(){
       html += '<div class="sched-empty">No events in range.</div>';
     } else {
       html += '<div class="sched-list">';
+      const todayKey = _ymdKeyTZ(now);
       dayKeys.forEach(dk => {
-        const label = _dayLabelTZ(new Date(dk + 'T12:00:00Z'));
-        html += '<div class="sched-day-hdr">' + _escS(label) + '</div>';
-        byDay[dk].forEach((e, i) => {
-          const k = 'ev::' + dk + '::' + i; window.__SP[k] = e;
-          const src = _src(e);
-          const att = _attCount(e);
-          const isPast = e._date < now;
-          html += '<div class="sched-row' + (isPast ? ' past' : '') + '" data-k="' + k + '">' +
-            '<div class="sched-row-time">' + _timeTZ(e._date) + '</div>' +
-            '<div class="sched-row-body">' +
-              '<div class="sched-row-title">' + _escS(e.title || '') + '</div>' +
-              '<div class="sched-row-meta">' +
-                '<span class="sched-src-pill ' + src.k + '">' + src.label + '</span>' +
-                (att ? ' · ' + att + ' att' : '') +
-              '</div>' +
-            '</div>' +
-          '</div>';
+        const dt = new Date(dk + 'T12:00:00Z');
+        const dayEvents = byDay[dk];
+        html += _dayHeader(dt, dayEvents.length);
+        let nowIdx = -1;
+        if(dk === todayKey){
+          for(let i = 0; i < dayEvents.length; i++){ if(dayEvents[i]._date >= now){ nowIdx = i; break; } }
+        }
+        dayEvents.forEach((e, i) => {
+          if(dk === todayKey && i === nowIdx && i > 0){
+            html += '<div class="sched-now-line"><span>Now</span></div>';
+          }
+          html += _row(e, 'ev::' + dk + '::' + i);
         });
       });
       html += '</div>';
@@ -3966,12 +4052,25 @@ function renderSchedule(){
   }
 
   host.innerHTML = html;
-  host.querySelectorAll('[data-k]').forEach(el => el.addEventListener('click', () => {
-    const ev = window.__SP[el.dataset.k];
-    if(ev && typeof openScheduleDrawer === 'function') openScheduleDrawer(ev);
-    else if(ev && window.openDrawer) openDrawer(ev.title || '', ev.source_raw || '', _timeTZ(ev._date), (ev.attendees || '') + (ev.location ? '\n' + ev.location : ''));
+  host.querySelectorAll('.sched-row[data-k], .sched-next-banner[data-k]').forEach(el => el.addEventListener('click', (ev) => {
+    if(ev.target && ev.target.closest && ev.target.closest('.row-action-btn')) return;
+    const evt = window.__SP[el.dataset.k];
+    if(evt && typeof openScheduleDrawer === 'function') openScheduleDrawer(evt);
+    else if(evt && window.openDrawer) openDrawer(evt.title || '', evt.source_raw || '', _timeTZ(evt._date), (evt.attendees || '') + (evt.location ? '\n' + evt.location : ''));
   }));
-
+  host.querySelectorAll('.sched-row .row-action-btn').forEach(btn => btn.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    const row = btn.closest('.sched-row'); if(!row) return;
+    const evt = window.__SP[row.dataset.k]; if(!evt) return;
+    const act = btn.dataset.act;
+    if(act === 'open'){
+      const url = evt.url || evt.web_link || evt.weblink || evt.html_link;
+      if(url){ try { window.open(url, '_blank', 'noopener'); } catch(_){ } return; }
+      if(typeof openScheduleDrawer === 'function') openScheduleDrawer(evt);
+    } else if(act === 'reschedule' && typeof openScheduleDrawer === 'function'){
+      openScheduleDrawer(evt);
+    }
+  }));
   if(badge){ badge.textContent = inWindow.length; badge.style.display = inWindow.length ? 'inline-block' : 'none'; }
 }
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-25T21:37:41Z -->
+<!-- cache-buster: 2026-04-25T21:43:57Z -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1987,15 +1987,57 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 .tdrawer-btn-remember { background: rgba(160,72,28,0.08); border: 0.5px solid var(--green); color: var(--green); padding: 6px 12px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; transition: filter 0.15s; }
 .tdrawer-btn-remember:hover { filter: brightness(0.94); }
 /* ───────── end Bite 24 ───────── */
+/* ───────── Bite 31: Elly's Week center-column big-treatment ─────── */
+.elly-rollup { background: linear-gradient(135deg, rgba(160,72,28,0.05), rgba(28,62,94,0.04)); border: 0.5px solid var(--border-med); border-radius: 12px; padding: 18px 20px 16px; margin: 14px 0 16px; }
+.elly-rollup .rollup-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px; gap: 12px; }
+.elly-rollup .rollup-eyebrow { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-2); display: inline-flex; align-items: center; gap: 6px; }
+.elly-rollup .rollup-headline { font-family: var(--font-serif); font-size: 22px; font-weight: 500; line-height: 1.25; color: var(--text); margin: 8px 0 12px; letter-spacing: -0.01em; }
+.elly-rollup .rollup-says { display: none; padding: 12px 16px; margin: 4px 0 14px; background: rgba(160,72,28,0.07); border-left: 3px solid var(--green); border-radius: 0 8px 8px 0; font-family: var(--font-serif); font-size: 15px; font-style: italic; line-height: 1.5; color: var(--text); cursor: pointer; transition: background .18s var(--ease); }
+.elly-rollup .rollup-says.has-content { display: block; }
+.elly-rollup .rollup-says:hover { background: rgba(160,72,28,0.10); }
+.elly-rollup .rollup-says .rollup-says-prefix { display: inline; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-style: normal; font-size: 9px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--green); margin-right: 10px; vertical-align: 2px; }
+.elly-rollup .rollup-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 4px; }
+.elly-rollup .rollup-col { padding: 12px 14px; border-radius: 8px; background: var(--card); border: 0.5px solid var(--border); transition: border-color .18s var(--ease); }
+.elly-rollup .rollup-col:hover { border-color: var(--border-med); }
+.elly-rollup .rollup-col-label { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; padding-bottom: 5px; border-bottom: 0.5px solid var(--border); }
+.elly-rollup .rollup-col.shipped .rollup-col-label { color: var(--green); border-bottom-color: var(--green-bg); }
+.elly-rollup .rollup-col.slipped .rollup-col-label { color: var(--red); border-bottom-color: var(--red-bg); }
+.elly-rollup .rollup-col.focus   .rollup-col-label { color: var(--blue); border-bottom-color: var(--blue-bg); }
+.elly-rollup .rollup-row { padding: 6px 0; display: flex; align-items: flex-start; gap: 7px; cursor: pointer; transition: transform .14s var(--ease); border-top: 0.5px dotted var(--border); }
+.elly-rollup .rollup-row:first-child { border-top: 0; padding-top: 4px; }
+.elly-rollup .rollup-row:hover { transform: translateX(2px); }
+.elly-rollup .rollup-row-icon { flex: 0 0 auto; width: 13px; text-align: center; color: var(--text-3); font-size: 11px; line-height: 1.4; }
+.elly-rollup .rollup-row-text { flex: 1 1 auto; min-width: 0; font-size: 12.5px; line-height: 1.35; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.elly-rollup .rollup-row-meta { flex: 0 0 auto; font-size: 10px; color: var(--text-3); }
+.elly-rollup .copilot-item-empty { font-size: 11.5px; color: var(--text-3); font-style: italic; padding: 4px 0; }
+.elly-rollup .rollup-actions { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+.elly-rollup .rollup-actions-btn { padding: 5px 12px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; border: 0.5px solid var(--border-med); background: var(--card); color: var(--text-2); border-radius: 5px; cursor: pointer; font-family: inherit; transition: filter .15s; }
+.elly-rollup .rollup-actions-btn:hover { background: var(--card-2); }
+.elly-rollup .rollup-actions-btn.primary { background: var(--green); color: #fff; border-color: var(--green); }
+.elly-rollup .rollup-actions-btn.primary:hover { filter: brightness(0.92); }
+.elly-rollup .rollup-actions-meta { font-size: 10px; color: var(--text-3); margin-left: auto; }
+/* Right-rail explicitly hides rollup since it's now in center */
+.col-right .elly-rollup { display: none; }
+/* ───────── end Bite 31 ───────── */
+/* ───────── Bite 30: inline Ask-Elly answer ─────── */
+.copilot-ask-answer { display: none; margin-top: 10px; padding: 12px 14px; border-radius: 8px; background: var(--card); border: 0.5px solid var(--border-med); animation: caa-fadein .25s var(--ease); }
+.copilot-ask-answer.visible { display: block; }
+@keyframes caa-fadein { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+.caa-q { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; }
+.caa-a { font-size: 13.5px; line-height: 1.5; color: var(--text); }
+.caa-a.thinking { color: var(--text-3); font-style: italic; display: flex; align-items: center; gap: 8px; }
+.caa-a.error { color: var(--red); }
+.caa-actions { display: flex; gap: 8px; margin-top: 10px; }
+.caa-btn { padding: 4px 10px; font-size: 11px; font-weight: 600; border: 0.5px solid var(--border-med); background: var(--card); color: var(--text-2); border-radius: 4px; cursor: pointer; font-family: inherit; transition: background .15s; }
+.caa-btn:hover { background: var(--card-2); }
+.caa-btn.caa-btn-dismiss:hover { background: var(--red-bg); color: var(--red); }
+/* ───────── end Bite 30 ───────── */
 
 
 
-/* Right-rail rollup gets compacted slightly */
-.col-right .elly-rollup { margin: 0 0 12px; padding: 14px 16px; }
-.col-right .elly-rollup .rollup-headline { font-size: 15.5px; }
-.col-right .elly-rollup .rollup-grid { grid-template-columns: 1fr; gap: 8px; }
-.col-right .elly-rollup .rollup-col { padding: 9px 10px; }
-.col-right .elly-rollup .rollup-says { padding: 7px 10px; font-size: 12.5px; }
+
+
+/* Right-rail compaction removed — rollup lives in center column now (Bite 31). Center keeps native wide layout. */
 /* ───────── end Bite 19 ───────── */
 
 /* Unified source pills */
@@ -2594,6 +2636,27 @@ body.dark {
         </div>
         </section>
 
+        <section class="rollup-card elly-rollup" id="rollup-card">
+      <div class="rollup-head">
+        <span class="rollup-eyebrow"><span class="elly-pulse"></span>Elly&rsquo;s Week</span>
+        <span class="rollup-eyebrow" id="rollup-meta" style="opacity:0.65;"></span>
+      </div>
+      <div class="rollup-says" id="rollup-says"></div>
+      <div class="rollup-headline" id="rollup-headline">Loading&hellip;</div>
+      <div class="rollup-grid">
+        <div class="rollup-col shipped"><div class="rollup-col-label">Shipped &middot; last 7d</div><div id="rollup-shipped"></div></div>
+        <div class="rollup-col slipped"><div class="rollup-col-label">Slipped</div><div id="rollup-slipped"></div></div>
+        <div class="rollup-col focus"><div class="rollup-col-label">Focus &middot; next 7d</div><div id="rollup-focus"></div></div>
+      </div>
+      <div class="rollup-note" id="rollup-note"></div>
+      <div class="rollup-actions">
+        <button class="rollup-actions-btn primary" onclick="_fetchWeeklyRollup(true)" title="Force a fresh Sonnet pass">Refresh</button>
+        <button class="rollup-actions-btn" onclick="_openRollupRaw()" title="See the raw data feeding this">Raw data</button>
+        <span class="rollup-actions-meta" id="rollup-actions-meta"></span>
+      </div>
+    </section>
+
+
 
     <div class="tw-section" id="tw-section">
       <div class="tw-header">
@@ -2681,20 +2744,7 @@ body.dark {
                onkeydown="if(event.key==='Enter')submitQuickCapture()">
         <button class="qc-btn" onclick="submitQuickCapture()" title="Save to Notes (Quick Capture)">+</button>
       </div>
-      <section class="rollup-card elly-rollup" id="rollup-card">
-      <div class="rollup-head">
-        <span class="rollup-eyebrow"><span class="elly-pulse"></span>Elly&rsquo;s Week</span>
-        <span class="rollup-eyebrow" id="rollup-meta" style="opacity:0.65;"></span>
-      </div>
-      <div class="rollup-says" id="rollup-says"></div>
-      <div class="rollup-headline" id="rollup-headline">Loading&hellip;</div>
-      <div class="rollup-grid">
-        <div class="rollup-col shipped"><div class="rollup-col-label">Shipped &middot; last 7d</div><div id="rollup-shipped"></div></div>
-        <div class="rollup-col slipped"><div class="rollup-col-label">Slipped</div><div id="rollup-slipped"></div></div>
-        <div class="rollup-col focus"><div class="rollup-col-label">Focus &middot; next 7d</div><div id="rollup-focus"></div></div>
-      </div>
-      <div class="rollup-note" id="rollup-note"></div>
-    </section>
+      
       <div class="tabs-hdr">
         <button class="tab-btn" data-tab="schedule" onclick="switchTab('schedule', this)" style="display:none">
           Schedule <span class="tab-unread" id="sched-badge" style="display:none">0</span>
@@ -5747,21 +5797,95 @@ function _renderCopilotBrief(d){
 }
 
 async function _copilotAsk(){
+  // Bite 30: submit inline against brief_chat — show the answer directly under the bar.
   const input = document.getElementById('copilot-ask-input');
   if(!input) return;
   const text = (input.value || '').trim();
   if(!text) return;
   input.value = '';
-  // Route to the existing Elly panel so the conversation thread is preserved
-  if(typeof toggleElly === 'function'){
-    try { toggleElly(); } catch(_){}
-    const ellyInput = document.getElementById('elly-input');
-    if(ellyInput){
-      ellyInput.value = text;
-      if(typeof ellySend === 'function') setTimeout(() => ellySend(), 50);
+  // Ensure an inline answer container exists right under the .copilot-ask row.
+  const askWrap = input.closest('.copilot-ask');
+  if(!askWrap) return;
+  let ans = document.getElementById('copilot-ask-answer');
+  if(!ans){
+    ans = document.createElement('div');
+    ans.id = 'copilot-ask-answer';
+    ans.className = 'copilot-ask-answer';
+    askWrap.parentNode.insertBefore(ans, askWrap.nextSibling);
+  }
+  ans.classList.add('visible');
+  ans.innerHTML = '<div class="caa-q">' + (text.replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]))) + '</div>' +
+                  '<div class="caa-a thinking"><span class="elly-pulse"></span>Elly is thinking…</div>';
+  try {
+    const r = await postSync({action: 'brief_chat', question: text, prompt: text});
+    let answer = '';
+    if(r){
+      // brief_chat may return {answer}, {brief}, {response}, or just {success, raw}
+      answer = r.answer || r.response || (r.brief && (r.brief.narrative || r.brief.title)) || r.text || r.message || '';
+      if(!answer && typeof r === 'string') answer = r;
+      if(!answer && r.error) answer = '× ' + r.error;
     }
-  } else if(window.showToast) {
-    showToast('Elly panel not ready');
+    if(!answer) answer = 'Elly answered but didn\'t return parseable text. Try opening the side panel for the full conversation.';
+    const esc = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+    ans.innerHTML = '<div class="caa-q">' + esc(text) + '</div>' +
+                    '<div class="caa-a">' + esc(answer).replace(/\n/g, '<br>') + '</div>' +
+                    '<div class="caa-actions">' +
+                      '<button class="caa-btn" onclick="_continueInElly()">Continue in Elly &rarr;</button>' +
+                      '<button class="caa-btn caa-btn-dismiss" onclick="_dismissAskAnswer()">Close</button>' +
+                    '</div>';
+  } catch(e){
+    const esc = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+    ans.innerHTML = '<div class="caa-q">' + esc(text) + '</div>' +
+                    '<div class="caa-a error">× ' + esc(String(e).slice(0, 200)) + '</div>' +
+                    '<div class="caa-actions"><button class="caa-btn caa-btn-dismiss" onclick="_dismissAskAnswer()">Close</button></div>';
+  }
+}
+
+function _dismissAskAnswer(){
+  const ans = document.getElementById('copilot-ask-answer');
+  if(ans){ ans.classList.remove('visible'); ans.innerHTML = ''; }
+}
+function _continueInElly(){
+  // Optional: route to the side-panel for ongoing conversation.
+  if(typeof toggleElly === 'function'){ try { toggleElly(); } catch(_){} }
+}
+
+async function _openRollupRaw(){
+  // Bite 31: peek at the raw data feeding Elly's Week — opens drawer with gather_all_sources output.
+  try {
+    const r = await postSync({action: 'gather_all_sources', lookback_days: 7, lookahead_days: 7});
+    const titleEl = document.getElementById('drawer-title');
+    const ctxEl = document.getElementById('drawer-context');
+    const detEl = document.getElementById('drawer-details');
+    if(!titleEl || !ctxEl || !detEl) return;
+    titleEl.textContent = 'Elly\'s Week — raw data';
+    ctxEl.innerHTML = '<span class="tdrawer-chip">last 7d</span><span class="tdrawer-chip">next 7d</span>';
+    const esc = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+    let rows = '';
+    if(r && r.success !== false){
+      const slices = ['tasks','projects','schedule','critical','signals','completed_tasks','signal_log','daily_context','wa_recent','inbox_activity'];
+      for(const k of slices){
+        const v = r[k] || {};
+        const arrLen = Array.isArray(v.items) ? v.items.length :
+                       Array.isArray(v.tasks) ? v.tasks.length :
+                       Array.isArray(v.projects) ? v.projects.length :
+                       Array.isArray(v.schedule) ? v.schedule.length :
+                       Array.isArray(v.signals) ? v.signals.length :
+                       Array.isArray(v.urgent_threads) ? v.urgent_threads.length : '—';
+        const h = (r.health || {})[k] || {};
+        const dot = h.ok === false ? '⚠' : '✓';
+        rows += '<div class="rollup-row"><span class="rollup-row-icon">' + dot + '</span><span class="rollup-row-text">' + esc(k) + '</span><span class="rollup-row-meta">' + esc(String(arrLen)) + (h.ms ? ' · ' + h.ms + 'ms' : '') + '</span></div>';
+      }
+    } else {
+      rows = '<div class="copilot-item-empty">' + esc((r && r.error) || 'no data') + '</div>';
+    }
+    detEl.innerHTML = '<div class="rollup-grid"><div class="rollup-col"><div class="rollup-col-label">Coverage</div>' + rows + '</div></div>';
+    const ov = document.getElementById('drawer-overlay');
+    const dr = document.getElementById('detail-drawer');
+    if(ov) ov.classList.add('open');
+    if(dr) dr.classList.add('open');
+  } catch(e){
+    if(window.showToast) showToast('× ' + String(e).slice(0, 80));
   }
 }
 

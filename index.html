@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-24T18:16:31.688503Z ts=53-tz-auto -->
+<!-- cache-buster: 2026-04-25T20:26:24Z -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1851,6 +1851,27 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 .sched-now-line span { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--red); }
 .sched-now-line::after { content: ""; flex: 1 1 auto; height: 1px; background: var(--red); opacity: 0.32; }
 .sched-empty { font-size: 12px; color: var(--text-3); padding: 18px 4px; font-style: italic; text-align: center; }
+/* ───────── Bite 19: Schedule moved to center column — bigger mount + section header ─────── */
+.cockpit-schedule { background: var(--card); border: 0.5px solid var(--border); border-radius: 12px; padding: 14px 18px 12px; margin: 12px 0 16px; }
+.cockpit-schedule-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 0.5px solid var(--border); }
+.cockpit-schedule-title { font-family: var(--font-serif); font-size: 18px; font-weight: 500; color: var(--text); letter-spacing: -0.01em; }
+.cockpit-schedule-sub { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--text-3); }
+/* center-column schedule has more horizontal room — pop typography even larger */
+.cockpit-schedule .sched-row-title { font-size: 15.5px; line-height: 1.32; }
+.cockpit-schedule .sched-row-time .t-start { font-size: 14px; }
+.cockpit-schedule .sched-row-time .t-end { font-size: 12px; }
+.cockpit-schedule .sched-row { padding: 13px 14px 13px 12px; }
+.cockpit-schedule .sched-day-hdr .dh-weekday { font-size: 19px; }
+.cockpit-schedule .cal-toolbar { padding: 0 0 10px; margin: 0 0 8px; border-bottom: 0.5px solid var(--border); }
+.cockpit-schedule #schedule-body { min-height: 240px; }
+/* Right-rail rollup gets compacted slightly */
+.col-right .elly-rollup { margin: 0 0 12px; padding: 14px 16px; }
+.col-right .elly-rollup .rollup-headline { font-size: 15.5px; }
+.col-right .elly-rollup .rollup-grid { grid-template-columns: 1fr; gap: 8px; }
+.col-right .elly-rollup .rollup-col { padding: 9px 10px; }
+.col-right .elly-rollup .rollup-says { padding: 7px 10px; font-size: 12.5px; }
+/* ───────── end Bite 19 ───────── */
+
 /* Unified source pills */
 .sched-src-pill, .sig-src-pill { display: inline-block; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 1px 5px; border-radius: 3px; }
 .sched-src-pill.afsh, .sig-src-pill.afsh { background: #FAECE7; color: #4A1B0C; }
@@ -2391,20 +2412,7 @@ body.dark {
     </div>
     <div id="metrics-row" class="metrics-mini-row" style="display:none;"></div>
 
-    <section class="rollup-card elly-rollup" id="rollup-card" style="display:none;">
-      <div class="rollup-head">
-        <span class="rollup-eyebrow"><span class="elly-pulse"></span>Elly&rsquo;s Week</span>
-        <span class="rollup-eyebrow" id="rollup-meta" style="opacity:0.65;"></span>
-      </div>
-      <div class="rollup-says" id="rollup-says"></div>
-      <div class="rollup-headline" id="rollup-headline">Loading&hellip;</div>
-      <div class="rollup-grid">
-        <div class="rollup-col shipped"><div class="rollup-col-label">Shipped &middot; last 7d</div><div id="rollup-shipped"></div></div>
-        <div class="rollup-col slipped"><div class="rollup-col-label">Slipped</div><div id="rollup-slipped"></div></div>
-        <div class="rollup-col focus"><div class="rollup-col-label">Focus &middot; next 7d</div><div id="rollup-focus"></div></div>
-      </div>
-      <div class="rollup-note" id="rollup-note"></div>
-    </section>
+    
 
         <!-- [session 54 Bite 8] Cockpit B2 mid row: Projects + Tasks peers, center column -->
     <section class="cockpit-mid" id="cockpit-mid">
@@ -2427,6 +2435,39 @@ body.dark {
         </div>
       </div>
     </section>
+
+        <!-- [Bite 19] Schedule moved from right rail to center column. Keeps schedule-body id stable so renderSchedule needs no change. -->
+        <section class="cockpit-schedule elly-schedule" id="cockpit-schedule">
+          <div class="cockpit-schedule-head">
+            <span class="cockpit-schedule-title">Schedule</span>
+            <span class="cockpit-schedule-sub" id="cockpit-schedule-sub"></span>
+          </div>
+          <div class="tab-panel active" id="tab-schedule">
+          <div class="cal-toolbar">
+            <div class="cal-views">
+              <button class="cal-view-btn active" data-view="day" onclick="setCalView('day')">D</button>
+              <button class="cal-view-btn" data-view="week" onclick="setCalView('week')">W</button>
+              <button class="cal-view-btn" data-view="month" onclick="setCalView('month')">M</button>
+              <button class="cal-view-btn" data-view="quarter" onclick="setCalView('quarter')">Q</button>
+            </div>
+            <div class="cal-nav-group">
+              <button class="cal-nav-btn" onclick="calNav(-1)" title="Previous">‹</button>
+              <button class="cal-today-btn" onclick="calToday()">Today</button>
+              <button class="cal-nav-btn" onclick="calNav(1)" title="Next">›</button>
+            </div>
+          </div>
+          <div class="cal-period-label" id="cal-period-label"></div>
+          <div class="cal-entity-chips">
+            <button class="ce-chip active" data-ent="" onclick="setCalEntity('')">All</button>
+            <button class="ce-chip afsh" data-ent="AFSH" onclick="setCalEntity('AFSH')">🐄</button>
+            <button class="ce-chip illume" data-ent="Illume" onclick="setCalEntity('Illume')">🫒</button>
+            <button class="ce-chip spade" data-ent="Spade" onclick="setCalEntity('Spade')">⚙️</button>
+            <button class="ce-chip personal" data-ent="Personal" onclick="setCalEntity('Personal')">👤</button>
+          </div>
+          <div id="schedule-body"></div>
+        </div>
+        </section>
+
 
     <div class="tw-section" id="tw-section">
       <div class="tw-header">
@@ -2513,11 +2554,25 @@ body.dark {
                onkeydown="if(event.key==='Enter')submitQuickCapture()">
         <button class="qc-btn" onclick="submitQuickCapture()" title="Save to Notes (Quick Capture)">+</button>
       </div>
+      <section class="rollup-card elly-rollup" id="rollup-card" style="display:none;">
+      <div class="rollup-head">
+        <span class="rollup-eyebrow"><span class="elly-pulse"></span>Elly&rsquo;s Week</span>
+        <span class="rollup-eyebrow" id="rollup-meta" style="opacity:0.65;"></span>
+      </div>
+      <div class="rollup-says" id="rollup-says"></div>
+      <div class="rollup-headline" id="rollup-headline">Loading&hellip;</div>
+      <div class="rollup-grid">
+        <div class="rollup-col shipped"><div class="rollup-col-label">Shipped &middot; last 7d</div><div id="rollup-shipped"></div></div>
+        <div class="rollup-col slipped"><div class="rollup-col-label">Slipped</div><div id="rollup-slipped"></div></div>
+        <div class="rollup-col focus"><div class="rollup-col-label">Focus &middot; next 7d</div><div id="rollup-focus"></div></div>
+      </div>
+      <div class="rollup-note" id="rollup-note"></div>
+    </section>
       <div class="tabs-hdr">
-        <button class="tab-btn active" data-tab="schedule" onclick="switchTab('schedule', this)">
+        <button class="tab-btn" data-tab="schedule" onclick="switchTab('schedule', this)" style="display:none">
           Schedule <span class="tab-unread" id="sched-badge" style="display:none">0</span>
         </button>
-        <button class="tab-btn" data-tab="tasks" onclick="switchTab('tasks', this)">
+        <button class="tab-btn active" data-tab="tasks" onclick="switchTab('tasks', this)">
           Tasks <span class="tab-unread" id="tasks-badge" style="display:none">0</span>
         </button>
         <button class="tab-btn" data-tab="projects" onclick="switchTab('projects', this)">Projects <span class="tab-unread" id="projects-badge" style="display:none">0</span></button>
@@ -2529,30 +2584,7 @@ body.dark {
         </button>
       </div>
       <div class="tab-panels-area">
-        <div class="tab-panel active" id="tab-schedule">
-          <div class="cal-toolbar">
-            <div class="cal-views">
-              <button class="cal-view-btn active" data-view="day" onclick="setCalView('day')">D</button>
-              <button class="cal-view-btn" data-view="week" onclick="setCalView('week')">W</button>
-              <button class="cal-view-btn" data-view="month" onclick="setCalView('month')">M</button>
-              <button class="cal-view-btn" data-view="quarter" onclick="setCalView('quarter')">Q</button>
-            </div>
-            <div class="cal-nav-group">
-              <button class="cal-nav-btn" onclick="calNav(-1)" title="Previous">‹</button>
-              <button class="cal-today-btn" onclick="calToday()">Today</button>
-              <button class="cal-nav-btn" onclick="calNav(1)" title="Next">›</button>
-            </div>
-          </div>
-          <div class="cal-period-label" id="cal-period-label"></div>
-          <div class="cal-entity-chips">
-            <button class="ce-chip active" data-ent="" onclick="setCalEntity('')">All</button>
-            <button class="ce-chip afsh" data-ent="AFSH" onclick="setCalEntity('AFSH')">🐄</button>
-            <button class="ce-chip illume" data-ent="Illume" onclick="setCalEntity('Illume')">🫒</button>
-            <button class="ce-chip spade" data-ent="Spade" onclick="setCalEntity('Spade')">⚙️</button>
-            <button class="ce-chip personal" data-ent="Personal" onclick="setCalEntity('Personal')">👤</button>
-          </div>
-          <div id="schedule-body"></div>
-        </div>
+        
         <div class="tab-panel" id="tab-tasks">
           <div class="tf-chips" id="tf-chips">
             <button class="tf-chip active" data-filter="all" onclick="setTaskFilter('all')">All</button>

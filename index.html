@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-25T21:15:20Z -->
+<!-- cache-buster: 2026-04-25T21:21:10Z -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1938,6 +1938,56 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 /* Right rail keeps agenda — center-only grids */
 .col-right .sched-month-grid, .col-right .sched-quarter-grid { display: none; }
 /* ───────── end Bite 26 ───────── */
+/* ───────── Bite 24: Memory drawer + remember-this affordances ─────── */
+.qc-memory-btn { margin-left: 2px; }
+.memory-drawer-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.18); z-index: 1100; }
+.memory-drawer-overlay.open { display: block; }
+.memory-drawer { display: none; position: fixed; top: 0; right: 0; bottom: 0; width: 480px; max-width: 90vw; background: var(--card); box-shadow: -10px 0 30px rgba(0,0,0,0.10); z-index: 1101; flex-direction: column; }
+.memory-drawer.open { display: flex; }
+.memory-drawer .drawer-hdr { padding: 14px 18px; border-bottom: 0.5px solid var(--border-med); display: flex; justify-content: space-between; align-items: center; }
+.memory-drawer .drawer-title { font-family: var(--font-serif); font-size: 18px; font-weight: 500; color: var(--text); }
+.memory-drawer .drawer-close { background: transparent; border: none; font-size: 22px; cursor: pointer; color: var(--text-3); }
+.memory-drawer-body { padding: 14px 18px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 12px; }
+.memory-add { padding: 10px 12px; background: var(--card-2); border: 0.5px solid var(--border); border-radius: 8px; display: flex; flex-direction: column; gap: 8px; }
+.memory-add-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.memory-add-input { flex: 1 1 auto; min-width: 0; padding: 8px 10px; border: 0.5px solid var(--border-med); border-radius: 5px; background: var(--card); font-size: 13px; color: var(--text); font-family: inherit; }
+.memory-add-input.small { flex: 0 1 140px; }
+.memory-add-input:focus { outline: none; border-color: var(--green); }
+.memory-add-select { padding: 7px 8px; border: 0.5px solid var(--border-med); border-radius: 5px; background: var(--card); font-size: 12px; color: var(--text); font-family: inherit; cursor: pointer; }
+.memory-add-btn { padding: 7px 14px; border: 0.5px solid var(--green); background: var(--green); color: #fff; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: 600; letter-spacing: 0.4px; transition: filter 0.15s; }
+.memory-add-btn:hover { filter: brightness(0.9); }
+.memory-filter { display: flex; gap: 4px; flex-wrap: wrap; padding-bottom: 6px; border-bottom: 0.5px solid var(--border); }
+.memory-filter-btn { padding: 4px 10px; border: 0.5px solid var(--border-med); background: transparent; color: var(--text-2); border-radius: 14px; cursor: pointer; font-size: 11px; font-weight: 600; letter-spacing: 0.4px; transition: background 0.15s, color 0.15s; }
+.memory-filter-btn.active { background: var(--green); color: #fff; border-color: var(--green); }
+.memory-filter-btn:hover:not(.active) { background: var(--card-2); }
+.memory-list { display: flex; flex-direction: column; gap: 6px; }
+.memory-empty { font-size: 12px; color: var(--text-3); padding: 20px 4px; text-align: center; font-style: italic; }
+.memory-row { padding: 9px 11px 8px; background: var(--card); border: 0.5px solid var(--border); border-left: 3px solid var(--text-3); border-radius: 6px; display: flex; flex-direction: column; gap: 4px; transition: border-color 0.12s; position: relative; }
+.memory-row:hover { border-color: var(--border-med); }
+.memory-row.entity-afsh    { border-left-color: var(--green); }
+.memory-row.entity-illume  { border-left-color: var(--blue); }
+.memory-row.entity-spade   { border-left-color: var(--purple); }
+.memory-row.entity-personal{ border-left-color: var(--teal); }
+.memory-row.entity-cross   { border-left-color: var(--text-2); }
+.memory-row-fact { font-size: 13px; color: var(--text); line-height: 1.4; }
+.memory-row-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 10px; color: var(--text-3); }
+.memory-row-meta .mr-tag { padding: 1px 6px; border-radius: 3px; background: var(--card-2); font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; }
+.memory-row-meta .mr-tag.preference { color: var(--green); background: var(--green-bg); }
+.memory-row-meta .mr-tag.pattern    { color: var(--amber); background: var(--amber-bg); }
+.memory-row-meta .mr-tag.decision   { color: var(--blue);  background: var(--blue-bg); }
+.memory-row-meta .mr-tag.observation { color: var(--text-2); background: var(--card-2); }
+.memory-row-meta .mr-conf { font-variant-numeric: tabular-nums; }
+.memory-row-actions { position: absolute; top: 6px; right: 6px; display: none; gap: 3px; }
+.memory-row:hover .memory-row-actions { display: flex; }
+.memory-row-action { padding: 2px 7px; font-size: 11px; border: 0.5px solid var(--border-med); background: var(--card); color: var(--text-2); border-radius: 4px; cursor: pointer; font-family: inherit; transition: background 0.12s, color 0.12s; }
+.memory-row-action:hover { background: var(--green-bg); color: var(--green); }
+.memory-row-action.danger:hover { background: var(--red-bg); color: var(--red); }
+
+/* "Remember this" affordance inside any drawer */
+.tdrawer-btn-remember { background: rgba(160,72,28,0.08); border: 0.5px solid var(--green); color: var(--green); padding: 6px 12px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; transition: filter 0.15s; }
+.tdrawer-btn-remember:hover { filter: brightness(0.94); }
+/* ───────── end Bite 24 ───────── */
+
 
 
 /* Right-rail rollup gets compacted slightly */
@@ -2624,13 +2674,14 @@ body.dark {
         <div class="qc-mode" id="qc-mode" role="radiogroup" aria-label="Capture mode">
           <button type="button" class="qc-mode-btn active" data-mode="note" onclick="setQcMode('note')" title="Save as Note">📝</button>
           <button type="button" class="qc-mode-btn" data-mode="task" onclick="setQcMode('task')" title="Save as Task">✅</button>
+          <button type="button" class="qc-mode-btn qc-memory-btn" onclick="openMemoryDrawer()" title="Open Elly's memory drawer">🧠</button>
         </div>
         <input class="qc-input" id="qc-input" type="text"
                placeholder="Jot a thought… (Enter to save)"
                onkeydown="if(event.key==='Enter')submitQuickCapture()">
         <button class="qc-btn" onclick="submitQuickCapture()" title="Save to Notes (Quick Capture)">+</button>
       </div>
-      <section class="rollup-card elly-rollup" id="rollup-card" style="display:none;">
+      <section class="rollup-card elly-rollup" id="rollup-card">
       <div class="rollup-head">
         <span class="rollup-eyebrow"><span class="elly-pulse"></span>Elly&rsquo;s Week</span>
         <span class="rollup-eyebrow" id="rollup-meta" style="opacity:0.65;"></span>
@@ -2791,6 +2842,50 @@ body.dark {
   <div class="drawer-actions">
     <button class="drawer-btn primary">Open</button>
     <button class="drawer-btn secondary" onclick="closeDrawer()">Close</button>
+  </div>
+</div>
+
+<!-- [Bite 24] Memory drawer — view/add/forget Elly memory entries -->
+<div class="drawer-overlay memory-drawer-overlay" id="memory-drawer-overlay" onclick="closeMemoryDrawer()"></div>
+<div class="drawer memory-drawer" id="memory-drawer">
+  <div class="drawer-hdr">
+    <div class="drawer-title">Elly&rsquo;s memory</div>
+    <button class="drawer-close" onclick="closeMemoryDrawer()">&times;</button>
+  </div>
+  <div class="drawer-body memory-drawer-body">
+    <div class="memory-add">
+      <div class="memory-add-row">
+        <input type="text" id="memory-add-fact" class="memory-add-input" placeholder="Remember a preference, pattern, decision&hellip;" onkeydown="if(event.key===\'Enter\') _addMemoryFromForm()">
+      </div>
+      <div class="memory-add-row memory-add-meta">
+        <select id="memory-add-type" class="memory-add-select" title="Memory type">
+          <option value="preference">preference (forever)</option>
+          <option value="pattern">pattern (90d)</option>
+          <option value="decision">decision (forever)</option>
+          <option value="observation">observation (7d)</option>
+        </select>
+        <select id="memory-add-entity" class="memory-add-select" title="Entity">
+          <option value="">(any entity)</option>
+          <option value="afsh">AFSH</option>
+          <option value="illume">Illume</option>
+          <option value="spade">Spade</option>
+          <option value="personal">Personal</option>
+          <option value="cross">Cross</option>
+        </select>
+        <input type="text" id="memory-add-category" class="memory-add-input small" placeholder="category (finance, ops&hellip;)">
+        <button class="memory-add-btn" onclick="_addMemoryFromForm()">Remember</button>
+      </div>
+    </div>
+    <div class="memory-filter">
+      <button class="memory-filter-btn active" data-filter="all" onclick="_setMemoryFilter(this, \'all\')">All</button>
+      <button class="memory-filter-btn" data-filter="preference" onclick="_setMemoryFilter(this, \'preference\')">Preferences</button>
+      <button class="memory-filter-btn" data-filter="pattern"    onclick="_setMemoryFilter(this, \'pattern\')">Patterns</button>
+      <button class="memory-filter-btn" data-filter="decision"   onclick="_setMemoryFilter(this, \'decision\')">Decisions</button>
+      <button class="memory-filter-btn" data-filter="observation" onclick="_setMemoryFilter(this, \'observation\')">Observations</button>
+    </div>
+    <div id="memory-list" class="memory-list">
+      <div class="memory-empty">Loading memory&hellip;</div>
+    </div>
   </div>
 </div>
 
@@ -5399,12 +5494,19 @@ async function _scheduleReschedulePrompt(source, eventId){
 
 // [Bite 11] Weekly Rollup
 async function _fetchWeeklyRollup(force){
+  const host = document.getElementById('rollup-card');
+  if(!host) return;
+  host.style.display = 'block';
+  const _hN = document.getElementById('rollup-headline');
+  if(_hN && !_hN.textContent.trim()) _hN.textContent = 'Loading\u2026';
   try {
     const r = await postSync({action:'weekly_rollup', force: !!force});
-    if(!r || !r.success) return;
-    const host = document.getElementById('rollup-card');
-    if(!host) return;
-    host.style.display = 'block';
+    if(!r || !r.success){
+      if(_hN) _hN.textContent = 'Elly\'s Week paused';
+      const _mN = document.getElementById('rollup-meta');
+      if(_mN) _mN.textContent = (r && r.error ? String(r.error).slice(0, 60) : 'try Refresh');
+      return;
+    }
     const esc = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
     const h = document.getElementById('rollup-headline');
     if(h) h.textContent = r.headline || '—';
@@ -6493,6 +6595,149 @@ restoreTab();
 // Keep schedule live as view cycles
 // Expose for debugging
 window.COS = { renderAll, postSync, cosAction, DD };
+
+
+// ===== Bite 24: Memory drawer + remember-this affordances =====
+window.MEMORY_FILTER = 'all';
+window.MEMORY_CACHE = [];
+
+async function openMemoryDrawer(){
+  const ov = document.getElementById('memory-drawer-overlay');
+  const dr = document.getElementById('memory-drawer');
+  if(!ov || !dr) return;
+  ov.classList.add('open');
+  dr.classList.add('open');
+  await _loadMemoryList();
+}
+function closeMemoryDrawer(){
+  const ov = document.getElementById('memory-drawer-overlay');
+  const dr = document.getElementById('memory-drawer');
+  if(ov) ov.classList.remove('open');
+  if(dr) dr.classList.remove('open');
+}
+
+async function _loadMemoryList(){
+  const list = document.getElementById('memory-list');
+  if(!list) return;
+  list.innerHTML = '<div class="memory-empty">Loading memory…</div>';
+  try {
+    const r = await postSync({action: 'memory_read', limit: 200});
+    if(!r || !r.success){
+      list.innerHTML = '<div class="memory-empty">Memory unavailable: ' + ((r && r.error) || 'unknown') + '</div>';
+      return;
+    }
+    window.MEMORY_CACHE = r.memories || [];
+    _renderMemoryList();
+  } catch(e){
+    list.innerHTML = '<div class="memory-empty">Failed to load: ' + String(e).slice(0, 80) + '</div>';
+  }
+}
+
+function _renderMemoryList(){
+  const list = document.getElementById('memory-list');
+  if(!list) return;
+  const esc = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+  const filter = window.MEMORY_FILTER || 'all';
+  const rows = (window.MEMORY_CACHE || []).filter(m => filter === 'all' || (m.type || 'observation') === filter);
+  if(!rows.length){
+    list.innerHTML = '<div class="memory-empty">No ' + (filter === 'all' ? 'memory entries' : filter + 's') + ' yet.</div>';
+    return;
+  }
+  list.innerHTML = rows.map((m, i) => {
+    const t = (m.type || 'observation').toLowerCase();
+    const ent = (m.entity || '').toLowerCase();
+    const conf = typeof m.confidence === 'number' ? Math.round(m.confidence * 100) + '%' : '—';
+    const cat = m.category ? esc(m.category) : '';
+    const src = m.source ? esc(m.source) : '';
+    const factEsc = esc(m.fact || '');
+    const factPrefix = (m.fact || '').slice(0, 50).replace(/'/g, "\\'");
+    const entCls = ent ? (' entity-' + ent.replace(/[^a-z0-9]/g, '')) : '';
+    return '<div class="memory-row' + entCls + '">' +
+      '<div class="memory-row-fact">' + factEsc + '</div>' +
+      '<div class="memory-row-meta">' +
+        '<span class="mr-tag ' + t + '">' + t + '</span>' +
+        (cat ? '<span>' + cat + '</span>' : '') +
+        (ent ? '<span>' + esc(ent) + '</span>' : '') +
+        '<span class="mr-conf">conf ' + conf + '</span>' +
+        (src ? '<span>· ' + src + '</span>' : '') +
+      '</div>' +
+      '<div class="memory-row-actions">' +
+        '<button class="memory-row-action" onclick="_bumpMemory(\'' + factPrefix + '\', 0.1)" title="Reinforce">+</button>' +
+        '<button class="memory-row-action" onclick="_bumpMemory(\'' + factPrefix + '\', -0.15)" title="Weaken">−</button>' +
+        '<button class="memory-row-action danger" onclick="_forgetMemoryRow(\'' + factPrefix + '\')" title="Forget">×</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function _setMemoryFilter(btn, filter){
+  window.MEMORY_FILTER = filter;
+  document.querySelectorAll('.memory-filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
+  _renderMemoryList();
+}
+
+async function _addMemoryFromForm(){
+  const fact = (document.getElementById('memory-add-fact') || {}).value || '';
+  if(!fact.trim()){
+    if(window.showToast) showToast('Fact required'); return;
+  }
+  const type = (document.getElementById('memory-add-type') || {}).value || 'preference';
+  const entity = (document.getElementById('memory-add-entity') || {}).value || '';
+  const category = (document.getElementById('memory-add-category') || {}).value || 'general';
+  try {
+    const r = await postSync({action: 'memory_write', fact: fact.trim(), type, entity, category, source: 'manual', confidence: 1.0});
+    if(r && r.saved){
+      if(window.showToast) showToast('Saved · ' + (r.total_memories || '?') + ' total');
+      const inp = document.getElementById('memory-add-fact'); if(inp) inp.value = '';
+      const cat = document.getElementById('memory-add-category'); if(cat) cat.value = '';
+      await _loadMemoryList();
+    } else {
+      if(window.showToast) showToast('× ' + ((r && r.error) || 'save failed'));
+    }
+  } catch(e){
+    if(window.showToast) showToast('× ' + String(e).slice(0, 80));
+  }
+}
+
+async function _bumpMemory(prefix, delta){
+  if(!prefix) return;
+  try {
+    const r = await postSync({action: 'memory_bump', fact_prefix: prefix, delta: delta});
+    if(window.showToast) showToast(delta > 0 ? '+ confidence' : '− confidence');
+    await _loadMemoryList();
+  } catch(e){
+    if(window.showToast) showToast('× ' + String(e).slice(0, 80));
+  }
+}
+
+async function _forgetMemoryRow(prefix){
+  if(!prefix) return;
+  if(!confirm('Forget this memory?')) return;
+  try {
+    const r = await postSync({action: 'memory_forget', fact_prefix: prefix});
+    if(window.showToast) showToast('Forgotten · ' + ((r && r.removed) || 0));
+    await _loadMemoryList();
+  } catch(e){
+    if(window.showToast) showToast('× ' + String(e).slice(0, 80));
+  }
+}
+
+// "Remember this" — generic helper that opens the memory drawer pre-filled with the row's title/entity.
+function _rememberThis(opts){
+  // opts: {fact, entity, category, type}
+  const fact = (opts && opts.fact) || '';
+  const entity = (opts && opts.entity) || '';
+  const category = (opts && opts.category) || 'general';
+  const type = (opts && opts.type) || 'preference';
+  openMemoryDrawer().then(() => {
+    setTimeout(() => {
+      const inp = document.getElementById('memory-add-fact'); if(inp) { inp.value = fact; inp.focus(); }
+      const ts = document.getElementById('memory-add-type'); if(ts) ts.value = type;
+      const es = document.getElementById('memory-add-entity'); if(es) es.value = entity.toLowerCase();
+      const cs = document.getElementById('memory-add-category'); if(cs) cs.value = category;
+    }, 50);
+  });
+}
 
 // Bite 17 hotfix: defensive Ask-Elly Enter handler — survives inline onkeydown breakage.
 (function _wireAskEllyEnter(){

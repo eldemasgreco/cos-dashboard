@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-25T22:52:07Z -->
+<!-- cache-buster: 2026-04-25T23:30:00Z -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -2100,6 +2100,33 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 .signals-row-meta { font-size: 10px; color: var(--text-3); margin-top: 2px; }
 /* [Bite 11] Weekly Rollup */
 .rollup-card { background: linear-gradient(135deg, rgba(155,94,47,0.04), rgba(26,58,92,0.04)); border: 0.5px solid var(--border); border-radius: 12px; padding: 16px 18px; margin: 0 0 16px; }
+/* ── Bite 28: "What Elly Learned" card ── */
+.learned-card { background: linear-gradient(135deg, rgba(112,84,52,0.05), rgba(56,80,108,0.04)); border: 0.5px solid var(--border); border-radius: 12px; padding: 14px 16px; margin: 0 0 16px; transition: max-height 0.25s ease; overflow: hidden; }
+.learned-card.collapsed .learned-body { display: none; }
+.learned-card.collapsed .learned-toggle { transform: rotate(-90deg); }
+.learned-head { display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; }
+.learned-eyebrow { font-family: var(--font-serif, Georgia, serif); font-size: 13px; font-weight: 500; color: var(--text); letter-spacing: 0.02em; display: inline-flex; align-items: center; gap: 6px; }
+.learned-spark { color: #b07a3a; font-size: 14px; }
+.learned-meta { font-size: 11px; color: var(--text-3, #888); opacity: 0.75; }
+.learned-toggle { font-size: 13px; color: var(--text-3, #888); transition: transform 0.2s ease; margin-left: 6px; }
+.learned-body { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.learned-empty { font-size: 12px; color: var(--text-3, #888); padding: 6px 0; line-height: 1.45; }
+.learned-row { background: var(--card, #fff); border: 0.5px solid var(--border-subtle, rgba(0,0,0,0.06)); border-radius: 8px; padding: 9px 11px; display: flex; flex-direction: column; gap: 5px; transition: opacity 0.2s ease; }
+.learned-row.acted { opacity: 0.4; }
+.learned-row-fact { font-size: 13px; color: var(--text); line-height: 1.4; }
+.learned-row-meta { display: flex; flex-wrap: wrap; gap: 6px; font-size: 10.5px; color: var(--text-3, #888); align-items: center; }
+.learned-row-meta .lt-tag { padding: 1px 6px; border-radius: 999px; font-weight: 500; letter-spacing: 0.02em; text-transform: lowercase; }
+.learned-row-meta .lt-tag.pattern { background: rgba(176, 122, 58, 0.10); color: #8a5a26; }
+.learned-row-meta .lt-tag.preference { background: rgba(56, 80, 108, 0.10); color: #38506c; }
+.learned-row-meta .lt-tag.observation { background: rgba(120, 120, 120, 0.10); color: #666; }
+.learned-row-meta .lt-tag.decision { background: rgba(120, 50, 50, 0.10); color: #823636; }
+.learned-row-meta .lt-conf { opacity: 0.75; }
+.learned-row-actions { display: flex; gap: 6px; margin-top: 2px; }
+.learned-act { background: transparent; border: 0.5px solid var(--border-med, rgba(0,0,0,0.10)); border-radius: 6px; padding: 3px 9px; font-size: 12px; cursor: pointer; color: var(--text-2, #555); transition: all 0.15s ease; }
+.learned-act:hover { background: var(--bg-2, #f6f4ef); border-color: var(--text-3, #888); }
+.learned-act.danger:hover { background: rgba(180, 60, 60, 0.08); border-color: #b03b3b; color: #b03b3b; }
+.learned-deprecate { font-size: 11px; color: var(--text-3, #888); padding: 6px 0 0; border-top: 0.5px dashed var(--border-subtle, rgba(0,0,0,0.06)); margin-top: 4px; }
+
 .rollup-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .rollup-eyebrow { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); }
 .rollup-headline { font-family: var(--font-serif); font-size: 17px; font-weight: 500; line-height: 1.3; margin-bottom: 12px; }
@@ -2790,6 +2817,16 @@ body.dark {
         <span class="rollup-actions-meta" id="rollup-actions-meta"></span>
       </div>
     </section>
+      <section class="learned-card" id="learned-card">
+        <div class="learned-head" onclick="toggleLearnedCard()" title="Click to collapse / expand">
+          <span class="learned-eyebrow"><span class="learned-spark">&#10022;</span>What Elly Learned</span>
+          <span class="learned-meta" id="learned-meta"></span>
+          <span class="learned-toggle" id="learned-toggle">&#9662;</span>
+        </div>
+        <div class="learned-body" id="learned-body">
+          <div class="learned-empty">Loading…</div>
+        </div>
+      </section>
       <div class="tabs-hdr">
         <button class="tab-btn" data-tab="schedule" onclick="switchTab('schedule', this)" style="display:none">
           Schedule <span class="tab-unread" id="sched-badge" style="display:none">0</span>
@@ -6995,6 +7032,138 @@ function _rememberThis(opts){
 }
 
 
+
+// ===== Bite 28: "What Elly Learned" card =====
+window.LEARNED_CACHE = null;
+window.LEARNED_LAST_FETCH = 0;
+window.LEARNED_ACTED = window.LEARNED_ACTED || {};
+
+function toggleLearnedCard(){
+  const c = document.getElementById('learned-card');
+  if(!c) return;
+  c.classList.toggle('collapsed');
+  try { localStorage.setItem('learnedCollapsed', c.classList.contains('collapsed') ? '1' : '0'); } catch(e){}
+}
+
+function _learnedDefaultCollapsedState(){
+  try {
+    const persisted = localStorage.getItem('learnedCollapsed');
+    if(persisted === '0') return false;
+    if(persisted === '1') return true;
+  } catch(e){}
+  const today = new Date();
+  if(today.getDay() === 1) return false;
+  return true;
+}
+
+function _lEsc(s){ return String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])); }
+
+async function _fetchLearnedDiff(){
+  const body = document.getElementById('learned-body');
+  if(!body) return;
+  try {
+    const r = await postSync({action: 'learned_diff'});
+    window.LEARNED_CACHE = r;
+    window.LEARNED_LAST_FETCH = Date.now();
+    _renderLearned(r);
+  } catch(e){
+    body.innerHTML = '<div class="learned-empty">Could not reach learned_diff: ' + _lEsc(String(e).slice(0, 80)) + '</div>';
+  }
+}
+
+function _renderLearned(r){
+  const body = document.getElementById('learned-body');
+  const meta = document.getElementById('learned-meta');
+  if(!body) return;
+  const facts = (r && r.new_facts) || [];
+  const deprecates = (r && r.deprecate_facts) || [];
+  const asOf = r && r.as_of;
+
+  if(meta){
+    if(asOf){
+      try { meta.textContent = 'as of ' + new Date(asOf).toLocaleDateString(undefined, {month:'short', day:'numeric'}); }
+      catch(e){ meta.textContent = ''; }
+    } else { meta.textContent = ''; }
+  }
+
+  if(!facts.length && !deprecates.length){
+    const note = (r && r.note) ? r.note : 'No new patterns this week.';
+    body.innerHTML = '<div class="learned-empty">' + _lEsc(note) + '</div>';
+    return;
+  }
+
+  const rows = facts.map(function(f){
+    const fact = String(f.fact || '');
+    const type = String(f.type || 'pattern').toLowerCase();
+    const ent = String(f.entity || '').toLowerCase();
+    const conf = (typeof f.confidence === 'number') ? f.confidence : 0.7;
+    const factKey = fact.slice(0, 50).replace(/'/g, "\\'");
+    const acted = window.LEARNED_ACTED[factKey] ? ' acted' : '';
+    return '<div class="learned-row' + acted + '" data-prefix="' + _lEsc(factKey) + '">' +
+      '<div class="learned-row-fact">' + _lEsc(fact) + '</div>' +
+      '<div class="learned-row-meta">' +
+        '<span class="lt-tag ' + _lEsc(type) + '">' + _lEsc(type) + '</span>' +
+        (ent ? '<span>' + _lEsc(ent) + '</span>' : '') +
+        '<span class="lt-conf">conf ' + Math.round(conf * 100) + '%</span>' +
+      '</div>' +
+      '<div class="learned-row-actions">' +
+        '<button class="learned-act" onclick="_learnedThumbsUp(this)" title="Confirm \u2014 bumps confidence">&#128077;</button>' +
+        '<button class="learned-act danger" onclick="_learnedThumbsDown(this)" title="Forget this pattern">&#128078;</button>' +
+        '<button class="learned-act" onclick="_learnedEdit(this)" title="Edit in memory drawer">&#9999;</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  let html = rows;
+  if(deprecates.length){
+    html += '<div class="learned-deprecate">Decayed: ' +
+      deprecates.map(function(d){ return _lEsc(String(d).slice(0, 60)); }).join(' \u00b7 ') +
+      '</div>';
+  }
+  body.innerHTML = html;
+}
+
+async function _learnedThumbsUp(btn){
+  const row = btn.closest('.learned-row'); if(!row) return;
+  const prefix = row.dataset.prefix; if(!prefix) return;
+  try {
+    await postSync({action: 'memory_bump', fact_prefix: prefix, delta: 0.25});
+    window.LEARNED_ACTED[prefix] = 'up';
+    row.classList.add('acted');
+    if(window.showToast) showToast('Confidence bumped');
+  } catch(e){ if(window.showToast) showToast('x ' + String(e).slice(0, 80)); }
+}
+
+async function _learnedThumbsDown(btn){
+  const row = btn.closest('.learned-row'); if(!row) return;
+  const prefix = row.dataset.prefix; if(!prefix) return;
+  if(!confirm('Forget this learned pattern?')) return;
+  try {
+    await postSync({action: 'memory_forget', fact_prefix: prefix});
+    window.LEARNED_ACTED[prefix] = 'down';
+    row.classList.add('acted');
+    if(window.showToast) showToast('Forgotten');
+  } catch(e){ if(window.showToast) showToast('x ' + String(e).slice(0, 80)); }
+}
+
+function _learnedEdit(btn){
+  if(typeof openMemoryDrawer === 'function') openMemoryDrawer();
+}
+
+(function _initLearnedCard(){
+  function bootstrap(){
+    const c = document.getElementById('learned-card');
+    if(!c) return;
+    if(_learnedDefaultCollapsedState()) c.classList.add('collapsed');
+    _fetchLearnedDiff();
+    setInterval(_fetchLearnedDiff, 30 * 60 * 1000);
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', bootstrap);
+  } else {
+    bootstrap();
+  }
+})();
 
 // Bite 32: mirror banner content into right-rail cards (Markets, Breaking news).
 (function _mirrorBannersToRail(){

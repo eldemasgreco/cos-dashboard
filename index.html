@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-25T22:31:11Z -->
+<!-- cache-buster: 2026-04-25T22:52:07Z -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -3061,11 +3061,19 @@ document.addEventListener('click', (e)=>{
 
 // ── Clock ──
 function renderClock(){
+  // Bite 28: defensive header date — validate CURRENT_TZ each tick; fall back to
+  // browser-resolved TZ if invalid (handles travel + bad CFG values that would
+  // silently leave the header on a stale TZ).
   const d = new Date();
-  const hr = new Intl.DateTimeFormat('en-GB',{ hour:'2-digit', minute:'2-digit', hour12:false, timeZone: CURRENT_TZ }).format(d);
-  const dayName = new Intl.DateTimeFormat('en-US',{ weekday:'long', timeZone: CURRENT_TZ }).format(d);
-  const dateStr = new Intl.DateTimeFormat('en-US',{ day:'numeric', month:'long', timeZone: CURRENT_TZ }).format(d);
-  const tzAbbr = (new Intl.DateTimeFormat('en',{ timeZoneName:'short', timeZone: CURRENT_TZ }).formatToParts(d).find(p=>p.type==='timeZoneName')||{}).value || '';
+  let tz = CURRENT_TZ;
+  try { new Intl.DateTimeFormat('en', {timeZone: tz}); } catch(_) { tz = null; }
+  if(!tz) {
+    try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(_) { tz = 'UTC'; }
+  }
+  const hr = new Intl.DateTimeFormat('en-GB',{ hour:'2-digit', minute:'2-digit', hour12:false, timeZone: tz }).format(d);
+  const dayName = new Intl.DateTimeFormat('en-US',{ weekday:'long', timeZone: tz }).format(d);
+  const dateStr = new Intl.DateTimeFormat('en-US',{ day:'numeric', month:'long', timeZone: tz }).format(d);
+  const tzAbbr = (new Intl.DateTimeFormat('en',{ timeZoneName:'short', timeZone: tz }).formatToParts(d).find(p=>p.type==='timeZoneName')||{}).value || '';
   $('hdr-time').textContent = hr;
   $('hdr-tz-abbr').textContent = tzAbbr;
   $('hdr-date').textContent = dateStr;

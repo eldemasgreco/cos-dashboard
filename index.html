@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-25T21:43:57Z -->
+<!-- cache-buster: 2026-04-25T21:45:28Z -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -2016,8 +2016,18 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 .elly-rollup .rollup-actions-btn.primary { background: var(--green); color: #fff; border-color: var(--green); }
 .elly-rollup .rollup-actions-btn.primary:hover { filter: brightness(0.92); }
 .elly-rollup .rollup-actions-meta { font-size: 10px; color: var(--text-3); margin-left: auto; }
-/* Right-rail explicitly hides rollup since it's now in center */
-.col-right .elly-rollup { display: none; }
+/* Bite 31.1: right-rail tuned variant — keep richness but compact for narrower column */
+.col-right .elly-rollup { padding: 14px 16px 12px; margin: 0 0 12px; }
+.col-right .elly-rollup .rollup-headline { font-size: 16px; line-height: 1.3; margin: 6px 0 10px; }
+.col-right .elly-rollup .rollup-says { padding: 9px 12px; font-size: 13px; margin: 4px 0 12px; }
+.col-right .elly-rollup .rollup-says .rollup-says-prefix { font-size: 8.5px; margin-right: 7px; }
+.col-right .elly-rollup .rollup-grid { grid-template-columns: 1fr; gap: 8px; }
+.col-right .elly-rollup .rollup-col { padding: 9px 11px; }
+.col-right .elly-rollup .rollup-col-label { font-size: 9px; padding-bottom: 4px; margin-bottom: 4px; }
+.col-right .elly-rollup .rollup-row { padding: 4px 0; }
+.col-right .elly-rollup .rollup-row-text { font-size: 12px; }
+.col-right .elly-rollup .rollup-actions { margin-top: 10px; padding-top: 8px; border-top: 0.5px solid var(--border); }
+.col-right .elly-rollup .rollup-actions-btn { padding: 4px 9px; font-size: 10.5px; }
 /* ───────── end Bite 31 ───────── */
 /* ───────── Bite 30: inline Ask-Elly answer ─────── */
 .copilot-ask-answer { display: none; margin-top: 10px; padding: 12px 14px; border-radius: 8px; background: var(--card); border: 0.5px solid var(--border-med); animation: caa-fadein .25s var(--ease); }
@@ -2636,25 +2646,7 @@ body.dark {
         </div>
         </section>
 
-        <section class="rollup-card elly-rollup" id="rollup-card">
-      <div class="rollup-head">
-        <span class="rollup-eyebrow"><span class="elly-pulse"></span>Elly&rsquo;s Week</span>
-        <span class="rollup-eyebrow" id="rollup-meta" style="opacity:0.65;"></span>
-      </div>
-      <div class="rollup-says" id="rollup-says"></div>
-      <div class="rollup-headline" id="rollup-headline">Loading&hellip;</div>
-      <div class="rollup-grid">
-        <div class="rollup-col shipped"><div class="rollup-col-label">Shipped &middot; last 7d</div><div id="rollup-shipped"></div></div>
-        <div class="rollup-col slipped"><div class="rollup-col-label">Slipped</div><div id="rollup-slipped"></div></div>
-        <div class="rollup-col focus"><div class="rollup-col-label">Focus &middot; next 7d</div><div id="rollup-focus"></div></div>
-      </div>
-      <div class="rollup-note" id="rollup-note"></div>
-      <div class="rollup-actions">
-        <button class="rollup-actions-btn primary" onclick="_fetchWeeklyRollup(true)" title="Force a fresh Sonnet pass">Refresh</button>
-        <button class="rollup-actions-btn" onclick="_openRollupRaw()" title="See the raw data feeding this">Raw data</button>
-        <span class="rollup-actions-meta" id="rollup-actions-meta"></span>
-      </div>
-    </section>
+        
 
 
 
@@ -2745,6 +2737,25 @@ body.dark {
         <button class="qc-btn" onclick="submitQuickCapture()" title="Save to Notes (Quick Capture)">+</button>
       </div>
       
+      <section class="rollup-card elly-rollup" id="rollup-card">
+      <div class="rollup-head">
+        <span class="rollup-eyebrow"><span class="elly-pulse"></span>Elly&rsquo;s Week</span>
+        <span class="rollup-eyebrow" id="rollup-meta" style="opacity:0.65;"></span>
+      </div>
+      <div class="rollup-says" id="rollup-says"></div>
+      <div class="rollup-headline" id="rollup-headline">Loading&hellip;</div>
+      <div class="rollup-grid">
+        <div class="rollup-col shipped"><div class="rollup-col-label">Shipped &middot; last 7d</div><div id="rollup-shipped"></div></div>
+        <div class="rollup-col slipped"><div class="rollup-col-label">Slipped</div><div id="rollup-slipped"></div></div>
+        <div class="rollup-col focus"><div class="rollup-col-label">Focus &middot; next 7d</div><div id="rollup-focus"></div></div>
+      </div>
+      <div class="rollup-note" id="rollup-note"></div>
+      <div class="rollup-actions">
+        <button class="rollup-actions-btn primary" onclick="_fetchWeeklyRollup(true)" title="Force a fresh Sonnet pass">Refresh</button>
+        <button class="rollup-actions-btn" onclick="_openRollupRaw()" title="See the raw data feeding this">Raw data</button>
+        <span class="rollup-actions-meta" id="rollup-actions-meta"></span>
+      </div>
+    </section>
       <div class="tabs-hdr">
         <button class="tab-btn" data-tab="schedule" onclick="switchTab('schedule', this)" style="display:none">
           Schedule <span class="tab-unread" id="sched-badge" style="display:none">0</span>

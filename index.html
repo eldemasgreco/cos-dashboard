@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-25T20:26:24Z -->
+<!-- cache-buster: 2026-04-25T21:06:30Z -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1864,6 +1864,38 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 .cockpit-schedule .sched-day-hdr .dh-weekday { font-size: 19px; }
 .cockpit-schedule .cal-toolbar { padding: 0 0 10px; margin: 0 0 8px; border-bottom: 0.5px solid var(--border); }
 .cockpit-schedule #schedule-body { min-height: 240px; }
+/* ───────── Bite 22: Hour-grid Schedule (Day/Week views in center column) ─────── */
+.sched-grid { position: relative; display: grid; grid-template-columns: 56px 1fr; gap: 0; background: var(--card); border: 0.5px solid var(--border); border-radius: 8px; margin-top: 8px; overflow: hidden; }
+.sched-grid.week { grid-template-columns: 56px repeat(7, 1fr); }
+.sched-grid-hour-col { display: flex; flex-direction: column; border-right: 0.5px solid var(--border); background: var(--bg); }
+.sched-grid-hour-cell { height: 50px; padding: 2px 6px 2px 8px; font-size: 10px; font-variant-numeric: tabular-nums; color: var(--text-3); border-bottom: 0.5px dotted var(--border); display: flex; align-items: flex-start; }
+.sched-grid-day-col { position: relative; border-right: 0.5px dotted var(--border); min-height: calc(15 * 50px); }
+.sched-grid-day-col:last-child { border-right: 0; }
+.sched-grid-day-col .grid-hour-rule { position: absolute; left: 0; right: 0; height: 1px; background: rgba(22,16,11,0.04); pointer-events: none; }
+.sched-grid-day-hdr { position: sticky; top: 0; z-index: 3; background: var(--card); padding: 8px 6px 6px; border-bottom: 0.5px solid var(--border-med); display: flex; align-items: baseline; gap: 6px; }
+.sched-grid-day-hdr .gh-weekday { font-family: var(--font-serif); font-size: 14px; font-style: italic; color: var(--text); }
+.sched-grid-day-hdr .gh-date { font-family: -apple-system, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-3); }
+.sched-grid-day-hdr.is-today .gh-weekday { color: var(--green); font-style: normal; font-weight: 600; }
+.sched-grid-day-hdr.is-today .gh-date { color: var(--green); }
+.sched-grid-event { position: absolute; left: 4px; right: 4px; padding: 4px 6px 4px 7px; border-radius: 5px; border-left: 3px solid var(--text-3); background: var(--card-2); cursor: pointer; overflow: hidden; transition: filter .15s var(--ease), transform .15s var(--ease), box-shadow .15s var(--ease); z-index: 2; }
+.sched-grid-event:hover { filter: brightness(0.96); transform: translateX(1px); box-shadow: 0 1px 4px rgba(0,0,0,0.10); z-index: 4; }
+.sched-grid-event.entity-afsh    { border-left-color: var(--green);  background: var(--green-bg); }
+.sched-grid-event.entity-illume  { border-left-color: var(--blue);   background: var(--blue-bg); }
+.sched-grid-event.entity-spade   { border-left-color: var(--purple); background: var(--purple-bg); }
+.sched-grid-event.entity-personal{ border-left-color: var(--teal);   background: var(--teal-bg); }
+.sched-grid-event.past { opacity: 0.45; }
+.sched-grid-event.now  { box-shadow: 0 0 0 1px var(--red); }
+.sched-grid-event-title { font-size: 12px; font-weight: 600; line-height: 1.2; color: var(--text); white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+.sched-grid-event-time  { font-size: 10px; color: var(--text-2); margin-top: 1px; font-variant-numeric: tabular-nums; }
+.sched-grid-event-loc   { font-size: 10px; color: var(--text-3); margin-top: 1px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+.sched-grid-now-line { position: absolute; left: 0; right: 0; height: 2px; background: var(--red); z-index: 5; pointer-events: none; box-shadow: 0 0 6px rgba(181,58,24,0.4); }
+.sched-grid-now-line::before { content: ""; position: absolute; left: -4px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 0 rgba(181,58,24,0.4); animation: ellyPulse 2.1s cubic-bezier(0.4,0,0.2,1) infinite; }
+.sched-grid-allday { padding: 4px 8px; border-bottom: 0.5px solid var(--border); background: rgba(160,72,28,0.04); display: flex; flex-wrap: wrap; gap: 4px; }
+.sched-grid-allday-pill { font-size: 10px; padding: 2px 6px; border-radius: 3px; background: var(--card); border: 0.5px solid var(--border); cursor: pointer; }
+/* Right rail still uses agenda list — center column only gets the grid. */
+.col-right .sched-grid { display: none; }
+/* ───────── end Bite 22 ───────── */
+
 /* Right-rail rollup gets compacted slightly */
 .col-right .elly-rollup { margin: 0 0 12px; padding: 14px 16px; }
 .col-right .elly-rollup .rollup-headline { font-size: 15.5px; }
@@ -2391,7 +2423,7 @@ body.dark {
       <div class="copilot-insight" id="copilot-insight"></div>
       <div class="copilot-ask">
         <span class="copilot-ask-prefix">Ask Elly</span>
-        <input type="text" id="copilot-ask-input" placeholder="anything &mdash; priorities, comms, schedule&hellip;" onkeydown="if(event.key===\'Enter\') _copilotAsk()" />
+        <input type="text" id="copilot-ask-input" placeholder="anything &mdash; priorities, comms, schedule&hellip;" onkeydown="if(event.key==='Enter') _copilotAsk()" />
       </div>
     </section>
 
@@ -3823,12 +3855,211 @@ function _calDateCell(d, e){
   };
 }
 
+// Bite 22 — hour-grid renderer used by center-mount Schedule for Day/Week views.
+function _renderScheduleHourGrid(host, badge, TZ){
+  const HOUR_PX = 50;     // 50px per hour
+  const HOUR_START = 7;   // 07:00 visible start
+  const HOUR_END = 23;    // 23:00 visible end (16h tall)
+  const ROWS = HOUR_END - HOUR_START;
+  const _esc = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+  const _entKey = e => {
+    const x = (typeof _calEntityOf === 'function') ? (_calEntityOf(e) || '') : (e.entity || '');
+    const v = String(x).toLowerCase();
+    if(v.includes('afsh'))    return 'afsh';
+    if(v.includes('illume'))  return 'illume';
+    if(v.includes('spade'))   return 'spade';
+    if(v.includes('personal'))return 'personal';
+    return 'other';
+  };
+  const _endOf = e => {
+    if(e.end){ const d = new Date(e.end); if(!isNaN(d.getTime())) return d; }
+    if(typeof e.duration_min === 'number') return new Date(new Date(e.start).getTime() + e.duration_min*60000);
+    if(typeof e.duration === 'number')     return new Date(new Date(e.start).getTime() + e.duration*60000);
+    return new Date(new Date(e.start).getTime() + 60*60000);
+  };
+  const _ymdKeyTZ = d => {
+    try { return new Intl.DateTimeFormat('en-CA', {year:'numeric', month:'2-digit', day:'2-digit', timeZone: TZ}).format(d); }
+    catch(_){ return d.toISOString().slice(0,10); }
+  };
+  const _timeTZ = d => {
+    try { return new Intl.DateTimeFormat('en-US', {hour:'2-digit', minute:'2-digit', hour12:false, timeZone: TZ}).format(d); }
+    catch(_){ return ''; }
+  };
+  const _localHourMin = d => {
+    // Returns minutes from local-TZ midnight using Intl parts
+    try {
+      const parts = new Intl.DateTimeFormat('en-US', {hour:'2-digit', minute:'2-digit', hour12:false, timeZone: TZ}).formatToParts(d);
+      let h = 0, m = 0;
+      for(const p of parts){ if(p.type==='hour') h = parseInt(p.value,10) || 0; if(p.type==='minute') m = parseInt(p.value,10) || 0; }
+      return h*60 + m;
+    } catch(_) { return d.getHours()*60 + d.getMinutes(); }
+  };
+  const now = new Date();
+
+  const events = (DD.schedule || []).filter(e => {
+    if(!e || !e.start) return false;
+    if(CAL_ENTITY && _calEntityOf(e) !== CAL_ENTITY) return false;
+    const d = new Date(e.start); return !isNaN(d.getTime());
+  }).map(e => {
+    const _date = new Date(e.start);
+    return {...e, _date, _end: _endOf(e), _entKey: _entKey(e), _allDay: !!(e.all_day || e.allDay)};
+  });
+
+  // Build day list
+  const view = (typeof CAL_VIEW !== 'undefined' && CAL_VIEW) || 'day';
+  const anchor = CAL_ANCHOR || new Date();
+  let days = [];
+  if(view === 'day'){
+    const d = new Date(anchor); d.setHours(0,0,0,0);
+    days.push(d);
+  } else {
+    const d = new Date(anchor); d.setHours(0,0,0,0);
+    const wd = d.getDay();
+    d.setDate(d.getDate() - (wd === 0 ? 6 : wd - 1));
+    for(let i = 0; i < 7; i++){
+      const dd = new Date(d); dd.setDate(d.getDate() + i);
+      days.push(dd);
+    }
+  }
+
+  // Bucket events by day key
+  const byDay = {};
+  days.forEach(d => byDay[_ymdKeyTZ(d)] = {timed: [], allDay: []});
+  events.forEach(e => {
+    const k = _ymdKeyTZ(e._date);
+    if(!byDay[k]) return;
+    if(e._allDay) byDay[k].allDay.push(e);
+    else byDay[k].timed.push(e);
+  });
+
+  // Build view title for the existing label
+  const labelEl = document.getElementById('cal-period-label');
+  if(labelEl){
+    if(view === 'day'){
+      try {
+        labelEl.textContent = new Intl.DateTimeFormat('en-US', {weekday:'long', month:'long', day:'numeric', timeZone: TZ}).format(days[0]);
+      } catch(_){ labelEl.textContent = ''; }
+    } else {
+      try {
+        const a = new Intl.DateTimeFormat('en-US', {month:'short', day:'numeric', timeZone: TZ}).format(days[0]);
+        const b = new Intl.DateTimeFormat('en-US', {month:'short', day:'numeric', timeZone: TZ}).format(days[6]);
+        labelEl.textContent = 'Week of ' + a + ' \u2014 ' + b;
+      } catch(_){ labelEl.textContent = ''; }
+    }
+  }
+
+  window.__SP = {};
+  let html = '';
+  // Header row inside the grid (sticky)
+  html += '<div class="sched-view-label"><span>' + (view === 'day' ? 'Day' : 'Week') + '</span><span>' + events.length + ' events</span></div>';
+  html += '<div class="sched-grid ' + (view === 'week' ? 'week' : 'day') + '">';
+  // Hour column
+  html += '<div class="sched-grid-hour-col"><div class="sched-grid-day-hdr" style="opacity:0">.</div>';
+  for(let h = HOUR_START; h < HOUR_END; h++){
+    html += '<div class="sched-grid-hour-cell">' + (h < 10 ? '0' + h : h) + ':00</div>';
+  }
+  html += '</div>';
+  // Day columns
+  const todayKey = _ymdKeyTZ(now);
+  days.forEach((d, di) => {
+    const k = _ymdKeyTZ(d);
+    const bucket = byDay[k] || {timed: [], allDay: []};
+    const isToday = (k === todayKey);
+    let weekday, datePart;
+    try { weekday = new Intl.DateTimeFormat('en-US', {weekday:'short', timeZone: TZ}).format(d); } catch(_){ weekday = ''; }
+    try { datePart = new Intl.DateTimeFormat('en-US', {month:'short', day:'numeric', timeZone: TZ}).format(d).toUpperCase(); } catch(_){ datePart = ''; }
+    html += '<div class="sched-grid-day-col">';
+    html += '<div class="sched-grid-day-hdr' + (isToday ? ' is-today' : '') + '">' +
+            '<span class="gh-weekday">' + _esc(weekday) + '</span>' +
+            '<span class="gh-date">' + _esc(datePart) + '</span></div>';
+    // All-day pills
+    if(bucket.allDay.length){
+      html += '<div class="sched-grid-allday">';
+      bucket.allDay.forEach((e, i) => {
+        const key = 'gv::' + di + '::ad::' + i; window.__SP[key] = e;
+        html += '<span class="sched-grid-allday-pill" data-k="' + key + '">' + _esc((e.title || '').slice(0, 26)) + '</span>';
+      });
+      html += '</div>';
+    }
+    // Hour rules
+    for(let h = 0; h < ROWS; h++){
+      html += '<div class="grid-hour-rule" style="top:' + (h * HOUR_PX) + 'px;"></div>';
+    }
+    // Place timed events with column packing for overlaps
+    const timed = bucket.timed.slice().sort((a, b) => a._date - b._date);
+    const cols = [];  // array of arrays of events; cols[i] = events placed in column i
+    timed.forEach(e => {
+      let placed = false;
+      for(let ci = 0; ci < cols.length; ci++){
+        const lastInCol = cols[ci][cols[ci].length - 1];
+        if(lastInCol._end <= e._date){
+          cols[ci].push(e);
+          e._col = ci;
+          placed = true;
+          break;
+        }
+      }
+      if(!placed){ e._col = cols.length; cols.push([e]); }
+    });
+    const totalCols = Math.max(1, cols.length);
+    timed.forEach((e, i) => {
+      const startMin = _localHourMin(e._date);
+      const endMin   = _localHourMin(e._end);
+      const fromTop  = ((startMin / 60) - HOUR_START) * HOUR_PX;
+      const heightPx = Math.max(20, ((endMin - startMin) / 60) * HOUR_PX - 2);
+      // If startMin < HOUR_START*60 or endMin > HOUR_END*60, clip the block (still draw, but hint)
+      if(endMin <= HOUR_START * 60) return;     // before visible window — skip
+      if(startMin >= HOUR_END * 60) return;     // after visible window — skip
+      const colWidth = 100 / totalCols;
+      const leftPct = (e._col || 0) * colWidth;
+      const isPast = e._end < now;
+      const isNow  = e._date <= now && e._end > now;
+      const cls = 'sched-grid-event entity-' + (e._entKey || 'other') + (isPast ? ' past' : '') + (isNow ? ' now' : '');
+      const k = 'gv::' + di + '::ev::' + i; window.__SP[k] = e;
+      html += '<div class="' + cls + '" data-k="' + k + '" ' +
+              'style="top:' + fromTop + 'px; height:' + heightPx + 'px; ' +
+              'left: calc(' + leftPct + '% + 4px); width: calc(' + colWidth + '% - 8px);">' +
+              '<div class="sched-grid-event-title">' + _esc(e.title || '') + '</div>' +
+              '<div class="sched-grid-event-time">' + _timeTZ(e._date) + '\u2013' + _timeTZ(e._end) + '</div>' +
+              (e.location ? '<div class="sched-grid-event-loc">' + _esc(String(e.location).slice(0, 28)) + '</div>' : '') +
+              '</div>';
+    });
+    // Now-line (only on today's column)
+    if(isToday){
+      const nowMin = _localHourMin(now);
+      const nowTop = ((nowMin / 60) - HOUR_START) * HOUR_PX;
+      if(nowMin >= HOUR_START * 60 && nowMin <= HOUR_END * 60){
+        html += '<div class="sched-grid-now-line" style="top:' + nowTop + 'px;"></div>';
+      }
+    }
+    html += '</div>';
+  });
+  html += '</div>';
+
+  host.innerHTML = html;
+  host.querySelectorAll('[data-k]').forEach(el => el.addEventListener('click', () => {
+    const evt = window.__SP[el.dataset.k];
+    if(evt && typeof openScheduleDrawer === 'function') openScheduleDrawer(evt);
+  }));
+  if(badge){ badge.textContent = events.length; badge.style.display = events.length ? 'inline-block' : 'none'; }
+}
+
 function renderSchedule(){
   // [Bite 18] Fantastical-grade Schedule — bigger type, entity stripes, time start+end, day headers, now-line.
+  // [Bite 22] In the center mount + day/week views, render hour-grid instead of agenda list.
   const host = document.getElementById('schedule-body'); if(!host) return;
   const badge = document.getElementById('sched-badge');
   const TZ = (typeof CURRENT_TZ !== 'undefined' && CURRENT_TZ) ? CURRENT_TZ : 'Europe/Madrid';
   window.__SP = {};
+  // Bite 22: hour-grid for center-mount Day/Week views
+  const _isCenterMount = !!host.closest('.cockpit-schedule');
+  const _gridView = (typeof CAL_VIEW !== 'undefined' && CAL_VIEW) || 'day';
+  if(_isCenterMount && (_gridView === 'day' || _gridView === 'week')){
+    try {
+      _renderScheduleHourGrid(host, badge, TZ);
+      return;
+    } catch(e){ console.warn('hour-grid render failed; falling back to agenda', e); }
+  }
 
   // Bite 18: derive end-time + entity normalization on each event up-front.
   const _entKey = e => {
@@ -5999,6 +6230,26 @@ restoreTab();
 // Keep schedule live as view cycles
 // Expose for debugging
 window.COS = { renderAll, postSync, cosAction, DD };
+
+// Bite 17 hotfix: defensive Ask-Elly Enter handler — survives inline onkeydown breakage.
+(function _wireAskEllyEnter(){
+  function _bind(){
+    const inp = document.getElementById('copilot-ask-input');
+    if(!inp || inp.dataset._enterBound === '1') return;
+    inp.dataset._enterBound = '1';
+    inp.addEventListener('keydown', function(ev){
+      if(ev.key === 'Enter' && typeof _copilotAsk === 'function'){
+        ev.preventDefault();
+        try { _copilotAsk(); } catch(e){ console.warn('_copilotAsk failed', e); }
+      }
+    });
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _bind);
+  else _bind();
+  // Also re-bind after any rerender that wipes listeners (defensive)
+  setInterval(_bind, 5000);
+})();
+
 </script>
 <div class="cmdk-overlay" id="cmdk-overlay" onclick="if(event.target===this)_closeCmdK()">
   <div class="cmdk">

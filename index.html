@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-24T18:16:31.688503Z ts=53-tz-auto -->
+<!-- cache-buster: 2026-04-25T22:31:11Z -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -215,9 +215,9 @@ body {
   background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
 }
 .wi-top { display: flex; align-items: flex-start; justify-content: space-between; position: relative; z-index: 1; }
-.wi-loc { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
-.wi-temp { font-size: 52px; font-weight: 200; letter-spacing: -3px; color: white; line-height: 1; }
-.wi-unit { font-size: 20px; font-weight: 300; color: rgba(255,255,255,0.5); vertical-align: top; margin-top: 8px; }
+.wi-loc { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-2); margin-bottom: 6px; }
+.wi-temp { font-size: 52px; font-weight: 200; letter-spacing: -3px; color: var(--text); line-height: 1; }
+.wi-unit { font-size: 20px; font-weight: 300; color: var(--text-2); vertical-align: top; margin-top: 8px; }
 .wi-icon { font-size: 36px; opacity: 0.85; }
 .wi-desc { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 6px; font-weight: 400; position: relative; z-index: 1; }
 .wi-stats { display: flex; gap: 0; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.12); position: relative; z-index: 1; }
@@ -286,7 +286,7 @@ body {
   width: 140px; height: 140px; border-radius: 50%;
   background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
 }
-.hero-eyebrow { font-size: 9.5px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 8px; position: relative; z-index: 1; }
+.hero-eyebrow { font-size: 9.5px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-2); margin-bottom: 8px; position: relative; z-index: 1; }
 .hero-title { font-size: 22px; font-weight: 800; letter-spacing: -0.7px; color: white; line-height: 1.2; margin-bottom: 10px; position: relative; z-index: 1; }
 .hero-lead { font-size: 13px; line-height: 1.65; color: rgba(255,255,255,0.75); margin-bottom: 14px; position: relative; z-index: 1; }
 .hero-lead strong { color: white; font-weight: 600; }
@@ -309,7 +309,7 @@ body {
   opacity: 0;
 }
 .center-hero.expanded .hero-body-ext { max-height: 200px; opacity: 1; }
-.hero-ext-text { font-size: 12.5px; color: rgba(255,255,255,0.7); line-height: 1.65; }
+.hero-ext-text { font-size: 12.5px; color: var(--text-2); line-height: 1.65; }
 .hero-ext-text strong { color: white; }
 
 /* ── CENTER PRIORITIES ── */
@@ -468,7 +468,7 @@ body {
 .col-right { overflow: hidden; }
 
 .right-col-inner { display: flex; flex-direction: column; height: 100%; }
-.tab-panels-area { flex: 1; overflow: hidden; position: relative; }
+.tab-panels-area { flex: 1 1 auto; overflow: hidden; position: relative; min-height: 360px; }
 
 /* ── RIGHT: TASK ROWS ── */
 .right-row {
@@ -2470,6 +2470,14 @@ body.dark {
   color: var(--ink-navy);
   line-height: 1.4;
 }
+
+/* Bite 27 hotfix: ensure right rail tabs panel has actual height + tab panels can scroll */
+.col-right .right-col-inner { display: flex; flex-direction: column; min-height: 100vh; }
+.col-right .tab-panels-area { min-height: 360px !important; flex: 1 1 auto; overflow-y: auto; }
+.col-right .tab-panel.active { display: block; min-height: 240px; }
+/* Bite 27: ensure cockpit row hover chips are actually clickable + above siblings */
+.cockpit-card .right-row .row-actions, .cockpit-card .project-row .row-actions { z-index: 5; }
+.cockpit-card .right-row, .cockpit-card .project-row { overflow: visible !important; }
 </style>
 </head>
 <body>
@@ -4384,7 +4392,8 @@ function _renderScheduleHourGrid(host, badge, TZ){
   window.__SP = {};
   let html = '';
   // Header row inside the grid (sticky)
-  html += '<div class="sched-view-label"><span>' + (view === 'day' ? 'Day' : 'Week') + '</span><span>' + events.length + ' events</span></div>';
+  const _vc = Object.values(byDay).reduce((n,b)=>n+b.timed.length+b.allDay.length,0);
+  html += '<div class="sched-view-label"><span>' + (view === 'day' ? 'Day' : 'Week') + '</span><span>' + _vc + ' visible / ' + events.length + ' total</span></div>';
   html += '<div class="sched-grid ' + (view === 'week' ? 'week' : 'day') + '">';
   // Hour column
   html += '<div class="sched-grid-hour-col"><div class="sched-grid-day-hdr" style="opacity:0">.</div>';
@@ -6770,7 +6779,82 @@ async function openMemoryDrawer(){
   if(!ov || !dr) return;
   ov.classList.add('open');
   dr.classList.add('open');
-  await _loadMemoryList();
+  try { await _loadMemoryList(); } catch(e){ console.warn('memory load failed', e); }
+}
+function closeMemoryDrawer(){
+  const ov = document.getElementById('memory-drawer-overlay');
+  const dr = document.getElementById('memory-drawer');
+  if(ov) ov.classList.remove('open');
+  if(dr) dr.classList.remove('open');
+}
+window._memoryFilter = window._memoryFilter || 'all';
+function _setMemoryFilter(btn, filter){
+  document.querySelectorAll('.memory-filter-btn').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  window._memoryFilter = filter || 'all';
+  _loadMemoryList();
+}
+async function _loadMemoryList(){
+  const list = document.getElementById('memory-list');
+  if(!list) return;
+  list.innerHTML = '<div class="memory-empty">Loading\u2026</div>';
+  const filter = window._memoryFilter || 'all';
+  const types = (filter === 'all') ? null : [filter];
+  try {
+    const r = await postSync({action: 'memory_read', types: types, limit: 80, min_confidence: 0.0});
+    if(!r || (r.error && !r.memories)){
+      list.innerHTML = '<div class="memory-empty">Memory unavailable: ' + ((r && r.error) || 'unknown') + '</div>';
+      return;
+    }
+    const rows = (r.memories || []).filter(m => m && m.fact);
+    if(!rows.length){
+      list.innerHTML = '<div class="memory-empty">No memory entries yet. Add one above, or interact with the dashboard \u2014 Elly will start writing entries automatically.</div>';
+      return;
+    }
+    const esc = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+    list.innerHTML = rows.map(m => {
+      const t = String(m.type || 'observation').toLowerCase();
+      const ent = String(m.entity || '').toLowerCase();
+      const cat = String(m.category || 'general');
+      const conf = (typeof m.confidence === 'number') ? m.confidence : 1.0;
+      const factEsc = esc(m.fact || '');
+      const factPrefix = (m.fact || '').slice(0, 50).replace(/'/g, "\\'");
+      return '<div class="memory-row entity-' + esc(ent || 'cross') + '" data-prefix="' + esc(factPrefix) + '">' +
+        '<div class="memory-row-fact">' + factEsc + '</div>' +
+        '<div class="memory-row-meta">' +
+          '<span class="mr-tag ' + esc(t) + '">' + esc(t) + '</span>' +
+          (cat ? '<span>' + esc(cat) + '</span>' : '') +
+          (ent ? '<span>' + esc(ent) + '</span>' : '') +
+          '<span class="mr-conf">conf ' + (conf * 100).toFixed(0) + '%</span>' +
+          (m.source ? '<span style="opacity:0.5">' + esc(m.source) + '</span>' : '') +
+        '</div>' +
+        '<div class="memory-row-actions">' +
+          '<button class="memory-row-action" onclick="_memBump(this, 0.1)" title="+confidence">+</button>' +
+          '<button class="memory-row-action" onclick="_memBump(this, -0.1)" title="-confidence">\u2212</button>' +
+          '<button class="memory-row-action danger" onclick="_memForget(this)" title="Forget">\u2715</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  } catch(e){
+    list.innerHTML = '<div class="memory-empty">Memory load failed: ' + String(e).slice(0, 120) + '</div>';
+  }
+}
+async function _memBump(btn, delta){
+  const row = btn.closest('.memory-row'); if(!row) return;
+  const prefix = row.dataset.prefix; if(!prefix) return;
+  try {
+    await postSync({action: 'memory_bump', fact_prefix: prefix, delta: Number(delta)});
+    await _loadMemoryList();
+  } catch(e){ if(window.showToast) showToast('\u00d7 ' + String(e).slice(0, 80)); }
+}
+async function _memForget(btn){
+  const row = btn.closest('.memory-row'); if(!row) return;
+  const prefix = row.dataset.prefix; if(!prefix) return;
+  if(!confirm('Forget this memory?')) return;
+  try {
+    await postSync({action: 'memory_forget', fact_prefix: prefix});
+    await _loadMemoryList();
+  } catch(e){ if(window.showToast) showToast('\u00d7 ' + String(e).slice(0, 80)); }
 }
 function closeMemoryDrawer(){
   const ov = document.getElementById('memory-drawer-overlay');

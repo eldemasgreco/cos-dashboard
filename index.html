@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-25T21:21:10Z -->
+<!-- cache-buster: 2026-04-25T21:37:41Z -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -6238,7 +6238,9 @@ function openSignalDrawer(sig){
     composer = '';
   }
 
-  detEl.innerHTML = bodyHtml + composer;
+  const _rememPayload_s = encodeURIComponent(JSON.stringify({fact: 'Re: ' + (s.title || s.summary || ''), entity: (s.entity || 'Personal').toLowerCase(), category: 'signal', type: 'observation', origin: s.url || s.gmail_link || ''}));
+  const rememBlock = '<div class="tdrawer-actions" style="margin-top:10px;"><button class="tdrawer-btn-remember" onclick="_rememberFromDrawer(\'' + _rememPayload_s + '\')">🧠 Remember this</button></div>';
+  detEl.innerHTML = bodyHtml + composer + rememBlock;
 
   const ov = document.getElementById('drawer-overlay');
   const dr = document.getElementById('detail-drawer');

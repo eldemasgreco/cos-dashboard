@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-25T21:45:28Z -->
+<!-- cache-buster: 2026-04-25T21:50:59Z -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1750,6 +1750,9 @@ body.dark .entity-filter-bar { background: var(--card); }
 .copilot-ask-prefix { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--green); flex: 0 0 auto; }
 .copilot-ask input { flex: 1 1 auto; border: none; background: transparent; font-size: 13px; color: var(--text); outline: none; padding: 4px 0; font-family: inherit; }
 .copilot-ask input::placeholder { color: var(--text-3); font-style: italic; }
+.copilot-ask-send { padding: 6px 14px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 11.5px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; background: var(--green); color: #fff; border: none; border-radius: 5px; cursor: pointer; flex-shrink: 0; transition: filter 0.15s; }
+.copilot-ask-send:hover { filter: brightness(0.9); }
+.copilot-ask-send:active { transform: scale(0.98); }
 
 /* Rollup — Elly's Week styling */
 .elly-rollup { background: linear-gradient(135deg, rgba(160,72,28,0.05), rgba(28,62,94,0.04)); border: 0.5px solid var(--border-med); }
@@ -2029,6 +2032,29 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 .col-right .elly-rollup .rollup-actions { margin-top: 10px; padding-top: 8px; border-top: 0.5px solid var(--border); }
 .col-right .elly-rollup .rollup-actions-btn { padding: 4px 9px; font-size: 10.5px; }
 /* ───────── end Bite 31 ───────── */
+/* ───────── Bite 32: Right-rail consolidation — left col blanked, center expanded, peripheral cards on right ─────── */
+.col-left, .col.col-left, #col-left-blank { display: none !important; }
+.layout { grid-template-columns: 1fr var(--right-w) !important; }
+@media (max-width: 1100px) { .layout { grid-template-columns: 1fr !important; } .col-right { display: none; } }
+.news-banner { display: none !important; }
+.rr-peripheral { display: flex; flex-direction: column; gap: 10px; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 0.5px solid var(--border-med); }
+.rr-card { background: var(--card); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 12px 9px; }
+.rr-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.rr-card-title { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); }
+.rr-card-refresh { background: transparent; border: none; cursor: pointer; color: var(--text-3); font-size: 13px; padding: 0 4px; transition: color 0.15s; }
+.rr-card-refresh:hover { color: var(--green); }
+.rr-card-body { font-size: 11.5px; line-height: 1.45; color: var(--text-2); min-height: 16px; }
+.rr-news-body { max-height: 110px; overflow-y: auto; }
+.rr-news-body .news-item, .rr-news-body .ticker-item { display: block; padding: 3px 0; border-top: 0.5px dotted var(--border); cursor: pointer; }
+.rr-news-body .news-item:first-child, .rr-news-body .ticker-item:first-child { border-top: none; padding-top: 0; }
+.rr-news-body .news-item:hover, .rr-news-body .ticker-item:hover { color: var(--text); }
+.rr-markets .rr-card-body { display: flex; flex-wrap: wrap; gap: 6px 10px; font-variant-numeric: tabular-nums; }
+.rr-markets .ticker-item, .rr-markets .market-pill { font-size: 11px; padding: 1px 4px; border-radius: 3px; background: var(--card-2); }
+.rr-weather { background: var(--card); border: 0.5px solid var(--border); border-radius: 8px; padding: 6px 10px; }
+.rr-signal-tiles .rr-card-body { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+.rr-signal-tiles .signal-tile { padding: 6px 8px; background: var(--card-2); border-radius: 5px; font-size: 11px; }
+/* ───────── end Bite 32 ───────── */
+
 /* ───────── Bite 30: inline Ask-Elly answer ─────── */
 .copilot-ask-answer { display: none; margin-top: 10px; padding: 12px 14px; border-radius: 8px; background: var(--card); border: 0.5px solid var(--border-med); animation: caa-fadein .25s var(--ease); }
 .copilot-ask-answer.visible { display: block; }
@@ -2515,36 +2541,18 @@ body.dark {
 
 <!-- Entity filter bar removed — entity filtering lives on the sidebar signal tiles now -->
 
-<!-- ═══ NEWS BANNER — markets strip + rolling alerts/news ticker ═══ -->
-<div class="news-banner" id="news-banner">
-  <div class="banner-row">
-    <span class="banner-label">Markets</span>
-    <div class="banner-markets-strip" id="banner-markets-strip"></div>
-    <button class="section-refresh-btn" onclick="cosAction('refresh_markets', this)" title="Refresh markets" style="flex-shrink:0;">↻</button>
-  </div>
-  <div class="banner-row">
-    <span class="banner-label">Breaking</span>
-    <div class="banner-ticker-viewport">
-      <div class="banner-ticker-track" id="banner-ticker-external"></div>
-    </div>
-    <button class="section-refresh-btn" onclick="cosAction('refresh_news', this)" title="Refresh external news" style="flex-shrink:0;">↻</button>
-  </div>
+<!-- [Bite 32] Top news-banner moved to right rail. Hidden placeholders preserved so legacy render fns targeting these IDs don't throw. -->
+<div class="news-banner" id="news-banner" style="display:none;">
+  <div class="banner-row"><div class="banner-markets-strip" id="banner-markets-strip"></div></div>
+  <div class="banner-row"><div class="banner-ticker-viewport"><div class="banner-ticker-track" id="banner-ticker-external"></div></div></div>
 </div>
 
 <div class="layout">
 
-  <!-- ═══ LEFT COLUMN ═══ -->
-  <aside class="col col-left">
-    <div class="weather-instrument" id="weather-instrument"></div>
-
-    <!-- Signals — per-entity tiles, replaces Internal ticker -->
-    <div class="signals-block">
-      <div class="signals-label">SIGNALS</div>
-      <div class="signal-tiles" id="signal-tiles"></div>
-    </div>
-
-    <!-- Phase 1: Markets / Ag / Signals moved to top banner. Kept hidden so
-         legacy render functions that target these IDs don't throw. -->
+  <!-- [Bite 32] Left column blanked — weather/signals/markets moved to right rail consolidation. Aside kept (hidden via CSS) so layout grid math works. -->
+  <aside class="col col-left" id="col-left-blank">
+    <div id="weather-instrument-legacy" style="display:none;"></div>
+    <div id="signal-tiles-legacy" style="display:none;"></div>
     <div id="markets-grid" style="display:none;"></div>
     <div id="ag-rows" style="display:none;"></div>
     <div id="news-body" style="display:none;"></div>
@@ -2569,7 +2577,8 @@ body.dark {
       <div class="copilot-insight" id="copilot-insight"></div>
       <div class="copilot-ask">
         <span class="copilot-ask-prefix">Ask Elly</span>
-        <input type="text" id="copilot-ask-input" placeholder="anything &mdash; priorities, comms, schedule&hellip;" onkeydown="if(event.key==='Enter') _copilotAsk()" />
+        <input type="text" id="copilot-ask-input" placeholder="anything &mdash; priorities, comms, schedule&hellip;" onkeydown="if(event.key==='Enter') { event.preventDefault(); _copilotAskSafe(); }" />
+        <button class="copilot-ask-send" onclick="_copilotAskSafe()" title="Send to Elly (or press Enter)" type="button">Send &rarr;</button>
       </div>
     </section>
 
@@ -2717,6 +2726,23 @@ body.dark {
   <!-- ═══ RIGHT COLUMN (rail tabs) ═══ -->
   <aside class="col col-right">
     <div class="right-col-inner">
+      <!-- [Bite 32] Right-rail consolidation: weather + markets + news + signal tiles -->
+      <div class="rr-peripheral" id="rr-peripheral">
+        <div class="weather-instrument rr-weather" id="weather-instrument"></div>
+        <div class="rr-card rr-markets">
+          <div class="rr-card-head"><span class="rr-card-title">Markets</span><button class="rr-card-refresh" onclick="cosAction('refresh_markets', this)" title="Refresh markets">&#x21bb;</button></div>
+          <div class="rr-card-body" id="rr-markets-body"></div>
+        </div>
+        <div class="rr-card rr-news">
+          <div class="rr-card-head"><span class="rr-card-title">Breaking</span><button class="rr-card-refresh" onclick="cosAction('refresh_news', this)" title="Refresh news">&#x21bb;</button></div>
+          <div class="rr-card-body rr-news-body" id="rr-news-body"></div>
+        </div>
+        <div class="rr-card rr-signal-tiles">
+          <div class="rr-card-head"><span class="rr-card-title">Signals</span></div>
+          <div class="rr-card-body" id="signal-tiles"></div>
+        </div>
+      </div>
+
       <!-- Quick Capture: lands in Notes DB as category=Quick Capture -->
       <div class="quick-capture" id="quick-capture">
         <select class="qc-entity" id="qc-entity" title="Entity">
@@ -6876,6 +6902,47 @@ function _rememberThis(opts){
   });
 }
 
+
+
+// Bite 32: mirror banner content into right-rail cards (Markets, Breaking news).
+(function _mirrorBannersToRail(){
+  function _mirror(){
+    try {
+      const sm = document.getElementById('banner-markets-strip');
+      const dm = document.getElementById('rr-markets-body');
+      if(sm && dm && sm.innerHTML !== '' && dm.dataset._mh !== sm.innerHTML){
+        dm.innerHTML = sm.innerHTML;
+        dm.dataset._mh = sm.innerHTML;
+      }
+      const sn = document.getElementById('banner-ticker-track');
+      const dn = document.getElementById('rr-news-body');
+      if(sn && dn && sn.innerHTML !== '' && dn.dataset._nh !== sn.innerHTML){
+        dn.innerHTML = sn.innerHTML;
+        dn.dataset._nh = sn.innerHTML;
+      }
+    } catch(e){ console.debug('rr mirror failed', e); }
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _mirror);
+  else _mirror();
+  setInterval(_mirror, 2500);
+})();
+
+// Bite 30.1: Visible-failure wrapper for Ask Elly. Inline onclick/Enter both call this.
+window._copilotAskSafe = function(){
+  console.log('[Ask Elly] submit triggered');
+  try {
+    if(typeof _copilotAsk !== 'function'){
+      console.warn('[Ask Elly] _copilotAsk not defined yet');
+      if(window.showToast) showToast('Elly not ready, try again in a sec');
+      return;
+    }
+    return _copilotAsk();
+  } catch(e){
+    console.error('[Ask Elly] submit failed:', e);
+    if(window.showToast) showToast('Ask Elly failed: ' + String(e).slice(0, 80));
+  }
+};
+
 // Bite 17 hotfix: defensive Ask-Elly Enter handler — survives inline onkeydown breakage.
 (function _wireAskEllyEnter(){
   function _bind(){
@@ -6883,9 +6950,9 @@ function _rememberThis(opts){
     if(!inp || inp.dataset._enterBound === '1') return;
     inp.dataset._enterBound = '1';
     inp.addEventListener('keydown', function(ev){
-      if(ev.key === 'Enter' && typeof _copilotAsk === 'function'){
+      if(ev.key === 'Enter'){
         ev.preventDefault();
-        try { _copilotAsk(); } catch(e){ console.warn('_copilotAsk failed', e); }
+        try { (typeof _copilotAskSafe === 'function' ? _copilotAskSafe() : _copilotAsk()); } catch(e){ console.warn('_copilotAsk failed', e); }
       }
     });
   }

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-25T21:06:30Z -->
+<!-- cache-buster: 2026-04-25T21:15:20Z -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1895,6 +1895,50 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 /* Right rail still uses agenda list — center column only gets the grid. */
 .col-right .sched-grid { display: none; }
 /* ───────── end Bite 22 ───────── */
+/* ───────── Bite 26: Month + Quarter box-grid calendar views ─────── */
+.sched-month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; background: var(--card); border: 0.5px solid var(--border); border-radius: 8px; margin-top: 8px; overflow: hidden; }
+.sched-month-grid .mg-dow-hdr { padding: 8px 6px; text-align: left; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-3); background: var(--card-2); border-bottom: 0.5px solid var(--border-med); }
+.sched-month-grid .mg-cell { position: relative; min-height: 96px; padding: 6px 8px; border-right: 0.5px solid var(--border); border-top: 0.5px solid var(--border); cursor: pointer; transition: background .15s var(--ease); display: flex; flex-direction: column; gap: 3px; }
+.sched-month-grid .mg-cell:nth-child(7n) { border-right: 0; }
+.sched-month-grid .mg-cell.muted { background: rgba(22,16,11,0.02); opacity: 0.55; }
+.sched-month-grid .mg-cell:hover { background: var(--card-2); }
+.sched-month-grid .mg-cell.is-today { background: rgba(160,72,28,0.06); border: 1px solid var(--green); border-radius: 4px; box-shadow: inset 0 0 0 1px var(--green-bg); }
+.sched-month-grid .mg-cell.is-weekend { background: rgba(22,16,11,0.015); }
+.mg-cell-num { font-family: var(--font-serif); font-size: 14px; font-weight: 500; color: var(--text); line-height: 1; margin-bottom: 2px; align-self: flex-start; }
+.mg-cell.is-today .mg-cell-num { color: var(--green); font-weight: 700; }
+.mg-cell.muted .mg-cell-num { color: var(--text-3); font-weight: 400; }
+.mg-cell .mg-event { font-size: 10.5px; line-height: 1.25; padding: 2px 5px 2px 6px; border-radius: 3px; border-left: 2px solid var(--text-3); background: var(--card-2); color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mg-cell .mg-event.entity-afsh    { border-left-color: var(--green);  background: var(--green-bg); }
+.mg-cell .mg-event.entity-illume  { border-left-color: var(--blue);   background: var(--blue-bg); }
+.mg-cell .mg-event.entity-spade   { border-left-color: var(--purple); background: var(--purple-bg); }
+.mg-cell .mg-event.entity-personal{ border-left-color: var(--teal);   background: var(--teal-bg); }
+.mg-cell .mg-event-time { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text-2); margin-right: 4px; }
+.mg-cell .mg-more { font-size: 10px; color: var(--text-3); font-style: italic; padding: 1px 4px; }
+
+/* Quarter — 3 mini month grids side by side */
+.sched-quarter-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 6px 0; }
+.sched-quarter-month { background: var(--card); border: 0.5px solid var(--border); border-radius: 8px; overflow: hidden; }
+.sched-quarter-month .qm-hdr { padding: 8px 10px; font-family: var(--font-serif); font-size: 14px; font-weight: 500; color: var(--text); border-bottom: 0.5px solid var(--border); background: var(--card-2); text-align: center; }
+.sched-quarter-month .qm-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; }
+.sched-quarter-month .qm-dow { font-size: 9px; padding: 4px 0; text-align: center; color: var(--text-3); font-weight: 700; letter-spacing: 0.6px; background: rgba(22,16,11,0.025); border-bottom: 0.5px solid var(--border); }
+.sched-quarter-month .qm-cell { position: relative; aspect-ratio: 1.1 / 1; padding: 3px 4px 2px; cursor: pointer; transition: background .15s var(--ease); border-right: 0.5px dotted var(--border); border-top: 0.5px dotted var(--border); display: flex; flex-direction: column; align-items: stretch; }
+.sched-quarter-month .qm-cell:nth-child(7n) { border-right: 0; }
+.sched-quarter-month .qm-cell:hover { background: var(--card-2); }
+.sched-quarter-month .qm-cell.muted { opacity: 0.4; }
+.sched-quarter-month .qm-cell.is-today { background: rgba(160,72,28,0.10); }
+.sched-quarter-month .qm-cell.is-today .qm-num { color: var(--green); font-weight: 700; }
+.sched-quarter-month .qm-num { font-size: 10px; color: var(--text); font-weight: 500; line-height: 1; align-self: flex-start; }
+.sched-quarter-month .qm-dots { display: flex; gap: 1.5px; flex-wrap: wrap; margin-top: 2px; align-content: flex-start; }
+.sched-quarter-month .qm-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--text-3); }
+.sched-quarter-month .qm-dot.entity-afsh    { background: var(--green); }
+.sched-quarter-month .qm-dot.entity-illume  { background: var(--blue); }
+.sched-quarter-month .qm-dot.entity-spade   { background: var(--purple); }
+.sched-quarter-month .qm-dot.entity-personal{ background: var(--teal); }
+
+/* Right rail keeps agenda — center-only grids */
+.col-right .sched-month-grid, .col-right .sched-quarter-grid { display: none; }
+/* ───────── end Bite 26 ───────── */
+
 
 /* Right-rail rollup gets compacted slightly */
 .col-right .elly-rollup { margin: 0 0 12px; padding: 14px 16px; }
@@ -3855,6 +3899,213 @@ function _calDateCell(d, e){
   };
 }
 
+// Bite 26 — Month box-grid renderer (center mount, month view).
+function _renderScheduleMonthGrid(host, badge, TZ){
+  const _esc = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+  const _entKey = e => {
+    const x = (typeof _calEntityOf === 'function') ? (_calEntityOf(e) || '') : (e.entity || '');
+    const v = String(x).toLowerCase();
+    if(v.includes('afsh'))    return 'afsh';
+    if(v.includes('illume'))  return 'illume';
+    if(v.includes('spade'))   return 'spade';
+    if(v.includes('personal'))return 'personal';
+    return 'other';
+  };
+  const _ymdKeyTZ = d => {
+    try { return new Intl.DateTimeFormat('en-CA', {year:'numeric', month:'2-digit', day:'2-digit', timeZone: TZ}).format(d); }
+    catch(_){ return d.toISOString().slice(0,10); }
+  };
+  const _timeShort = d => {
+    try { return new Intl.DateTimeFormat('en-US', {hour:'2-digit', minute:'2-digit', hour12:false, timeZone: TZ}).format(d); }
+    catch(_){ return ''; }
+  };
+  const now = new Date();
+  const anchor = CAL_ANCHOR || new Date();
+  const monthFirst = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
+  const monthLast = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0);
+  const dayOfWeek = monthFirst.getDay();              // 0=Sun .. 6=Sat
+  const offsetMon = (dayOfWeek === 0 ? 6 : dayOfWeek - 1);  // Monday-first grid
+  const gridStart = new Date(monthFirst);
+  gridStart.setDate(monthFirst.getDate() - offsetMon);
+  // Always 6 weeks = 42 cells
+  const cells = [];
+  for(let i = 0; i < 42; i++){
+    const d = new Date(gridStart);
+    d.setDate(gridStart.getDate() + i);
+    cells.push(d);
+  }
+
+  const events = (DD.schedule || []).filter(e => {
+    if(!e || !e.start) return false;
+    if(CAL_ENTITY && _calEntityOf(e) !== CAL_ENTITY) return false;
+    const d = new Date(e.start); return !isNaN(d.getTime());
+  }).map(e => ({...e, _date: new Date(e.start), _entKey: _entKey(e), _allDay: !!(e.all_day || e.allDay)}));
+
+  // Bucket by day
+  const byDay = {};
+  events.forEach(e => {
+    const k = _ymdKeyTZ(e._date);
+    if(!byDay[k]) byDay[k] = [];
+    byDay[k].push(e);
+  });
+
+  // Period label
+  const labelEl = document.getElementById('cal-period-label');
+  if(labelEl){
+    try {
+      labelEl.textContent = new Intl.DateTimeFormat('en-US', {month:'long', year:'numeric', timeZone: TZ}).format(anchor);
+    } catch(_){ labelEl.textContent = ''; }
+  }
+
+  window.__SP = {};
+  let html = '';
+  const monthKey = anchor.getFullYear() + '-' + (anchor.getMonth()+1).toString().padStart(2,'0');
+  const totalEvents = events.filter(e => _ymdKeyTZ(e._date).startsWith(monthKey)).length;
+  html += '<div class="sched-view-label"><span>Month</span><span>' + totalEvents + ' events</span></div>';
+  html += '<div class="sched-month-grid">';
+  ['MON','TUE','WED','THU','FRI','SAT','SUN'].forEach(d => {
+    html += '<div class="mg-dow-hdr">' + d + '</div>';
+  });
+  const todayKey = _ymdKeyTZ(now);
+  cells.forEach((d, i) => {
+    const k = _ymdKeyTZ(d);
+    const isMuted = (d.getMonth() !== anchor.getMonth());
+    const isToday = (k === todayKey);
+    const isWeekend = (d.getDay() === 0 || d.getDay() === 6);
+    const cls = 'mg-cell' + (isMuted ? ' muted' : '') + (isToday ? ' is-today' : '') + (isWeekend ? ' is-weekend' : '');
+    const dayEvents = (byDay[k] || []).slice().sort((a, b) => a._date - b._date);
+    html += '<div class="' + cls + '" data-day="' + k + '">';
+    html += '<span class="mg-cell-num">' + d.getDate() + '</span>';
+    const showMax = 4;
+    dayEvents.slice(0, showMax).forEach((e, ei) => {
+      const sk = 'me::' + i + '::' + ei; window.__SP[sk] = e;
+      const t = e._allDay ? '' : '<span class="mg-event-time">' + _timeShort(e._date) + '</span>';
+      html += '<div class="mg-event entity-' + e._entKey + '" data-k="' + sk + '">' + t + _esc((e.title || '').slice(0, 32)) + '</div>';
+    });
+    if(dayEvents.length > showMax){
+      html += '<div class="mg-more">+' + (dayEvents.length - showMax) + ' more</div>';
+    }
+    html += '</div>';
+  });
+  html += '</div>';
+
+  host.innerHTML = html;
+  host.querySelectorAll('.mg-event[data-k]').forEach(el => el.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    const evt = window.__SP[el.dataset.k];
+    if(evt && typeof openScheduleDrawer === 'function') openScheduleDrawer(evt);
+  }));
+  host.querySelectorAll('.mg-cell[data-day]').forEach(el => el.addEventListener('click', () => {
+    // Drill into Day view of that date.
+    try {
+      const dk = el.dataset.day;
+      const dt = new Date(dk + 'T12:00:00Z');
+      window.CAL_ANCHOR = dt;
+      window.CAL_VIEW = 'day';
+      // Update toolbar buttons visually
+      document.querySelectorAll('.cal-view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === 'day'));
+      renderSchedule();
+    } catch(_){}
+  }));
+  if(badge){ badge.textContent = totalEvents; badge.style.display = totalEvents ? 'inline-block' : 'none'; }
+}
+
+// Bite 26 — Quarter mini-month grid renderer (center mount, quarter view).
+function _renderScheduleQuarterGrid(host, badge, TZ){
+  const _esc = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+  const _entKey = e => {
+    const x = (typeof _calEntityOf === 'function') ? (_calEntityOf(e) || '') : (e.entity || '');
+    const v = String(x).toLowerCase();
+    if(v.includes('afsh'))    return 'afsh';
+    if(v.includes('illume'))  return 'illume';
+    if(v.includes('spade'))   return 'spade';
+    if(v.includes('personal'))return 'personal';
+    return 'other';
+  };
+  const _ymdKeyTZ = d => {
+    try { return new Intl.DateTimeFormat('en-CA', {year:'numeric', month:'2-digit', day:'2-digit', timeZone: TZ}).format(d); }
+    catch(_){ return d.toISOString().slice(0,10); }
+  };
+  const now = new Date();
+  const anchor = CAL_ANCHOR || new Date();
+  const quarterStart = new Date(anchor.getFullYear(), Math.floor(anchor.getMonth()/3) * 3, 1);
+
+  const events = (DD.schedule || []).filter(e => {
+    if(!e || !e.start) return false;
+    if(CAL_ENTITY && _calEntityOf(e) !== CAL_ENTITY) return false;
+    const d = new Date(e.start); return !isNaN(d.getTime());
+  }).map(e => ({...e, _date: new Date(e.start), _entKey: _entKey(e), _allDay: !!(e.all_day || e.allDay)}));
+  const byDay = {};
+  events.forEach(e => {
+    const k = _ymdKeyTZ(e._date);
+    if(!byDay[k]) byDay[k] = [];
+    byDay[k].push(e);
+  });
+
+  const labelEl = document.getElementById('cal-period-label');
+  if(labelEl){
+    try {
+      const qNum = Math.floor(anchor.getMonth()/3) + 1;
+      labelEl.textContent = 'Q' + qNum + ' ' + anchor.getFullYear();
+    } catch(_){ labelEl.textContent = ''; }
+  }
+
+  let html = '';
+  let totalEvents = 0;
+  for(let mi = 0; mi < 3; mi++){
+    const monthRef = new Date(quarterStart.getFullYear(), quarterStart.getMonth() + mi, 1);
+    const monthName = (function(){ try { return new Intl.DateTimeFormat('en-US', {month:'long', timeZone: TZ}).format(monthRef); } catch(_){ return ''; } })();
+    const monthFirst = new Date(monthRef);
+    const dayOfWeek = monthFirst.getDay();
+    const offsetMon = (dayOfWeek === 0 ? 6 : dayOfWeek - 1);
+    const gridStart = new Date(monthFirst);
+    gridStart.setDate(monthFirst.getDate() - offsetMon);
+    const monthKey = monthRef.getFullYear() + '-' + (monthRef.getMonth()+1).toString().padStart(2,'0');
+    const monthEvents = events.filter(e => _ymdKeyTZ(e._date).startsWith(monthKey)).length;
+    totalEvents += monthEvents;
+
+    html += '<div class="sched-quarter-month">';
+    html += '<div class="qm-hdr">' + _esc(monthName) + ' &middot; ' + monthEvents + '</div>';
+    html += '<div class="qm-grid">';
+    ['M','T','W','T','F','S','S'].forEach(d => {
+      html += '<div class="qm-dow">' + d + '</div>';
+    });
+    for(let i = 0; i < 42; i++){
+      const d = new Date(gridStart);
+      d.setDate(gridStart.getDate() + i);
+      const k = _ymdKeyTZ(d);
+      const isMuted = (d.getMonth() !== monthRef.getMonth());
+      const isToday = (k === _ymdKeyTZ(now));
+      const cls = 'qm-cell' + (isMuted ? ' muted' : '') + (isToday ? ' is-today' : '');
+      const dayEvents = (byDay[k] || []);
+      html += '<div class="' + cls + '" data-day="' + k + '" title="' + (dayEvents.length ? dayEvents.length + ' event' + (dayEvents.length !== 1 ? 's' : '') : '') + '">';
+      html += '<span class="qm-num">' + d.getDate() + '</span>';
+      if(dayEvents.length){
+        html += '<div class="qm-dots">';
+        dayEvents.slice(0, 6).forEach(e => {
+          html += '<span class="qm-dot entity-' + e._entKey + '"></span>';
+        });
+        html += '</div>';
+      }
+      html += '</div>';
+    }
+    html += '</div></div>';
+  }
+  let outer = '<div class="sched-view-label"><span>Quarter</span><span>' + totalEvents + ' events</span></div><div class="sched-quarter-grid">' + html + '</div>';
+  host.innerHTML = outer;
+  host.querySelectorAll('.qm-cell[data-day]').forEach(el => el.addEventListener('click', () => {
+    try {
+      const dk = el.dataset.day;
+      const dt = new Date(dk + 'T12:00:00Z');
+      window.CAL_ANCHOR = dt;
+      window.CAL_VIEW = 'day';
+      document.querySelectorAll('.cal-view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === 'day'));
+      renderSchedule();
+    } catch(_){}
+  }));
+  if(badge){ badge.textContent = totalEvents; badge.style.display = totalEvents ? 'inline-block' : 'none'; }
+}
+
 // Bite 22 — hour-grid renderer used by center-mount Schedule for Day/Week views.
 function _renderScheduleHourGrid(host, badge, TZ){
   const HOUR_PX = 50;     // 50px per hour
@@ -4051,7 +4302,7 @@ function renderSchedule(){
   const badge = document.getElementById('sched-badge');
   const TZ = (typeof CURRENT_TZ !== 'undefined' && CURRENT_TZ) ? CURRENT_TZ : 'Europe/Madrid';
   window.__SP = {};
-  // Bite 22: hour-grid for center-mount Day/Week views
+  // Bite 22+26: hour-grid (Day/Week) + box-grid (Month/Quarter) for center-mount.
   const _isCenterMount = !!host.closest('.cockpit-schedule');
   const _gridView = (typeof CAL_VIEW !== 'undefined' && CAL_VIEW) || 'day';
   if(_isCenterMount && (_gridView === 'day' || _gridView === 'week')){
@@ -4059,6 +4310,18 @@ function renderSchedule(){
       _renderScheduleHourGrid(host, badge, TZ);
       return;
     } catch(e){ console.warn('hour-grid render failed; falling back to agenda', e); }
+  }
+  if(_isCenterMount && _gridView === 'month'){
+    try {
+      _renderScheduleMonthGrid(host, badge, TZ);
+      return;
+    } catch(e){ console.warn('month-grid render failed; falling back to agenda', e); }
+  }
+  if(_isCenterMount && _gridView === 'quarter'){
+    try {
+      _renderScheduleQuarterGrid(host, badge, TZ);
+      return;
+    } catch(e){ console.warn('quarter-grid render failed; falling back to agenda', e); }
   }
 
   // Bite 18: derive end-time + entity normalization on each event up-front.

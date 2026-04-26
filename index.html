@@ -5047,64 +5047,80 @@ function renderTopPriority(){
 function renderSignalTiles(){
   const host = $('signal-tiles');
   if(!host) return;
-  const ENT = {
-    AFSH:     {count: 0, worst: 'gray', latest: ''},
-    Illume:   {count: 0, worst: 'gray', latest: ''},
-    Spade:    {count: 0, worst: 'gray', latest: ''},
-    Personal: {count: 0, worst: 'gray', latest: ''},
-  };
+
+  // Hardcoded entity config — always renders all 4 tiles regardless of backend data
+  const SIGNAL_ENTITIES = [
+    { key: 'afsh',     label: 'AFSH',     emoji: '🐄' },
+    { key: 'illume',   label: 'Illume',   emoji: '🌿' },
+    { key: 'spade',    label: 'Spade',    emoji: '⚙️' },
+    { key: 'personal', label: 'Personal', emoji: '👤' },
+  ];
+
   const RANK = { red: 3, amber: 2, green: 1, gray: 0 };
-  function bump(ent, tier, title){
-    if(!ENT[ent]) return;
-    ENT[ent].count++;
-    if((RANK[tier]||0) > RANK[ENT[ent].worst]) ENT[ent].worst = tier;
-    if(!ENT[ent].latest && title) ENT[ent].latest = _stripMd(title);
+
+  // Build a lookup map keyed by lowercase for case-insensitive matching
+  const state = {};
+  SIGNAL_ENTITIES.forEach(cfg => {
+    state[cfg.key] = { count: 0, worst: 'gray', latest: '' };
+  });
+
+  function resolveKey(raw) {
+    // Case-insensitive match against our 4 entity keys
+    const lc = String(raw || '').toLowerCase().trim();
+    if(!lc) return null;
+    for(const cfg of SIGNAL_ENTITIES) {
+      if(lc.includes(cfg.key) || cfg.key.includes(lc)) return cfg.key;
+    }
+    return null;
   }
+
+  function bump(rawEnt, tier, title) {
+    const k = resolveKey(rawEnt);
+    if(k === null) return;
+    state[k].count++;
+    if((RANK[tier]||0) > RANK[state[k].worst]) state[k].worst = tier;
+    if(!state[k].latest && title) state[k].latest = _stripMd(title);
+  }
+
   (DD.alerts || []).forEach(cluster => {
-    const ent = _normEntity(cluster.label || '');
     (cluster.items || []).forEach(it => {
       const sev = (it.severity || 'b').toLowerCase();
       const tier = sev==='r' ? 'red' : (sev==='a' ? 'amber' : 'green');
-      bump(ent, tier, it.title || '');
+      bump(cluster.label || '', tier, it.title || '');
     });
-  });
-  if(Object.values(ENT).every(e => e.count === 0)){
-    (DD.alerts_flat || []).forEach(a => {
-      const ent = _normEntity(a.entity || '');
-      const level = (a.level || '').toLowerCase();
-      const tier = level==='red' ? 'red' : (level==='amber' ? 'amber' : 'green');
-      bump(ent, tier, a.title || '');
-    });
-  }
-  (DD.signals || []).forEach(s => {
-    const ent = _normEntity(s.entity || '');
-    const t = String(s.tier || s.severity || '').toLowerCase();
-    const tier = (t==='red'||t==='r') ? 'red' : ((t==='amber'||t==='a') ? 'amber' : 'green');
-    bump(ent, tier, s.title || s.summary || '');
   });
 
-  const TILES = [
-    {key:'AFSH',     emoji:'🐄', name:'AFSH'},
-    {key:'Illume',   emoji:'🫒', name:'Illume'},
-    {key:'Spade',    emoji:'⚙️', name:'Spade'},
-    {key:'Personal', emoji:'👤', name:'Personal'},
-  ];
-  host.innerHTML = TILES.map(t => {
-    const e = ENT[t.key];
-    const n = e.count;
+  if(SIGNAL_ENTITIES.every(cfg => state[cfg.key].count === 0)){
+    (DD.alerts_flat || []).forEach(a => {
+      const level = (a.level || '').toLowerCase();
+      const tier = level==='red' ? 'red' : (level==='amber' ? 'amber' : 'green');
+      bump(a.entity || '', tier, a.title || '');
+    });
+  }
+
+  (DD.signals || []).forEach(s => {
+    const t = String(s.tier || s.severity || '').toLowerCase();
+    const tier = (t==='red'||t==='r') ? 'red' : ((t==='amber'||t==='a') ? 'amber' : 'green');
+    bump(s.entity || '', tier, s.title || s.summary || '');
+  });
+
+  // Always render all 4 tiles — missing data shows as "quiet" with gray dot
+  host.innerHTML = SIGNAL_ENTITIES.map(cfg => {
+    const s = state[cfg.key];
+    const n = s.count;
     let ctx;
     if(n === 0)       ctx = 'quiet';
-    else if(e.latest) ctx = e.latest;
+    else if(s.latest) ctx = s.latest;
     else              ctx = `${n} ${n===1?'signal':'signals'}`;
-    const isActive = (ENTITY_FILTER === t.key);
+    const isActive = (ENTITY_FILTER === cfg.label);
     const countTxt = n === 0 ? '' : `<span class="signal-tile-count">${n}</span>`;
-    return `<div class="signal-tile ${t.key.toLowerCase()}${isActive?' active':''}" onclick="applyEntityFilter('${t.key}')" title="${esc(t.name)} — click to focus, click again to clear">
-      <span class="signal-tile-emoji">${t.emoji}</span>
+    return `<div class="signal-tile ${cfg.key}${isActive?' active':''}" onclick="applyEntityFilter('${cfg.label}')" title="${esc(cfg.label)} — click to focus, click again to clear">
+      <span class="signal-tile-emoji">${cfg.emoji}</span>
       <div class="signal-tile-body">
-        <div class="signal-tile-name">${esc(t.name)}${countTxt}</div>
+        <div class="signal-tile-name">${esc(cfg.label)}${countTxt}</div>
         <div class="signal-tile-ctx">${esc(ctx)}</div>
       </div>
-      <span class="signal-tile-dot ${e.worst}"></span>
+      <span class="signal-tile-dot ${s.worst}"></span>
     </div>`;
   }).join('');
 }
@@ -5182,12 +5198,10 @@ function renderNewsSidebar(){
     </div>`;
   }).join('') || '<div class="empty-state">No signals</div>';
   // [Bite 28] Also update compact info-strip breaking (first headline if any)
-  // Filter: skip GitHub Actions run names (contain git SHA or known system labels)
   try {
     const ib = document.getElementById('info-strip-breaking');
     if(ib) {
-      const _isGhRun = t => /\b[0-9a-f]{7,}\b/.test(t) || /TimelinesAI poll|Elly probe|cos-webhook|github\.com\/runs|^Runs\s+[0-9a-f]/i.test(t);
-      const first = rows.find(r => r && r.title && !_isGhRun(r.title));
+      const first = rows[0];
       if(first && first.title) {
         ib.textContent = String(first.title).slice(0,60) + (first.title.length > 60 ? '…' : '');
         ib.classList.add('has-headline');

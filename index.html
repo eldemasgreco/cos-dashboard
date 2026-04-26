@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-25T23:30:00Z -->
+<!-- cache-buster: 2026-04-25T22:00:00Z -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1710,7 +1710,7 @@ body.dark .entity-filter-bar { background: var(--card); }
 .copilot-eyebrow { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); }
 .copilot-meta { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; color: var(--text-3); }
 .copilot-headline { font-family: var(--font-serif); font-size: 24px; font-weight: 500; letter-spacing: -0.015em; line-height: 1.2; margin-bottom: 16px; color: var(--text); }
-.copilot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.copilot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
 .copilot-tile { padding: 12px 14px; border-radius: 8px; }
 .copilot-tile.red { background: rgba(163,45,45,0.07); }
 .copilot-tile.amber { background: rgba(186,117,23,0.08); }
@@ -1727,7 +1727,7 @@ body.dark .entity-filter-bar { background: var(--card); }
 .elly-pulse { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green-vivid); margin-right: 8px; position: relative; vertical-align: 1px; box-shadow: 0 0 0 0 rgba(196,99,43,0.55); animation: ellyPulse 2.1s cubic-bezier(0.4,0,0.2,1) infinite; }
 @keyframes ellyPulse { 0% { box-shadow: 0 0 0 0 rgba(196,99,43,0.45); } 70% { box-shadow: 0 0 0 8px rgba(196,99,43,0); } 100% { box-shadow: 0 0 0 0 rgba(196,99,43,0); } }
 .copilot-hero .copilot-eyebrow { display: inline-flex; align-items: center; color: var(--text-2); font-weight: 700; }
-.copilot-tile { position: relative; padding: 11px 13px 11px 14px; border-radius: 8px; border-left: 3px solid transparent; transition: background .18s var(--ease), transform .18s var(--ease); }
+.copilot-tile { position: relative; padding: 8px 10px 8px 10px; border-radius: 8px; border-left: 3px solid transparent; transition: background .18s var(--ease), transform .18s var(--ease); }
 .copilot-tile.red    { background: var(--red-bg);    border-left-color: var(--red); }
 .copilot-tile.amber  { background: var(--amber-bg);  border-left-color: var(--amber); }
 .copilot-tile.blue   { background: var(--blue-bg);   border-left-color: var(--blue); }
@@ -1739,14 +1739,15 @@ body.dark .entity-filter-bar { background: var(--card); }
 .copilot-tile.purple .tile-dot { background: var(--purple); }
 .copilot-tile-label { display: inline-flex; align-items: center; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; }
 .copilot-tile-body .copilot-item { cursor: pointer; padding: 4px 0; border-top: 0.5px dotted var(--border); font-size: 13px; line-height: 1.4; color: var(--text); display: flex; align-items: flex-start; gap: 7px; transition: transform .14s var(--ease); }
-.copilot-tile-body .copilot-item:first-child { border-top: none; padding-top: 2px; }
+.copilot-tile-body .copilot-item:first-child { border-top: none; padding-top: 2px; min-height: 0; }
 .copilot-tile-body .copilot-item:hover { transform: translateX(2px); }
 .copilot-item-icon { flex: 0 0 auto; width: 14px; text-align: center; font-size: 11px; line-height: 1.5; color: var(--text-3); }
 .copilot-item-text { flex: 1 1 auto; min-width: 0; }
 .copilot-item-text b { font-weight: 600; color: var(--text); }
-.copilot-item-meta { font-size: 10px; color: var(--text-3); margin-top: 1px; letter-spacing: 0.2px; }
+.copilot-item-meta { font-size: 10px; color: var(--text-3); margin-top: 1px; letter-spacing: 0.2px; display: none; }
+.copilot-tile-body .copilot-item:hover .copilot-item-meta { display: block; }
 .copilot-item-empty { font-size: 12px; color: var(--text-3); padding: 4px 0; font-style: italic; }
-.copilot-ask { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding: 8px 12px; background: rgba(22,16,11,0.035); border: 0.5px solid var(--border-med); border-radius: 8px; }
+.copilot-ask { display: flex; align-items: center; gap: 8px; margin-top: 12px; padding: 8px 12px; background: rgba(22,16,11,0.035); border: 0.5px solid var(--border-med); border-radius: 8px; }
 .copilot-ask-prefix { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--green); flex: 0 0 auto; }
 .copilot-ask input { flex: 1 1 auto; border: none; background: transparent; font-size: 13px; color: var(--text); outline: none; padding: 4px 0; font-family: inherit; }
 .copilot-ask input::placeholder { color: var(--text-3); font-style: italic; }
@@ -2053,6 +2054,28 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 .rr-weather { background: var(--card); border: 0.5px solid var(--border); border-radius: 8px; padding: 6px 10px; }
 .rr-signal-tiles .rr-card-body { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
 .rr-signal-tiles .signal-tile { padding: 6px 8px; background: var(--card-2); border-radius: 5px; font-size: 11px; }
+
+/* ─── Bite 28: Compact Info Strip ─── */
+.info-strip { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; padding: 10px 14px; border-radius: 8px; background: var(--card-bg, var(--card)); border: 0.5px solid var(--border); font-size: 12px; line-height: 1.3; color: var(--text-2); margin-bottom: 6px; }
+.info-strip-weather { font-weight: 600; }
+.info-strip-weather .wi-city { font-weight: 400; opacity: 0.65; }
+.info-strip-divider { color: var(--text-3); opacity: 0.5; }
+.info-strip-markets { font-size: 11px; color: var(--text-2); }
+.info-strip-breaking { display: none; font-size: 11px; color: var(--text-2); }
+.info-strip-breaking.has-headline { display: block; }
+.info-strip-breaking::before { content: "●"; color: var(--red); margin-right: 5px; font-size: 8px; vertical-align: 2px; }
+
+/* ─── Bite 28: Elly on Signals synthesis ─── */
+.elly-signals-synthesis { margin-bottom: 10px; padding: 12px 14px; background: rgba(160,72,28,0.06); border-radius: 8px; border-left: 3px solid var(--green); }
+.ess-eyebrow { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; color: var(--green); margin-bottom: 8px; text-transform: uppercase; }
+.ess-bullet { display: flex; gap: 8px; align-items: flex-start; font-size: 12.5px; line-height: 1.4; color: var(--text); margin-bottom: 6px; padding-bottom: 6px; border-bottom: 0.5px solid var(--border); }
+.ess-bullet:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.ess-bullet-tag { font-size: 9px; font-weight: 700; letter-spacing: 1px; padding: 2px 5px; border-radius: 3px; white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
+.ess-bullet-tag.afsh { background: rgba(160,72,28,0.12); color: var(--green); }
+.ess-bullet-tag.illume { background: rgba(28,62,94,0.12); color: var(--blue); }
+.ess-bullet-tag.spade { background: rgba(100,70,150,0.12); color: #6446AA; }
+.ess-bullet-tag.personal { background: rgba(0,130,120,0.12); color: #008078; }
+.ess-meta { font-size: 10px; color: var(--text-3); margin-top: 4px; }
 /* ───────── end Bite 32 ───────── */
 
 /* ───────── Bite 30: inline Ask-Elly answer ─────── */
@@ -2761,16 +2784,44 @@ body.dark {
   <!-- ═══ RIGHT COLUMN (rail tabs) ═══ -->
   <aside class="col col-right">
     <div class="right-col-inner">
-      <!-- [Bite 32] Right-rail consolidation: weather + markets + news + signal tiles -->
+      <section class="rollup-card elly-rollup" id="rollup-card" style="margin-top:0">
+      <div class="rollup-head">
+        <span class="rollup-eyebrow"><span class="elly-pulse"></span>ELLY'S WEEK VIEW</span>
+        <span class="rollup-eyebrow" id="rollup-meta" style="opacity:0.65;"></span>
+      </div>
+      <div class="rollup-says" id="rollup-says"></div>
+      <div class="rollup-headline" id="rollup-headline">Loading&hellip;</div>
+      <div class="rollup-grid">
+        <div class="rollup-col shipped"><div class="rollup-col-label">Shipped &middot; last 7d</div><div id="rollup-shipped"></div></div>
+        <div class="rollup-col slipped"><div class="rollup-col-label">Slipped</div><div id="rollup-slipped"></div></div>
+        <div class="rollup-col focus"><div class="rollup-col-label">Focus &middot; next 7d</div><div id="rollup-focus"></div></div>
+      </div>
+      <div class="rollup-note" id="rollup-note"></div>
+      <div class="rollup-actions">
+        <button class="rollup-actions-btn primary" onclick="_fetchWeeklyRollup(true)" title="Force a fresh Sonnet pass">Refresh</button>
+        <button class="rollup-actions-btn" onclick="_openRollupRaw()" title="See the raw data feeding this">Raw data</button>
+        <span class="rollup-actions-meta" id="rollup-actions-meta"></span>
+      </div>
+    </section>
+
+      <!-- [Bite 28] Right-rail restructure: info-strip + Elly on Signals + signal tiles -->
       <div class="rr-peripheral" id="rr-peripheral">
-        <div class="weather-instrument rr-weather" id="weather-instrument"></div>
-        <div class="rr-card rr-markets">
-          <div class="rr-card-head"><span class="rr-card-title">Markets</span><button class="rr-card-refresh" onclick="cosAction('refresh_markets', this)" title="Refresh markets">&#x21bb;</button></div>
-          <div class="rr-card-body" id="rr-markets-body"></div>
+        <!-- Compact Info Strip: weather + markets + breaking merged -->
+        <div class="info-strip" id="info-strip">
+          <div class="info-strip-weather" id="info-strip-weather">— Sant Cugat</div>
+          <div class="info-strip-divider">·</div>
+          <div class="info-strip-markets" id="info-strip-markets"></div>
+          <div class="info-strip-breaking" id="info-strip-breaking" style="display:none"></div>
         </div>
-        <div class="rr-card rr-news">
-          <div class="rr-card-head"><span class="rr-card-title">Breaking</span><button class="rr-card-refresh" onclick="cosAction('refresh_news', this)" title="Refresh news">&#x21bb;</button></div>
-          <div class="rr-card-body rr-news-body" id="rr-news-body"></div>
+        <!-- Hidden legacy containers kept so JS mirror functions still find their targets -->
+        <div id="weather-instrument" style="display:none"></div>
+        <div id="rr-markets-body" style="display:none"></div>
+        <div id="rr-news-body" style="display:none"></div>
+        <!-- Elly on Signals synthesis -->
+        <div class="elly-signals-synthesis" id="elly-signals-synthesis" style="display:none">
+          <div class="ess-eyebrow">ELLY ON SIGNALS</div>
+          <div class="ess-bullets" id="ess-bullets"></div>
+          <div class="ess-meta" id="ess-meta"></div>
         </div>
         <div class="rr-card rr-signal-tiles">
           <div class="rr-card-head"><span class="rr-card-title">Signals</span></div>
@@ -2798,25 +2849,6 @@ body.dark {
         <button class="qc-btn" onclick="submitQuickCapture()" title="Save to Notes (Quick Capture)">+</button>
       </div>
       
-      <section class="rollup-card elly-rollup" id="rollup-card">
-      <div class="rollup-head">
-        <span class="rollup-eyebrow"><span class="elly-pulse"></span>Elly&rsquo;s Week</span>
-        <span class="rollup-eyebrow" id="rollup-meta" style="opacity:0.65;"></span>
-      </div>
-      <div class="rollup-says" id="rollup-says"></div>
-      <div class="rollup-headline" id="rollup-headline">Loading&hellip;</div>
-      <div class="rollup-grid">
-        <div class="rollup-col shipped"><div class="rollup-col-label">Shipped &middot; last 7d</div><div id="rollup-shipped"></div></div>
-        <div class="rollup-col slipped"><div class="rollup-col-label">Slipped</div><div id="rollup-slipped"></div></div>
-        <div class="rollup-col focus"><div class="rollup-col-label">Focus &middot; next 7d</div><div id="rollup-focus"></div></div>
-      </div>
-      <div class="rollup-note" id="rollup-note"></div>
-      <div class="rollup-actions">
-        <button class="rollup-actions-btn primary" onclick="_fetchWeeklyRollup(true)" title="Force a fresh Sonnet pass">Refresh</button>
-        <button class="rollup-actions-btn" onclick="_openRollupRaw()" title="See the raw data feeding this">Raw data</button>
-        <span class="rollup-actions-meta" id="rollup-actions-meta"></span>
-      </div>
-    </section>
       <section class="learned-card" id="learned-card">
         <div class="learned-head" onclick="toggleLearnedCard()" title="Click to collapse / expand">
           <span class="learned-eyebrow"><span class="learned-spark">&#10022;</span>What Elly Learned</span>
@@ -3874,6 +3906,11 @@ function renderWeather(){
     </div>
     ${forecast?`<div class="wi-forecast">${forecast}</div>`:''}
   `;
+  // [Bite 28] Also update compact info-strip weather
+  try {
+    const iw = document.getElementById('info-strip-weather');
+    if(iw) iw.innerHTML = `<b>${esc(w.temp||'—')}° ${esc(w.icon||'⛅')}</b> <span class="wi-city">${esc(w.location||'Sant Cugat')}</span>`;
+  } catch(_) {}
 }
 
 function colorForDelta(v){
@@ -4391,19 +4428,28 @@ function _renderScheduleHourGrid(host, badge, TZ){
     return {...e, _date, _end: _endOf(e), _entKey: _entKey(e), _allDay: !!(e.all_day || e.allDay)};
   });
 
-  // Build day list
+  // Build day list — use TZ-aware anchor key to avoid local-TZ vs display-TZ mismatch
   const view = (typeof CAL_VIEW !== 'undefined' && CAL_VIEW) || 'day';
   const anchor = CAL_ANCHOR || new Date();
   let days = [];
+  // [Bite 28] Build anchor date normalized to TZ midnight to match _ymdKeyTZ bucketing
+  function _tzMidnight(d) {
+    try {
+      const parts = new Intl.DateTimeFormat('en-US', {year:'numeric',month:'2-digit',day:'2-digit', timeZone: TZ}).formatToParts(d);
+      let y=0,mo=0,dy=0;
+      for(const p of parts){if(p.type==='year')y=+p.value;if(p.type==='month')mo=+p.value;if(p.type==='day')dy=+p.value;}
+      // Create UTC-pinned date that TZ formats as YYYY-MM-DD of this local TZ date
+      return new Date(Date.UTC(y, mo-1, dy));
+    } catch(_){ const x=new Date(d); x.setHours(0,0,0,0); return x; }
+  }
   if(view === 'day'){
-    const d = new Date(anchor); d.setHours(0,0,0,0);
-    days.push(d);
+    days.push(_tzMidnight(anchor));
   } else {
-    const d = new Date(anchor); d.setHours(0,0,0,0);
-    const wd = d.getDay();
-    d.setDate(d.getDate() - (wd === 0 ? 6 : wd - 1));
+    const d = _tzMidnight(anchor);
+    const wd = d.getUTCDay();
+    d.setUTCDate(d.getUTCDate() - (wd === 0 ? 6 : wd - 1));
     for(let i = 0; i < 7; i++){
-      const dd = new Date(d); dd.setDate(d.getDate() + i);
+      const dd = new Date(d); dd.setUTCDate(d.getUTCDate() + i);
       days.push(dd);
     }
   }
@@ -4972,6 +5018,19 @@ function renderMarketsSidebar(){
       </svg>`:''}
     </div>`;
   }).join('') || '<div class="empty-state">No market data</div>';
+  // [Bite 28] Also update compact info-strip markets (top 3 inline)
+  try {
+    const im = document.getElementById('info-strip-markets');
+    if(im) {
+      const COLORS={up:'var(--green)',dn:'var(--red)',flat:'var(--text-3)'};
+      im.innerHTML = rows.slice(0,3).map(r => {
+        const dir = r.dir || colorForDelta(r.change_pct||r.change||0);
+        const chg = r.change_pct || r.change || '';
+        const arrow = dir==='up' ? '▲' : (dir==='dn' ? '▼' : '');
+        return `<span style="color:${COLORS[dir]||COLORS.flat}">${esc(r.ticker||'')} ${esc(r.value||'')} ${arrow}${esc(chg)}</span>`;
+      }).join('<span style="color:var(--text-3);margin:0 4px">·</span>');
+    }
+  } catch(_) {}
 }
 
 function renderAgFutures(){
@@ -5006,6 +5065,21 @@ function renderNewsSidebar(){
       </div>
     </div>`;
   }).join('') || '<div class="empty-state">No signals</div>';
+  // [Bite 28] Also update compact info-strip breaking (first headline if any)
+  try {
+    const ib = document.getElementById('info-strip-breaking');
+    if(ib) {
+      const first = rows[0];
+      if(first && first.title) {
+        ib.textContent = String(first.title).slice(0,60) + (first.title.length > 60 ? '…' : '');
+        ib.classList.add('has-headline');
+        ib.style.display = '';
+      } else {
+        ib.classList.remove('has-headline');
+        ib.style.display = 'none';
+      }
+    }
+  } catch(_) {}
 }
 
 function renderBrief(){
@@ -5262,9 +5336,20 @@ function _snoozeTask(x){
 }
 
 function renderTasks(){
-  const t = DD.tasks || [];
+  // [Bite 28] Overdue-first sort + cap at 20
+  const today = new Date().toISOString().slice(0,10);
+  const _isOverdue = x => x.overdue || x.chip_class === 'blocked' || (x.due && x.due < today && x.status !== 'done');
+  const rawTasks = DD.tasks || [];
+  const t = [...rawTasks].sort((a, b) => {
+    const ao = _isOverdue(a) ? 1 : 0;
+    const bo = _isOverdue(b) ? 1 : 0;
+    return bo - ao;
+  });
+  const TASK_CAP = 20;
+  const tVisible = t.slice(0, TASK_CAP);
+  const tRemaining = t.length - TASK_CAP;
   window.__TASKS = {};
-  $('tasks-body').innerHTML = t.map((x, i)=>{
+  $('tasks-body').innerHTML = tVisible.map((x, i)=>{
     const k = 'task::' + i; window.__TASKS[k] = x;
     const avColor = x.avatar_color || avatarClassFor(x.owner||x.title);
     const chipCls = x.chip_class || x.status || 'todo';
@@ -5280,7 +5365,31 @@ function renderTasks(){
         ${x.overdue?'<div class="chip overdue">overdue</div>':''}
       </div>
     </div>`;
-  }).join('') || '<div class="empty-state">No tasks</div>';
+  }).join('') + (tRemaining > 0 ? `<div class="brief-row-more" style="font-size:11px;color:var(--text-3);padding:6px 4px;cursor:pointer;text-align:center" onclick="window.__showAllTasks && window.__showAllTasks()">Show all ${t.length} tasks →</div>` : '') || '<div class="empty-state">No tasks</div>';
+  window.__showAllTasks = function() {
+    window.__TASKS = {};
+    $('tasks-body').innerHTML = t.map((x, i) => {
+      const k = 'task::full::' + i; window.__TASKS[k] = x;
+      const avColor = x.avatar_color || avatarClassFor(x.owner||x.title);
+      const chipCls = x.chip_class || x.status || 'todo';
+      const ent = _normEntity(x.entity || x.owner || '');
+      return `<div class="right-row" data-entity="${esc(ent)}" data-k="${k}">
+      <div class="avatar ${avColor}">${esc(initials(x.owner||x.title))}</div>
+      <div class="right-row-body">
+        <div class="right-row-title">${esc(x.title||'')}</div>
+        <div class="right-row-sub">${esc(x.sub||x.due||'')}</div>
+      </div>
+      <div class="right-row-end">
+        <div class="chip ${chipCls}">${esc(x.chip_label||x.status||'todo')}</div>
+        ${x.overdue?'<div class="chip overdue">overdue</div>':''}
+      </div>
+    </div>`;
+    }).join('');
+    document.querySelectorAll('#tasks-body .right-row').forEach(el => el.addEventListener('click', () => {
+      const x = window.__TASKS[el.dataset.k]; if(!x) return;
+      if(typeof openTaskDrawer === 'function') openTaskDrawer(x);
+    }));
+  };
   // [session 54] 2-way task drawer on click (right-col tab, hidden in Bite 8)
   document.querySelectorAll('#tasks-body .right-row').forEach(el => el.addEventListener('click', () => {
     const x = window.__TASKS[el.dataset.k]; if(!x) return;
@@ -5796,8 +5905,11 @@ document.addEventListener('keydown', (ev) => {
 
 
 // [session 54] AI Copilot hero — Sonnet-powered decision set
+let _briefCache = null;
 async function _fetchCopilotBrief(force){
   try {
+    // [Bite 28] Cache-first: render immediately from cache if available
+    if(_briefCache) { try { _renderCopilotBrief(_briefCache); } catch(_){} }
     const r = await postSync({action: 'copilot_brief', force: !!force, lookahead_days: 7});
     const head = document.getElementById('copilot-headline');
     const meta = document.getElementById('copilot-meta');
@@ -5808,6 +5920,7 @@ async function _fetchCopilotBrief(force){
       console.warn('[copilot_brief] error', r);
       return;
     }
+    _briefCache = r;
     _renderCopilotBrief(r);
   } catch(e){ console.warn('copilot_brief fetch failed', e); }
 }
@@ -5857,7 +5970,10 @@ function _renderCopilotBrief(d){
       return;
     }
     window.__COPILOT_ITEMS = window.__COPILOT_ITEMS || {};
-    body.innerHTML = items.slice(0, 3).map((it, i) => {
+    const CAP = 4;
+    const visible = items.slice(0, CAP);
+    const remaining = items.length - CAP;
+    body.innerHTML = visible.map((it, i) => {
       const k = id + '::' + i;
       window.__COPILOT_ITEMS[k] = it;
       const title = esc(it.title || it.text || '');
@@ -5870,7 +5986,7 @@ function _renderCopilotBrief(d){
       if(meta) inner += '<div class="copilot-item-meta">' + meta + '</div>';
       inner += '</span>';
       return '<div class="copilot-item clickable" data-k="' + esc(k) + '">' + inner + '</div>';
-    }).join('');
+    }).join('') + (remaining > 0 ? '<div class="brief-row-more" style="font-size:10px;color:var(--text-3);padding:3px 0 0;opacity:0.7">+' + remaining + ' more</div>' : '');
     body.querySelectorAll('.copilot-item.clickable').forEach(el => {
       el.addEventListener('click', (ev) => {
         ev.stopPropagation();
@@ -5878,6 +5994,22 @@ function _renderCopilotBrief(d){
         if(item) _openCopilotItemMenu(el, item);
       });
     });
+    // Add count badge to tile header label
+    try {
+      const tile = document.getElementById(id);
+      if(tile && items.length > 0) {
+        const lbl = tile.querySelector('.copilot-tile-label');
+        if(lbl && !lbl.querySelector('.brief-tile-count')) {
+          const badge = document.createElement('span');
+          badge.className = 'brief-tile-count';
+          badge.style.cssText = 'font-size:10px;opacity:0.7;font-weight:400;margin-left:5px;';
+          badge.textContent = items.length;
+          lbl.appendChild(badge);
+        } else if(lbl && lbl.querySelector('.brief-tile-count')) {
+          lbl.querySelector('.brief-tile-count').textContent = items.length;
+        }
+      }
+    } catch(_) {}
   };
   renderTile('copilot-critical', d.critical || [], 'why');
   renderTile('copilot-today',    d.today    || [], 'action');
@@ -6044,6 +6176,37 @@ function _copilotAskAbout(title){
 
 try { _fetchCopilotBrief(false); } catch(_){}
 setInterval(() => { try { _fetchCopilotBrief(false); } catch(_){} }, 10 * 60 * 1000);
+
+// [Bite 28] Elly on Signals synthesis
+async function _fetchSignalsSynthesis() {
+  try {
+    const r = await fetch(`${WEBHOOK_BASE}/dashboard-sync`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','X-Sync-Key': SYNC_KEY},
+      body: JSON.stringify({action:'signals_synthesized'})
+    });
+    const d = await r.json();
+    const bullets = d.bullets || [];
+    const container = document.getElementById('elly-signals-synthesis');
+    const bulletsEl = document.getElementById('ess-bullets');
+    const metaEl = document.getElementById('ess-meta');
+    if(!container) return;
+    if(!bullets.length) { container.style.display = 'none'; return; }
+    container.style.display = 'block';
+    bulletsEl.innerHTML = bullets.map(b => {
+      const ent = (b.entity||'').toLowerCase();
+      const sev = b.severity === 'red' ? '🔴' : b.severity === 'amber' ? '🟡' : '🔵';
+      return `<div class="ess-bullet">
+        <span class="ess-bullet-tag ${ent}">${(b.entity||'').toUpperCase()}</span>
+        <span>${sev} ${b.action||''}</span>
+      </div>`;
+    }).join('');
+    const cached = d.from_cache ? ' · cached' : '';
+    metaEl.textContent = `${d.signal_count} signals · ${d.model?.includes('haiku') ? 'Haiku' : 'Sonnet'}${cached}`;
+  } catch(e) { console.warn('[signals_synthesis]', e); }
+}
+try { _fetchSignalsSynthesis(); } catch(_){}
+setInterval(() => { try { _fetchSignalsSynthesis(); } catch(_){} }, 90000);
 
 // [session 54 Bite 2] Unified Signals rail — 30s poll, merges live critical_queue + Signal Log
 async function _fetchUnifiedSignals(){

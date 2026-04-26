@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-26T01:00:00Z -->
+<!-- cache-buster: 2026-04-26T03:00:00Z -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1142,20 +1142,21 @@ body.dark .cal-view-btn.active { background: var(--bg); }
 .signal-tiles { display: flex; flex-direction: column; gap: 6px; }
 .signal-tile {
   display: flex; align-items: center; gap: 9px;
-  padding: 8px 10px; border-radius: 10px;
+  padding: 7px 10px; border-radius: 10px;
   background: var(--card-2); border: 1px solid var(--border);
   cursor: pointer; transition: all var(--t);
+  min-height: 52px;
 }
 .signal-tile:hover { border-color: var(--text-3); }
 .signal-tile-emoji { font-size: 15px; line-height: 1; flex-shrink: 0; }
 .signal-tile-body { flex: 1; min-width: 0; }
 .signal-tile-name {
-  font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.2;
+  font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.2;
   display: flex; align-items: baseline; gap: 6px;
 }
 .signal-tile-count { font-size: 10px; color: var(--text-3); font-weight: 600; }
 .signal-tile-ctx {
-  font-size: 10px; color: var(--text-2); line-height: 1.3; margin-top: 1px;
+  font-size: 11.5px; color: var(--text-2); line-height: 1.3; margin-top: 1px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .signal-tile-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
@@ -1756,7 +1757,7 @@ body.dark .entity-filter-bar { background: var(--card); }
 .copilot-ask-send:active { transform: scale(0.98); }
 
 /* Rollup — Elly's Week styling */
-.elly-rollup { background: linear-gradient(135deg, rgba(160,72,28,0.05), rgba(28,62,94,0.04)); border: 0.5px solid var(--border-med); }
+.elly-rollup { background: linear-gradient(135deg, rgba(160,72,28,0.05), rgba(28,62,94,0.04)); border: 0.5px solid var(--border-med); border-bottom: 1px solid var(--border); }
 .elly-rollup .rollup-eyebrow { display: inline-flex; align-items: center; color: var(--text-2); }
 .rollup-says { display: none; font-family: var(--font-serif); font-size: 13px; font-style: italic; line-height: 1.45; color: var(--text-2); padding: 8px 12px; margin: 4px 0 10px; border-left: 2px solid var(--green); background: rgba(160,72,28,0.055); border-radius: 0 6px 6px 0; cursor: pointer; transition: background .18s var(--ease); }
 .rollup-says.has-content { display: block; }
@@ -2001,6 +2002,10 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 .elly-rollup .rollup-says:hover { background: rgba(160,72,28,0.10); }
 .elly-rollup .rollup-says .rollup-says-prefix { display: inline; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-style: normal; font-size: 9px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--green); margin-right: 10px; vertical-align: 2px; }
 .elly-rollup .rollup-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 4px; }
+.elly-rollup.is-loading .rollup-grid { display: none; }
+.elly-rollup.is-loading .rollup-headline { display: none; }
+.elly-rollup.is-loading .rollup-says { display: none; }
+.rollup-loading-line { font-size: 12px; color: var(--text-3); padding: 4px 0; }
 .elly-rollup .rollup-col { min-width: 0; overflow: hidden; padding: 0; background: none; border: none; border-radius: 0; }
 .elly-rollup .rollup-col:hover { border-color: transparent; }
 .elly-rollup .rollup-col-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; padding-bottom: 3px; border-bottom: 0.5px solid var(--border); }
@@ -2042,7 +2047,7 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 .rr-peripheral { display: flex; flex-direction: column; gap: 10px; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 0.5px solid var(--border-med); }
 .rr-card { background: var(--card); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 12px 9px; }
 .rr-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.rr-card-title { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); }
+.rr-card-title { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); margin-bottom: 0; }
 .rr-card-refresh { background: transparent; border: none; cursor: pointer; color: var(--text-3); font-size: 13px; padding: 0 4px; transition: color 0.15s; }
 .rr-card-refresh:hover { color: var(--green); }
 .rr-card-body { font-size: 11.5px; line-height: 1.45; color: var(--text-2); min-height: 16px; }
@@ -2058,13 +2063,13 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 
 /* ─── Bite 28: Compact Info Strip ─── */
 .info-strip { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; padding: 10px 14px; border-radius: 8px; background: var(--card-bg, var(--card)); border: 0.5px solid var(--border); font-size: 12px; line-height: 1.3; color: var(--text-2); margin-bottom: 6px; }
-.info-strip-weather { font-weight: 600; }
+.info-strip-weather { font-weight: 600; font-size: 13px; }
 .info-strip-weather .wi-city { font-weight: 400; opacity: 0.65; }
-.info-strip-divider { color: var(--text-3); opacity: 0.5; }
+.info-strip-divider { color: var(--text-3); opacity: 0.35; }
 .info-strip-markets { font-size: 11px; color: var(--text-2); }
 .info-strip-breaking { display: none; font-size: 11px; color: var(--text-2); }
 .info-strip-breaking.has-headline { display: block; }
-.info-strip-breaking::before { content: "●"; color: var(--red); margin-right: 5px; font-size: 8px; vertical-align: 2px; }
+/* bullet removed — breaking shows as plain line */
 
 /* ─── Bite 28: Elly on Signals synthesis ─── */
 .elly-signals-synthesis { margin-bottom: 10px; padding: 12px 14px; background: rgba(160,72,28,0.06); border-radius: 8px; border-left: 3px solid var(--green); }
@@ -2870,8 +2875,9 @@ body.dark {
         <span class="rollup-eyebrow"><span class="elly-pulse"></span>ELLY'S WEEK VIEW</span>
         <span style="display:flex;align-items:center;gap:8px;"><span class="rollup-eyebrow" id="rollup-meta" style="opacity:0.65;"></span><button class="rollup-head-refresh" onclick="_fetchWeeklyRollup(true)" title="Refresh">↺</button></span>
       </div>
+      <div class="rollup-loading-line" id="rollup-loading-line">Thinking…</div>
       <div class="rollup-says" id="rollup-says"></div>
-      <div class="rollup-headline" id="rollup-headline">Loading&hellip;</div>
+      <div class="rollup-headline" id="rollup-headline"></div>
       <div class="rollup-grid">
         <div class="rollup-col shipped"><div class="rollup-col-label">Shipped &middot; last 7d</div><div id="rollup-shipped"></div></div>
         <div class="rollup-col slipped"><div class="rollup-col-label">Slipped</div><div id="rollup-slipped"></div></div>
@@ -2930,7 +2936,7 @@ body.dark {
         <button class="qc-btn" onclick="submitQuickCapture()" title="Save to Notes (Quick Capture)">+</button>
       </div>
       
-      <section class="learned-card" id="learned-card">
+      <section class="learned-card collapsed" id="learned-card">
         <div class="learned-head" onclick="toggleLearnedCard()" title="Click to collapse / expand">
           <span class="learned-eyebrow"><span class="learned-spark">&#10022;</span>What Elly Learned</span>
           <span class="learned-meta" id="learned-meta"></span>
@@ -2943,7 +2949,7 @@ body.dark {
           <div class="learned-empty">Loading…</div>
         </div>
       </section>
-      <section class="cross-card" id="cross-card">
+      <section class="cross-card collapsed" id="cross-card">
         <div class="cross-head" onclick="toggleCrossCard()" title="Click to collapse / expand">
           <span class="cross-eyebrow"><span class="cross-spark">&#9879;</span>Cross-Entity Signals</span>
           <span class="cross-meta" id="cross-meta"></span>
@@ -5185,6 +5191,13 @@ function renderAgFutures(){
   }).join('') || '<div class="empty-state">No ag data</div>';
 }
 
+function _isGithubRunText(str) {
+  if(!str) return true;
+  return /\b[0-9a-f]{7,10}\b/.test(str) ||
+         /\brun\b/i.test(str) ||
+         /poll|probe|webhook|deploy|workflow|action/i.test(str);
+}
+
 function renderNewsSidebar(){
   const rows = DD.signals || DD.news || [];
   $('news-body').innerHTML = rows.slice(0,6).map(r=>{
@@ -5201,9 +5214,10 @@ function renderNewsSidebar(){
   try {
     const ib = document.getElementById('info-strip-breaking');
     if(ib) {
-      const first = rows[0];
-      if(first && first.title) {
-        ib.textContent = String(first.title).slice(0,60) + (first.title.length > 60 ? '…' : '');
+      const realNews = rows.find(r => r && r.title && !_isGithubRunText(r.title));
+      if(realNews) {
+        const txt = String(realNews.title).slice(0,60) + (realNews.title.length > 60 ? '\u2026' : '');
+        ib.textContent = txt;
         ib.classList.add('has-headline');
         ib.style.display = '';
       } else {
@@ -5918,10 +5932,14 @@ async function _fetchWeeklyRollup(force){
   const host = document.getElementById('rollup-card');
   if(!host) return;
   host.style.display = 'block';
+  host.classList.add('is-loading');
+  const _llN = document.getElementById('rollup-loading-line');
+  if(_llN) _llN.style.display = '';
   const _hN = document.getElementById('rollup-headline');
-  if(_hN && !_hN.textContent.trim()) _hN.textContent = 'Loading\u2026';
   try {
     const r = await postSync({action:'weekly_rollup', force: !!force});
+    host.classList.remove('is-loading');
+    if(_llN) _llN.style.display = 'none';
     if(!r || !r.success){
       if(_hN) _hN.textContent = 'Elly\'s Week paused';
       const _mN = document.getElementById('rollup-meta');

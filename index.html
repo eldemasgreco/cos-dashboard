@@ -6363,6 +6363,7 @@ async function _copilotAsk(){
                     '<div class="caa-actions"><button class="caa-btn caa-btn-dismiss" onclick="_dismissAskAnswer()">Close</button></div>';
   }
 }
+window._copilotAsk = _copilotAsk; // explicit global
 
 function _dismissAskAnswer(){
   const ans = document.getElementById('copilot-ask-answer');
@@ -7997,12 +7998,8 @@ async function _fetchDrafts(){
 window._copilotAskSafe = function(){
   console.log('[Ask Elly] submit triggered');
   try {
-    if(typeof _copilotAsk !== 'function'){
-      console.warn('[Ask Elly] _copilotAsk not defined yet');
-      if(window.showToast) showToast('Elly not ready, try again in a sec');
-      return;
-    }
-    return _copilotAsk();
+    const fn = window._copilotAsk || _copilotAsk;
+    return fn();
   } catch(e){
     console.error('[Ask Elly] submit failed:', e);
     if(window.showToast) showToast('Ask Elly failed: ' + String(e).slice(0, 80));

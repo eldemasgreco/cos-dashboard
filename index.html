@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-25T23:30:00Z -->
+<!-- cache-buster: 2026-04-26T01:00:00Z -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1995,15 +1995,15 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 .elly-rollup { background: linear-gradient(135deg, rgba(160,72,28,0.05), rgba(28,62,94,0.04)); border: 0.5px solid var(--border-med); border-radius: 12px; padding: 18px 20px 16px; margin: 14px 0 16px; }
 .elly-rollup .rollup-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px; gap: 12px; }
 .elly-rollup .rollup-eyebrow { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-2); display: inline-flex; align-items: center; gap: 6px; }
-.elly-rollup .rollup-headline { font-family: var(--font-serif); font-size: 22px; font-weight: 500; line-height: 1.25; color: var(--text); margin: 8px 0 12px; letter-spacing: -0.01em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.elly-rollup .rollup-says { display: none; padding: 12px 16px; margin: 4px 0 14px; background: rgba(160,72,28,0.07); border-left: 3px solid var(--green); border-radius: 0 8px 8px 0; font-family: var(--font-serif); font-size: 15px; font-style: italic; line-height: 1.5; color: var(--text); cursor: pointer; transition: background .18s var(--ease); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.elly-rollup .rollup-headline { font-family: var(--font-serif); font-size: 17px; font-weight: 500; line-height: 1.25; color: var(--text); margin: 8px 0 12px; letter-spacing: -0.01em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.elly-rollup .rollup-says { display: none; padding: 8px 10px; margin: 4px 0 10px; background: rgba(160,72,28,0.07); border-left: 3px solid var(--green); border-radius: 0 8px 8px 0; font-family: var(--font-serif); font-size: 13px; font-style: italic; line-height: 1.45; color: var(--text); cursor: pointer; transition: background .18s var(--ease); -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .elly-rollup .rollup-says.has-content { display: block; }
 .elly-rollup .rollup-says:hover { background: rgba(160,72,28,0.10); }
 .elly-rollup .rollup-says .rollup-says-prefix { display: inline; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-style: normal; font-size: 9px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--green); margin-right: 10px; vertical-align: 2px; }
-.elly-rollup .rollup-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 4px; }
-.elly-rollup .rollup-col { padding: 12px 14px; border-radius: 8px; background: var(--card); border: 0.5px solid var(--border); transition: border-color .18s var(--ease); min-width: 0; overflow: hidden; }
-.elly-rollup .rollup-col:hover { border-color: var(--border-med); }
-.elly-rollup .rollup-col-label { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; padding-bottom: 5px; border-bottom: 0.5px solid var(--border); }
+.elly-rollup .rollup-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 4px; }
+.elly-rollup .rollup-col { min-width: 0; overflow: hidden; padding: 0; background: none; border: none; border-radius: 0; }
+.elly-rollup .rollup-col:hover { border-color: transparent; }
+.elly-rollup .rollup-col-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; padding-bottom: 3px; border-bottom: 0.5px solid var(--border); }
 .elly-rollup .rollup-col.shipped .rollup-col-label { color: var(--green); border-bottom-color: var(--green-bg); }
 .elly-rollup .rollup-col.slipped .rollup-col-label { color: var(--red); border-bottom-color: var(--red-bg); }
 .elly-rollup .rollup-col.focus   .rollup-col-label { color: var(--blue); border-bottom-color: var(--blue-bg); }
@@ -2020,6 +2020,7 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 .elly-rollup .rollup-actions-btn.primary { background: var(--green); color: #fff; border-color: var(--green); }
 .elly-rollup .rollup-actions-btn.primary:hover { filter: brightness(0.92); }
 .elly-rollup .rollup-actions-meta { font-size: 10px; color: var(--text-3); margin-left: auto; }
+.rollup-head-refresh { background:none; border:none; color:var(--text-3); font-size:14px; cursor:pointer; padding:0 2px; opacity:0.6; } .rollup-head-refresh:hover { opacity:1; }
 /* Bite 31.1: right-rail tuned variant — keep richness but compact for narrower column */
 .col-right .elly-rollup { padding: 14px 16px 12px; margin: 0 0 12px; }
 .col-right .elly-rollup .rollup-headline { font-size: 16px; line-height: 1.3; margin: 6px 0 10px; }
@@ -2233,15 +2234,15 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 .rollup-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .rollup-eyebrow { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); }
 .rollup-headline { font-family: var(--font-serif); font-size: 17px; font-weight: 500; line-height: 1.3; margin-bottom: 12px; }
-.rollup-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
-.rollup-col { background: var(--card); border-radius: 8px; padding: 10px 12px; }
-.rollup-col-label { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; }
+.rollup-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
+.rollup-col { min-width: 0; overflow: hidden; padding: 0; background: none; border: none; border-radius: 0; }
+.rollup-col-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; padding-bottom: 3px; border-bottom: 0.5px solid var(--border); }
 .rollup-col.shipped .rollup-col-label { color: #0F6E56; }
 .rollup-col.slipped .rollup-col-label { color: var(--red); }
 .rollup-col.focus .rollup-col-label { color: var(--ink-navy, #1A3A5C); }
-.rollup-item { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 3px 0; line-height: 1.3; margin-bottom: 0; }
+.rollup-item { font-size: 11.5px; line-height: 1.3; padding: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .rollup-item-sub { display: none; }
-.rollup-note { font-family: var(--font-serif); font-style: italic; font-size: 12px; color: var(--text-2); border-top: 0.5px solid var(--border); padding-top: 10px; margin-top: 8px; }
+.rollup-note { font-family: var(--font-serif); font-style: italic; font-size: 12px; color: var(--text-2); border-top: 0.5px solid var(--border); padding-top: 10px; margin-top: 8px; display: none !important; }
 /* CmdK */
 .cmdk-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 10000; align-items: flex-start; justify-content: center; padding-top: 15vh; }
 .cmdk-overlay.open { display: flex; }
@@ -2865,9 +2866,9 @@ body.dark {
   <aside class="col col-right">
     <div class="right-col-inner">
       <section class="rollup-card elly-rollup" id="rollup-card" style="margin-top:0">
-      <div class="rollup-head">
+      <div class="rollup-head" style="display:flex;align-items:center;justify-content:space-between;">
         <span class="rollup-eyebrow"><span class="elly-pulse"></span>ELLY'S WEEK VIEW</span>
-        <span class="rollup-eyebrow" id="rollup-meta" style="opacity:0.65;"></span>
+        <span style="display:flex;align-items:center;gap:8px;"><span class="rollup-eyebrow" id="rollup-meta" style="opacity:0.65;"></span><button class="rollup-head-refresh" onclick="_fetchWeeklyRollup(true)" title="Refresh">↺</button></span>
       </div>
       <div class="rollup-says" id="rollup-says"></div>
       <div class="rollup-headline" id="rollup-headline">Loading&hellip;</div>
@@ -2877,7 +2878,7 @@ body.dark {
         <div class="rollup-col focus"><div class="rollup-col-label">Focus &middot; next 7d</div><div id="rollup-focus"></div></div>
       </div>
       <div class="rollup-note" id="rollup-note"></div>
-      <div class="rollup-actions">
+      <div class="rollup-actions" style="display:none">
         <button class="rollup-actions-btn primary" onclick="_fetchWeeklyRollup(true)" title="Force a fresh Sonnet pass">Refresh</button>
         <button class="rollup-actions-btn" onclick="_openRollupRaw()" title="See the raw data feeding this">Raw data</button>
         <span class="rollup-actions-meta" id="rollup-actions-meta"></span>

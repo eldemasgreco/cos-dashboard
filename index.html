@@ -2710,6 +2710,25 @@ body.dark {
 /* === BREAKING NEWS — PERMANENTLY HIDDEN === */
 .info-strip-breaking { display: none !important; }
 
+
+  /* ── CENTER COLUMN TABS ── */
+  .center-tab-bar {
+    display: flex; gap: 4px; padding: 0 0 12px;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .ctab {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+    padding: 5px 14px; border-radius: 20px; border: 0.5px solid var(--border);
+    background: transparent; color: var(--text-3); cursor: pointer; transition: all .15s;
+  }
+  .ctab:hover { color: var(--text); border-color: var(--text-3); }
+  .ctab.ctab-active {
+    background: var(--accent); color: #fff; border-color: var(--accent);
+  }
+  .ctab-panel { display: none; }
+  .ctab-panel.ctab-panel-active { display: block; }
 </style>
 </head>
 <body>
@@ -2801,6 +2820,17 @@ body.dark {
   <!-- ═══ CENTER COLUMN ═══ -->
   <main class="col col-center">
 
+    <!-- ── Center column tab bar ── -->
+    <div class="center-tab-bar">
+      <button class="ctab ctab-active" id="ctab-btn-brief"
+              onclick="switchCenterTab('brief')" type="button">Brief</button>
+      <button class="ctab" id="ctab-btn-schedule"
+              onclick="switchCenterTab('schedule')" type="button">Schedule</button>
+    </div>
+
+    <!-- ── BRIEF panel ── -->
+    <div class="ctab-panel ctab-panel-active" id="ctab-panel-brief">
+
     <!-- [Bite 17] Elly's Brief hero — Sonnet-powered decision set, bullet-first, icon-coded -->
     <section class="copilot-hero elly-hero" id="copilot-hero">
       <div class="copilot-head">
@@ -2864,55 +2894,6 @@ body.dark {
     </section>
 
         <!-- [Bite 19] Schedule moved from right rail to center column. Keeps schedule-body id stable so renderSchedule needs no change. -->
-        <section class="cockpit-schedule elly-schedule" id="cockpit-schedule">
-          <div class="cockpit-schedule-head">
-            <span class="cockpit-schedule-title">Schedule</span>
-            <span class="cockpit-schedule-sub" id="cockpit-schedule-sub"></span>
-          </div>
-          <div class="tab-panel active" id="tab-schedule">
-          <div class="cal-toolbar">
-            <div class="cal-views">
-              <button class="cal-view-btn active" data-view="day" onclick="setCalView('day')">D</button>
-              <button class="cal-view-btn" data-view="week" onclick="setCalView('week')">W</button>
-              <button class="cal-view-btn" data-view="month" onclick="setCalView('month')">M</button>
-              <button class="cal-view-btn" data-view="quarter" onclick="setCalView('quarter')">Q</button>
-            </div>
-            <div class="cal-nav-group">
-              <button class="cal-nav-btn" onclick="calNav(-1)" title="Previous">‹</button>
-              <button class="cal-today-btn" onclick="calToday()">Today</button>
-              <button class="cal-nav-btn" onclick="calNav(1)" title="Next">›</button>
-            </div>
-          </div>
-          <div class="cal-period-label" id="cal-period-label"></div>
-          <div class="cal-entity-chips">
-            <button class="ce-chip active" data-ent="" onclick="setCalEntity('')">All</button>
-            <button class="ce-chip afsh" data-ent="AFSH" onclick="setCalEntity('AFSH')">🐄</button>
-            <button class="ce-chip illume" data-ent="Illume" onclick="setCalEntity('Illume')">🫒</button>
-            <button class="ce-chip spade" data-ent="Spade" onclick="setCalEntity('Spade')">⚙️</button>
-            <button class="ce-chip personal" data-ent="Personal" onclick="setCalEntity('Personal')">👤</button>
-          </div>
-          <div id="schedule-body"></div>
-        </div>
-        </section>
-
-        
-
-
-
-    <div class="tw-section" id="tw-section">
-      <div class="tw-header">
-        <span class="tw-title">This Week</span>
-        <div class="tw-chips">
-          <button class="tw-chip active" data-ent="" onclick="setTwEntity('')">All</button>
-          <button class="tw-chip afsh" data-ent="AFSH" onclick="setTwEntity('AFSH')">🐄</button>
-          <button class="tw-chip illume" data-ent="Illume" onclick="setTwEntity('Illume')">🫒</button>
-          <button class="tw-chip spade" data-ent="Spade" onclick="setTwEntity('Spade')">⚙️</button>
-          <button class="tw-chip personal" data-ent="Personal" onclick="setTwEntity('Personal')">👤</button>
-        </div>
-      </div>
-      <div id="tw-body"></div>
-    </div>
-
     <div class="dz-pills">
       <span class="dz-pill" onclick="openDzDrawer('markets')">📊 Markets</span>
       <span class="dz-pill" onclick="openDzDrawer('news')">📰 News</span>
@@ -2961,6 +2942,55 @@ body.dark {
       <div id="sys-scenarios"></div>
     </div>
 
+    </div><!-- /ctab-panel-brief -->
+
+    <!-- ── SCHEDULE panel ── -->
+    <div class="ctab-panel" id="ctab-panel-schedule">
+        <section class="cockpit-schedule elly-schedule" id="cockpit-schedule">
+          <div class="cockpit-schedule-head">
+            <span class="cockpit-schedule-title">Schedule</span>
+            <span class="cockpit-schedule-sub" id="cockpit-schedule-sub"></span>
+          </div>
+          <div class="tab-panel active" id="tab-schedule">
+          <div class="cal-toolbar">
+            <div class="cal-views">
+              <button class="cal-view-btn active" data-view="day" onclick="setCalView('day')">D</button>
+              <button class="cal-view-btn" data-view="week" onclick="setCalView('week')">W</button>
+              <button class="cal-view-btn" data-view="month" onclick="setCalView('month')">M</button>
+              <button class="cal-view-btn" data-view="quarter" onclick="setCalView('quarter')">Q</button>
+            </div>
+            <div class="cal-nav-group">
+              <button class="cal-nav-btn" onclick="calNav(-1)" title="Previous">‹</button>
+              <button class="cal-today-btn" onclick="calToday()">Today</button>
+              <button class="cal-nav-btn" onclick="calNav(1)" title="Next">›</button>
+            </div>
+          </div>
+          <div class="cal-period-label" id="cal-period-label"></div>
+          <div class="cal-entity-chips">
+            <button class="ce-chip active" data-ent="" onclick="setCalEntity('')">All</button>
+            <button class="ce-chip afsh" data-ent="AFSH" onclick="setCalEntity('AFSH')">🐄</button>
+            <button class="ce-chip illume" data-ent="Illume" onclick="setCalEntity('Illume')">🫒</button>
+            <button class="ce-chip spade" data-ent="Spade" onclick="setCalEntity('Spade')">⚙️</button>
+            <button class="ce-chip personal" data-ent="Personal" onclick="setCalEntity('Personal')">👤</button>
+          </div>
+          <div id="schedule-body"></div>
+        </div>
+        </section>
+
+    <div class="tw-section" id="tw-section">
+      <div class="tw-header">
+        <span class="tw-title">This Week</span>
+        <div class="tw-chips">
+          <button class="tw-chip active" data-ent="" onclick="setTwEntity('')">All</button>
+          <button class="tw-chip afsh" data-ent="AFSH" onclick="setTwEntity('AFSH')">🐄</button>
+          <button class="tw-chip illume" data-ent="Illume" onclick="setTwEntity('Illume')">🫒</button>
+          <button class="tw-chip spade" data-ent="Spade" onclick="setTwEntity('Spade')">⚙️</button>
+          <button class="tw-chip personal" data-ent="Personal" onclick="setTwEntity('Personal')">👤</button>
+        </div>
+      </div>
+      <div id="tw-body"></div>
+    </div>
+    </div><!-- /ctab-panel-schedule -->
   </main>
 
   <!-- ═══ RIGHT COLUMN (rail tabs) ═══ -->
@@ -7998,6 +8028,17 @@ window._copilotAskSafe = function(){
   setInterval(_bind, 5000);
 })();
 
+
+  function switchCenterTab(tab) {
+    ['brief','schedule'].forEach(function(t) {
+      var btn   = document.getElementById('ctab-btn-'+t);
+      var panel = document.getElementById('ctab-panel-'+t);
+      if (!btn || !panel) return;
+      var active = (t === tab);
+      btn.classList.toggle('ctab-active', active);
+      panel.classList.toggle('ctab-panel-active', active);
+    });
+  }
 </script>
 <div class="cmdk-overlay" id="cmdk-overlay" onclick="if(event.target===this)_closeCmdK()">
   <div class="cmdk">

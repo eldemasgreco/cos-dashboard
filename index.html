@@ -7059,6 +7059,7 @@ buildTzDropdown();
 renderClock();
 setInterval(renderClock, 30000);
 renderAll();
+try { _geoRefreshWeather(); } catch(_){} // restore live geo weather
 
 // Hydrate persisted timezone preference from backend (user_prefs.json).
 // CURRENT_TZ defaults to Europe/Madrid at load; overwrite if the user picked
@@ -7133,6 +7134,113 @@ async function _autoDetectTz(){
       showToast('Timezone: ' + detected + ' (' + source + ')');
     }
   } catch(e){ console.debug('Auto-TZ failed', e); }
+}
+
+// ── Geolocation-based live weather refresh (restored) ──
+// Uses navigator.geolocation to get precise lat/lon, fetches live weather from
+// open-meteo (same API used by fetchTravelWeather), then updates DD.weather and
+// re-renders so info-strip-weather shows real-time local data.
+// Falls back to IP-based lat/lon via ipapi.co if geolocation is denied/times out.
+async function _geoRefreshWeather() {
+  try {
+    const _fetchWeatherForCoords = async (lat, lon, cityName) => {
+      try {
+        const u = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}`
+          + `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code`
+          + `&daily=temperature_2m_max,temperature_2m_min,uv_index_max,weather_code`
+          + `&timezone=auto&forecast_days=4`;
+        const r = await fetch(u);
+        if (!r.ok) return;
+        const data = await r.json();
+        const cur = (data && data.current) || {};
+        const daily = (data && data.daily) || {};
+        const code = parseInt(cur.weather_code || 0, 10);
+        const icons = (daily.weather_code || []).slice(1, 4).map(c => WMO_ICONS[parseInt(c,10)] || '⛅');
+        const labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+        const today = new Date();
+        const forecast = (daily.time || []).slice(1, 4).map((dateStr, i) => {
+          const d = new Date(dateStr + 'T12:00:00');
+          const label = labels[d.getDay()];
+          return {
+            label,
+            icon: icons[i] || '⛅',
+            hi: Math.round((daily.temperature_2m_max || [])[i+1] ?? (daily.temperature_2m_max || [])[i] ?? 0) + '°',
+            lo: Math.round((daily.temperature_2m_min || [])[i+1] ?? (daily.temperature_2m_min || [])[i] ?? 0) + '°'
+          };
+        });
+        // Merge live data into DD.weather, preserving any server fields not overwritten
+        DD.weather = Object.assign({}, DD.weather || {}, {
+          temp: Math.round(cur.temperature_2m ?? (DD.weather && DD.weather.temp) ?? 0),
+          humidity: Math.round(cur.relative_humidity_2m ?? (DD.weather && DD.weather.humidity) ?? 0),
+          wind: Math.round(cur.wind_speed_10m ?? (DD.weather && DD.weather.wind) ?? 0),
+          high: Math.round((daily.temperature_2m_max || [])[0] ?? (DD.weather && DD.weather.high) ?? 0),
+          low: Math.round((daily.temperature_2m_min || [])[0] ?? (DD.weather && DD.weather.low) ?? 0),
+          uv: Math.round((daily.uv_index_max || [])[0] ?? (DD.weather && DD.weather.uv) ?? 0),
+          icon: WMO_ICONS[code] || (DD.weather && DD.weather.icon) || '⛅',
+          desc: WMO_LABELS[code] || (DD.weather && DD.weather.desc) || '',
+          condition: WMO_LABELS[code] || (DD.weather && DD.weather.condition) || '',
+          location: cityName || (DD.weather && DD.weather.location) || 'Sant Cugat',
+          fetched_at: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false}),
+          forecast: forecast.length ? forecast : (DD.weather && DD.weather.forecast) || []
+        });
+        try { renderWeather(); } catch(_) {}
+      } catch(e) { console.debug('_geoRefreshWeather fetch failed', e); }
+    };
+
+    const _getCityName = async (lat, lon) => {
+      try {
+        const r = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`,
+          { headers: { 'Accept-Language': 'en' } }
+        );
+        if (!r.ok) return null;
+        const j = await r.json();
+        return (j && j.address && (j.address.city || j.address.town || j.address.village || j.address.municipality)) || null;
+      } catch(_) { return null; }
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async pos => {
+          const { latitude: lat, longitude: lon } = pos.coords;
+          const city = await _getCityName(lat, lon);
+          await _fetchWeatherForCoords(lat, lon, city || (DD.weather && DD.weather.location) || 'Sant Cugat');
+        },
+        async () => {
+          // Geolocation denied/failed — fall back to ipapi.co lat/lon
+          try {
+            const ctrl = new AbortController();
+            const t = setTimeout(() => ctrl.abort(), 3000);
+            const r = await fetch('https://ipapi.co/json/', { signal: ctrl.signal, mode: 'cors' });
+            clearTimeout(t);
+            if (r.ok) {
+              const j = await r.json();
+              if (j && j.latitude && j.longitude) {
+                const city = j.city || (DD.weather && DD.weather.location) || 'Sant Cugat';
+                await _fetchWeatherForCoords(j.latitude, j.longitude, city);
+              }
+            }
+          } catch(_) {}
+        },
+        { timeout: 8000, maximumAge: 300000 }
+      );
+    } else {
+      // No geolocation API — try ipapi.co directly
+      try {
+        const ctrl = new AbortController();
+        const t = setTimeout(() => ctrl.abort(), 3000);
+        const r = await fetch('https://ipapi.co/json/', { signal: ctrl.signal, mode: 'cors' });
+        clearTimeout(t);
+        if (r.ok) {
+          const j = await r.json();
+          if (j && j.latitude && j.longitude) {
+            const city = j.city || (DD.weather && DD.weather.location) || 'Sant Cugat';
+            await _fetchWeatherForCoords(j.latitude, j.longitude, city);
+          }
+        }
+      } catch(_) {}
+    }
+  } catch(e) { console.debug('_geoRefreshWeather top-level', e); }
 }
 
 // Hydrate Elly pause state so the Live pill shows truth, not a client-only

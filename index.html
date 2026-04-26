@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-25T22:00:00Z -->
+<!-- cache-buster: 2026-04-25T23:55:00Z -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -2149,6 +2149,86 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 .learned-act:hover { background: var(--bg-2, #f6f4ef); border-color: var(--text-3, #888); }
 .learned-act.danger:hover { background: rgba(180, 60, 60, 0.08); border-color: #b03b3b; color: #b03b3b; }
 .learned-deprecate { font-size: 11px; color: var(--text-3, #888); padding: 6px 0 0; border-top: 0.5px dashed var(--border-subtle, rgba(0,0,0,0.06)); margin-top: 4px; }
+/* ── Bite 30: Cross-Entity Signals card ── */
+.cross-card { background: linear-gradient(135deg, rgba(176,122,58,0.05), rgba(56,80,108,0.05)); border: 0.5px solid var(--border); border-radius: 12px; padding: 14px 16px; margin: 0 0 16px; transition: max-height 0.25s ease; overflow: hidden; }
+.cross-card.collapsed .cross-body { display: none; }
+.cross-card.collapsed .cross-toggle { transform: rotate(-90deg); }
+.cross-head { display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; }
+.cross-eyebrow { font-family: var(--font-serif, Georgia, serif); font-size: 13px; font-weight: 500; color: var(--text); letter-spacing: 0.02em; display: inline-flex; align-items: center; gap: 6px; }
+.cross-spark { color: #8a5a26; font-size: 14px; }
+.cross-meta { font-size: 11px; color: var(--text-3, #888); opacity: 0.75; margin-left: auto; margin-right: 8px; }
+.cross-actions { display: inline-flex; align-items: center; gap: 6px; }
+.cross-refresh { background: transparent; border: none; cursor: pointer; font-size: 13px; color: var(--text-3, #888); padding: 0 4px; }
+.cross-refresh:hover { color: var(--text); }
+.cross-toggle { font-size: 13px; color: var(--text-3, #888); transition: transform 0.2s ease; }
+.cross-body { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.cross-empty { font-size: 12px; color: var(--text-3, #888); padding: 6px 0; line-height: 1.45; }
+.cross-row { background: var(--card, #fff); border: 0.5px solid var(--border-subtle, rgba(0,0,0,0.06)); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+.cross-row-title { font-size: 13px; color: var(--text); line-height: 1.4; font-weight: 500; }
+.cross-row-why { font-size: 12px; color: var(--text-2, #555); line-height: 1.45; }
+.cross-row-action { font-size: 11.5px; color: #8a5a26; line-height: 1.4; font-style: italic; }
+.cross-row-entities { display: inline-flex; gap: 4px; flex-wrap: wrap; margin-top: 2px; }
+.cross-ent-tag { padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.cross-ent-tag.afsh { background: rgba(176, 122, 58, 0.15); color: #8a5a26; }
+.cross-ent-tag.illume { background: rgba(56, 110, 96, 0.15); color: #2c5a4a; }
+.cross-ent-tag.spade { background: rgba(140, 70, 60, 0.15); color: #6c3530; }
+.cross-ent-tag.personal { background: rgba(95, 105, 120, 0.15); color: #4a5462; }
+.cross-ent-tag.cross { background: rgba(120, 120, 120, 0.15); color: #555; }
+
+/* ── Bite 29: Pattern Engine debug card ── */
+.pattern-card { background: rgba(60, 70, 80, 0.025); border: 0.5px solid var(--border-subtle, rgba(0,0,0,0.08)); border-radius: 12px; padding: 12px 14px; margin: 0 0 16px; transition: max-height 0.25s ease; overflow: hidden; }
+.pattern-card.collapsed .pattern-body { display: none; }
+.pattern-card.collapsed .pattern-toggle { transform: rotate(-90deg); }
+.pattern-head { display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; }
+.pattern-eyebrow { font-family: var(--font-serif, Georgia, serif); font-size: 12px; font-weight: 500; color: var(--text-2, #555); letter-spacing: 0.02em; display: inline-flex; align-items: center; gap: 6px; }
+.pattern-spark { font-size: 10px; color: var(--text-3, #888); }
+.pattern-spark.live { color: #2a7a3a; }
+.pattern-spark.dry { color: #b07a3a; }
+.pattern-spark.off { color: var(--text-3, #888); }
+.pattern-status { font-size: 10px; padding: 1px 6px; border-radius: 999px; background: rgba(120,120,120,0.10); color: var(--text-3, #888); margin-left: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+.pattern-status.live { background: rgba(40, 110, 60, 0.15); color: #2a7a3a; }
+.pattern-status.dry { background: rgba(176, 122, 58, 0.15); color: #8a5a26; }
+.pattern-toggle { font-size: 12px; color: var(--text-3, #888); transition: transform 0.2s ease; }
+.pattern-body { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; max-height: 320px; overflow-y: auto; }
+.pattern-empty { font-size: 11.5px; color: var(--text-3, #888); padding: 4px 0; line-height: 1.45; }
+.pattern-row { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 6px; font-size: 11.5px; transition: background 0.15s ease; }
+.pattern-row:hover { background: var(--bg-2, #f6f4ef); }
+.pattern-row .pr-pill { padding: 1px 6px; border-radius: 999px; font-size: 9.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; flex-shrink: 0; }
+.pattern-row .pr-pill.fired { background: rgba(40, 110, 60, 0.15); color: #2a7a3a; }
+.pattern-row .pr-pill.dry { background: rgba(176, 122, 58, 0.15); color: #8a5a26; }
+.pattern-row .pr-pill.cool { background: rgba(95, 105, 120, 0.10); color: #4a5462; }
+.pattern-row .pr-pill.cap { background: rgba(140, 70, 60, 0.12); color: #6c3530; }
+.pattern-row .pr-pill.miss { background: rgba(120, 120, 120, 0.08); color: #888; }
+.pattern-row .pr-fact { flex: 1; color: var(--text-2, #555); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pattern-row .pr-conf { color: var(--text-3, #888); flex-shrink: 0; }
+.pattern-row .pr-time { color: var(--text-3, #888); font-size: 10px; flex-shrink: 0; }
+.pattern-row .pr-approve { background: transparent; border: none; cursor: pointer; padding: 0 4px; color: var(--text-3, #888); font-size: 11px; }
+.pattern-row .pr-approve:hover { color: #2a7a3a; }
+
+/* ── Bite 28d: learned-card refresh button ── */
+.learned-actions { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; }
+.learned-refresh { background: transparent; border: none; cursor: pointer; font-size: 13px; color: var(--text-3, #888); padding: 0 4px; }
+.learned-refresh:hover { color: var(--text); }
+
+/* ── Bite 31: Drafts tab ── */
+.drafts-head { display: flex; align-items: center; gap: 8px; padding: 6px 0 10px; }
+.drafts-refresh { background: transparent; border: 0.5px solid var(--border-med, rgba(0,0,0,0.10)); border-radius: 6px; padding: 3px 8px; cursor: pointer; font-size: 12px; color: var(--text-2, #555); }
+.drafts-refresh:hover { background: var(--bg-2, #f6f4ef); }
+.drafts-meta { font-size: 11px; color: var(--text-3, #888); opacity: 0.75; }
+.drafts-empty { font-size: 12px; color: var(--text-3, #888); padding: 12px 0; line-height: 1.45; text-align: center; }
+.draft-row { background: var(--card, #fff); border: 0.5px solid var(--border-subtle, rgba(0,0,0,0.06)); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 6px; }
+.draft-row-hdr { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.draft-tenant-tag { padding: 1px 6px; border-radius: 999px; font-size: 9.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; flex-shrink: 0; }
+.draft-tenant-tag.personal { background: rgba(95, 105, 120, 0.15); color: #4a5462; }
+.draft-tenant-tag.afsh { background: rgba(176, 122, 58, 0.15); color: #8a5a26; }
+.draft-tenant-tag.illume { background: rgba(56, 110, 96, 0.15); color: #2c5a4a; }
+.draft-row-subj { font-size: 13px; font-weight: 500; color: var(--text); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.draft-row-to { font-size: 11px; color: var(--text-3, #888); }
+.draft-row-preview { font-size: 12px; color: var(--text-2, #555); line-height: 1.4; max-height: 3.6em; overflow: hidden; }
+.draft-row-actions { display: flex; gap: 6px; margin-top: 2px; }
+.draft-act { background: transparent; border: 0.5px solid var(--border-med, rgba(0,0,0,0.10)); border-radius: 6px; padding: 3px 9px; font-size: 12px; cursor: pointer; color: var(--text-2, #555); text-decoration: none; }
+.draft-act:hover { background: var(--bg-2, #f6f4ef); border-color: var(--text-3, #888); }
+
 
 .rollup-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .rollup-eyebrow { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); }
@@ -2853,10 +2933,35 @@ body.dark {
         <div class="learned-head" onclick="toggleLearnedCard()" title="Click to collapse / expand">
           <span class="learned-eyebrow"><span class="learned-spark">&#10022;</span>What Elly Learned</span>
           <span class="learned-meta" id="learned-meta"></span>
-          <span class="learned-toggle" id="learned-toggle">&#9662;</span>
+          <span class="learned-actions" onclick="event.stopPropagation()">
+            <button class="learned-refresh" onclick="_forceConsolidate(this)" title="Force fresh Sonnet consolidate pass (~15s)">&#8635;</button>
+            <span class="learned-toggle" id="learned-toggle">&#9662;</span>
+          </span>
         </div>
         <div class="learned-body" id="learned-body">
           <div class="learned-empty">Loading…</div>
+        </div>
+      </section>
+      <section class="cross-card" id="cross-card">
+        <div class="cross-head" onclick="toggleCrossCard()" title="Click to collapse / expand">
+          <span class="cross-eyebrow"><span class="cross-spark">&#9879;</span>Cross-Entity Signals</span>
+          <span class="cross-meta" id="cross-meta"></span>
+          <span class="cross-actions">
+            <button class="cross-refresh" onclick="event.stopPropagation(); _fetchCrossEntity(true)" title="Force fresh Sonnet pass">&#8635;</button>
+            <span class="cross-toggle" id="cross-toggle">&#9662;</span>
+          </span>
+        </div>
+        <div class="cross-body" id="cross-body">
+          <div class="cross-empty">Loading…</div>
+        </div>
+      </section>
+      <section class="pattern-card collapsed" id="pattern-card">
+        <div class="pattern-head" onclick="togglePatternCard()" title="Click to collapse / expand">
+          <span class="pattern-eyebrow"><span class="pattern-spark" id="pattern-spark">&#9711;</span>Pattern Engine <span class="pattern-status" id="pattern-status">loading…</span></span>
+          <span class="pattern-toggle" id="pattern-toggle">&#9662;</span>
+        </div>
+        <div class="pattern-body" id="pattern-body">
+          <div class="pattern-empty">Loading…</div>
         </div>
       </section>
       <div class="tabs-hdr">
@@ -2872,6 +2977,9 @@ body.dark {
         </button>
         <button class="tab-btn" data-tab="waiting" onclick="switchTab('waiting', this)">
           Waiting <span class="tab-unread" id="wait-count" style="display:none">0</span>
+        </button>
+        <button class="tab-btn" data-tab="drafts" onclick="switchTab('drafts', this)">
+          Drafts <span class="tab-unread" id="drafts-badge" style="display:none">0</span>
         </button>
       </div>
       <div class="tab-panels-area">
@@ -2889,6 +2997,13 @@ body.dark {
         <div class="tab-panel" id="tab-projects"><div id="projects-body"></div></div>
         <div class="tab-panel" id="tab-comms"><div id="comms-body"></div></div>
         <div class="tab-panel" id="tab-waiting"><div id="waiting-body"></div></div>
+        <div class="tab-panel" id="tab-drafts">
+          <div class="drafts-head">
+            <button class="drafts-refresh" onclick="_fetchDrafts()" title="Refresh drafts">&#8635;</button>
+            <span class="drafts-meta" id="drafts-meta"></span>
+          </div>
+          <div id="drafts-body"><div class="drafts-empty">Loading…</div></div>
+        </div>
       </div>
 
       <!-- [session 54 Bite 2] Unified Signals card — always visible below tab area -->
@@ -7326,6 +7441,240 @@ function _learnedEdit(btn){
   } else {
     bootstrap();
   }
+})();
+
+// ===== Bite 30: Cross-Entity Signals =====
+window.CROSS_CACHE = null;
+
+function toggleCrossCard(){
+  const c = document.getElementById('cross-card');
+  if(!c) return;
+  c.classList.toggle('collapsed');
+  try { localStorage.setItem('crossCollapsed', c.classList.contains('collapsed') ? '1' : '0'); } catch(e){}
+}
+
+async function _fetchCrossEntity(force){
+  const body = document.getElementById('cross-body');
+  if(!body) return;
+  if(force) body.innerHTML = '<div class="cross-empty">Refreshing…</div>';
+  try {
+    const r = await postSync({action: 'cross_entity_signals', force: !!force});
+    window.CROSS_CACHE = r;
+    _renderCrossEntity(r);
+  } catch(e){
+    body.innerHTML = '<div class="cross-empty">Could not reach cross_entity_signals: ' + _lEsc(String(e).slice(0, 80)) + '</div>';
+  }
+}
+
+function _renderCrossEntity(r){
+  const body = document.getElementById('cross-body');
+  const meta = document.getElementById('cross-meta');
+  if(!body) return;
+  const signals = (r && r.signals) || [];
+  if(meta){
+    if(r && r.as_of){
+      try { meta.textContent = (r.from_cache ? 'cached · ' : '') + new Date(r.as_of).toLocaleTimeString(undefined, {hour:'2-digit', minute:'2-digit'}); }
+      catch(e){ meta.textContent = ''; }
+    } else { meta.textContent = ''; }
+  }
+  if(!signals.length){
+    body.innerHTML = '<div class="cross-empty">No cross-entity signals right now. Sonnet ran clean.</div>';
+    return;
+  }
+  body.innerHTML = signals.map(function(s){
+    const ents = Array.isArray(s.entities) ? s.entities : [];
+    const tagsHtml = ents.map(function(e){ const k = String(e || 'cross').toLowerCase(); return '<span class="cross-ent-tag ' + _lEsc(k) + '">' + _lEsc(k) + '</span>'; }).join('');
+    return '<div class="cross-row">' +
+      '<div class="cross-row-title">' + _lEsc(s.title || '') + '</div>' +
+      (s.why ? '<div class="cross-row-why">' + _lEsc(s.why) + '</div>' : '') +
+      (s.actionable ? '<div class="cross-row-action">' + _lEsc(s.actionable) + '</div>' : '') +
+      '<div class="cross-row-entities">' + tagsHtml + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+(function _initCrossCard(){
+  function bootstrap(){
+    const c = document.getElementById('cross-card');
+    if(!c) return;
+    try { if(localStorage.getItem('crossCollapsed') === '1') c.classList.add('collapsed'); } catch(e){}
+    _fetchCrossEntity(false);
+    setInterval(function(){ _fetchCrossEntity(false); }, 30 * 60 * 1000);
+  }
+  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', bootstrap); } else { bootstrap(); }
+})();
+
+// ===== Bite 29: Pattern Engine debug panel =====
+window.PATTERN_LAST_FETCH = 0;
+
+function togglePatternCard(){
+  const c = document.getElementById('pattern-card');
+  if(!c) return;
+  c.classList.toggle('collapsed');
+  try { localStorage.setItem('patternCollapsed', c.classList.contains('collapsed') ? '1' : '0'); } catch(e){}
+}
+
+async function _fetchPatternDecisions(){
+  const body = document.getElementById('pattern-body');
+  const status = document.getElementById('pattern-status');
+  const spark = document.getElementById('pattern-spark');
+  if(!body) return;
+  try {
+    const r = await postSync({action: 'pattern_decisions', limit: 30});
+    if(!r){
+      body.innerHTML = '<div class="pattern-empty">No response from pattern_decisions.</div>';
+      return;
+    }
+    const decisions = r.decisions || [];
+    const anyFired = decisions.some(d => d.fired);
+    const anyDry = decisions.some(d => d.reason === 'dry_run');
+    if(status && spark){
+      if(anyFired){ status.textContent = 'live'; status.className = 'pattern-status live'; spark.className = 'pattern-spark live'; }
+      else if(anyDry){ status.textContent = 'dry-run'; status.className = 'pattern-status dry'; spark.className = 'pattern-spark dry'; }
+      else { status.textContent = 'off'; status.className = 'pattern-status'; spark.className = 'pattern-spark off'; }
+    }
+    if(!decisions.length){
+      body.innerHTML = '<div class="pattern-empty">' + _lEsc(r.note || 'No pattern decisions logged yet. Engine runs every 15 min.') + '</div>';
+      return;
+    }
+    body.innerHTML = decisions.map(function(d){
+      const reason = String(d.reason || '');
+      let pill = 'miss', label = reason || 'miss';
+      if(d.fired){ pill = 'fired'; label = 'fired'; }
+      else if(reason === 'dry_run'){ pill = 'dry'; label = 'dry'; }
+      else if(reason === 'cooldown'){ pill = 'cool'; label = 'cool'; }
+      else if(reason === 'daily_cap'){ pill = 'cap'; label = 'cap'; }
+      const conf = (typeof d.conf === 'number') ? Math.round(d.conf * 100) + '%' : '';
+      const factPrefix = String(d.fact_prefix || '');
+      const tStr = d.iso ? new Date(d.iso).toLocaleTimeString(undefined, {hour:'2-digit', minute:'2-digit'}) : '';
+      return '<div class="pattern-row" data-prefix="' + _lEsc(factPrefix) + '">' +
+        '<span class="pr-pill ' + pill + '">' + _lEsc(label) + '</span>' +
+        '<span class="pr-fact" title="' + _lEsc(d.fact_prefix || '') + '">' + _lEsc(d.fact_prefix || '') + '</span>' +
+        '<span class="pr-conf">' + conf + '</span>' +
+        '<span class="pr-time">' + _lEsc(tStr) + '</span>' +
+        '<button class="pr-approve" onclick="_patternApprove(this)" title="Bump confidence +0.15">&#128077;</button>' +
+      '</div>';
+    }).join('');
+    window.PATTERN_LAST_FETCH = Date.now();
+  } catch(e){
+    body.innerHTML = '<div class="pattern-empty">Pattern fetch failed: ' + _lEsc(String(e).slice(0, 80)) + '</div>';
+  }
+}
+
+async function _patternApprove(btn){
+  const row = btn.closest('.pattern-row'); if(!row) return;
+  const prefix = row.dataset.prefix; if(!prefix) return;
+  try {
+    await postSync({action: 'memory_bump', fact_prefix: prefix, delta: 0.15});
+    if(window.showToast) showToast('Confidence bumped');
+    btn.disabled = true;
+    btn.style.opacity = '0.4';
+  } catch(e){ if(window.showToast) showToast('x ' + String(e).slice(0, 80)); }
+}
+
+(function _initPatternCard(){
+  function bootstrap(){
+    const c = document.getElementById('pattern-card');
+    if(!c) return;
+    try {
+      if(localStorage.getItem('patternCollapsed') === '0') c.classList.remove('collapsed');
+    } catch(e){}
+    _fetchPatternDecisions();
+    setInterval(_fetchPatternDecisions, 5 * 60 * 1000);
+  }
+  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', bootstrap); } else { bootstrap(); }
+})();
+
+// ===== Bite 28d: force-consolidate button =====
+async function _forceConsolidate(btn){
+  if(btn){ btn.disabled = true; btn.style.opacity = '0.4'; }
+  try {
+    if(window.showToast) showToast('Consolidating…');
+    const r = await postSync({action: 'memory_consolidate', force: true});
+    if(window.showToast) showToast('Consolidated: ' + ((r && r.saved_memories) || 0) + ' new');
+    if(typeof _fetchLearnedDiff === 'function') await _fetchLearnedDiff();
+  } catch(e){
+    if(window.showToast) showToast('x ' + String(e).slice(0, 80));
+  } finally {
+    if(btn){ btn.disabled = false; btn.style.opacity = '1'; }
+  }
+}
+
+// ===== Bite 29: pre-seed memory with 5 obvious patterns (one-shot) =====
+(async function _preSeedPatterns(){
+  try {
+    if(localStorage.getItem('patternsSeeded_v1') === '1') return;
+  } catch(e){}
+  const patterns = [
+    {fact: "Nick clears email inbox Monday mornings before 10:00 CET", type: "pattern", entity: "personal", confidence: 0.75, category: "routine"},
+    {fact: "Friday morning Pacific = Illume leadership call prep window (Jeff + Spencer)", type: "pattern", entity: "illume", confidence: 0.80, category: "routine"},
+    {fact: "Nick prefers terse Elly responses — max 3-4 lines, no markdown, lead with answer", type: "preference", entity: "cross", confidence: 0.95, category: "voice"},
+    {fact: "Hormuz / customs / shipping topics belong to AFSH", type: "pattern", entity: "afsh", confidence: 0.85, category: "routing"},
+    {fact: "Sant Cugat sunset (~21:00 CET summer) signals end of business day", type: "pattern", entity: "personal", confidence: 0.70, category: "routine"},
+  ];
+  try {
+    const r = await postSync({action: 'pre_seed_patterns', patterns: patterns});
+    if(r && r.success){
+      try { localStorage.setItem('patternsSeeded_v1', '1'); } catch(e){}
+      console.log('[seed] saved', r.saved, 'of', r.requested, 'patterns');
+    }
+  } catch(e){ console.warn('[seed] failed', e); }
+})();
+
+// ===== Bite 31: Drafts tab =====
+async function _fetchDrafts(){
+  const body = document.getElementById('drafts-body');
+  const meta = document.getElementById('drafts-meta');
+  const badge = document.getElementById('drafts-badge');
+  if(!body) return;
+  body.innerHTML = '<div class="drafts-empty">Loading…</div>';
+  try {
+    const r = await postSync({action: 'list_drafts', limit: 10});
+    if(!r || !r.success){
+      body.innerHTML = '<div class="drafts-empty">Could not reach list_drafts: ' + ((r && r.error) || 'no response') + '</div>';
+      return;
+    }
+    const drafts = r.drafts || [];
+    if(meta){
+      const tt = r.tenants || {};
+      const flags = Object.keys(tt).map(function(k){ const v = tt[k] || {}; return v.ok ? (k+':'+(v.count||0)) : (k+':err'); }).join(' · ');
+      meta.textContent = flags;
+    }
+    if(badge){
+      if(drafts.length){ badge.textContent = drafts.length; badge.style.display = ''; } else { badge.style.display = 'none'; }
+    }
+    if(!drafts.length){
+      body.innerHTML = '<div class="drafts-empty">No drafts pending. Ask Elly to draft a reply: &ldquo;draft a reply to &lt;person&gt; saying X&rdquo;.</div>';
+      return;
+    }
+    body.innerHTML = drafts.map(function(d){
+      const tenant = String(d.tenant || 'personal').toLowerCase();
+      const to = Array.isArray(d.to) ? d.to.join(', ') : (d.to || '');
+      return '<div class="draft-row">' +
+        '<div class="draft-row-hdr">' +
+          '<span class="draft-tenant-tag ' + _lEsc(tenant) + '">' + _lEsc(tenant) + '</span>' +
+          '<span class="draft-row-subj">' + _lEsc(d.subject || '(no subject)') + '</span>' +
+        '</div>' +
+        '<div class="draft-row-to">to: ' + _lEsc(to) + '</div>' +
+        '<div class="draft-row-preview">' + _lEsc((d.body_preview || '').slice(0, 240)) + '</div>' +
+        '<div class="draft-row-actions">' +
+          (d.web_link ? '<a class="draft-act" target="_blank" rel="noopener" href="' + _lEsc(d.web_link) + '">Open in Outlook</a>' : '') +
+        '</div>' +
+      '</div>';
+    }).join('');
+  } catch(e){
+    body.innerHTML = '<div class="drafts-empty">Drafts fetch failed: ' + _lEsc(String(e).slice(0, 100)) + '</div>';
+  }
+}
+
+(function _initDraftsTab(){
+  function bootstrap(){
+    const tab = document.getElementById('tab-drafts');
+    if(!tab) return;
+    _fetchDrafts();
+    setInterval(_fetchDrafts, 5 * 60 * 1000);
+  }
+  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', bootstrap); } else { bootstrap(); }
 })();
 
 // Bite 32: mirror banner content into right-rail cards (Markets, Breaking news).

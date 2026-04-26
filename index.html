@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-25T23:55:00Z -->
+<!-- cache-buster: 2026-04-25T23:30:00Z -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1742,7 +1742,7 @@ body.dark .entity-filter-bar { background: var(--card); }
 .copilot-tile-body .copilot-item:first-child { border-top: none; padding-top: 2px; min-height: 0; }
 .copilot-tile-body .copilot-item:hover { transform: translateX(2px); }
 .copilot-item-icon { flex: 0 0 auto; width: 14px; text-align: center; font-size: 11px; line-height: 1.5; color: var(--text-3); }
-.copilot-item-text { flex: 1 1 auto; min-width: 0; }
+.copilot-item-text { flex: 1 1 auto; min-width: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
 .copilot-item-text b { font-weight: 600; color: var(--text); }
 .copilot-item-meta { font-size: 10px; color: var(--text-3); margin-top: 1px; letter-spacing: 0.2px; display: none; }
 .copilot-tile-body .copilot-item:hover .copilot-item-meta { display: block; }
@@ -1995,13 +1995,13 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 .elly-rollup { background: linear-gradient(135deg, rgba(160,72,28,0.05), rgba(28,62,94,0.04)); border: 0.5px solid var(--border-med); border-radius: 12px; padding: 18px 20px 16px; margin: 14px 0 16px; }
 .elly-rollup .rollup-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px; gap: 12px; }
 .elly-rollup .rollup-eyebrow { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-2); display: inline-flex; align-items: center; gap: 6px; }
-.elly-rollup .rollup-headline { font-family: var(--font-serif); font-size: 22px; font-weight: 500; line-height: 1.25; color: var(--text); margin: 8px 0 12px; letter-spacing: -0.01em; }
-.elly-rollup .rollup-says { display: none; padding: 12px 16px; margin: 4px 0 14px; background: rgba(160,72,28,0.07); border-left: 3px solid var(--green); border-radius: 0 8px 8px 0; font-family: var(--font-serif); font-size: 15px; font-style: italic; line-height: 1.5; color: var(--text); cursor: pointer; transition: background .18s var(--ease); }
+.elly-rollup .rollup-headline { font-family: var(--font-serif); font-size: 22px; font-weight: 500; line-height: 1.25; color: var(--text); margin: 8px 0 12px; letter-spacing: -0.01em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.elly-rollup .rollup-says { display: none; padding: 12px 16px; margin: 4px 0 14px; background: rgba(160,72,28,0.07); border-left: 3px solid var(--green); border-radius: 0 8px 8px 0; font-family: var(--font-serif); font-size: 15px; font-style: italic; line-height: 1.5; color: var(--text); cursor: pointer; transition: background .18s var(--ease); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .elly-rollup .rollup-says.has-content { display: block; }
 .elly-rollup .rollup-says:hover { background: rgba(160,72,28,0.10); }
 .elly-rollup .rollup-says .rollup-says-prefix { display: inline; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-style: normal; font-size: 9px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--green); margin-right: 10px; vertical-align: 2px; }
 .elly-rollup .rollup-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 4px; }
-.elly-rollup .rollup-col { padding: 12px 14px; border-radius: 8px; background: var(--card); border: 0.5px solid var(--border); transition: border-color .18s var(--ease); }
+.elly-rollup .rollup-col { padding: 12px 14px; border-radius: 8px; background: var(--card); border: 0.5px solid var(--border); transition: border-color .18s var(--ease); min-width: 0; overflow: hidden; }
 .elly-rollup .rollup-col:hover { border-color: var(--border-med); }
 .elly-rollup .rollup-col-label { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; padding-bottom: 5px; border-bottom: 0.5px solid var(--border); }
 .elly-rollup .rollup-col.shipped .rollup-col-label { color: var(--green); border-bottom-color: var(--green-bg); }
@@ -2233,14 +2233,14 @@ body.dark .copilot-item.clickable:hover { background: rgba(255,255,255,0.05); }
 .rollup-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .rollup-eyebrow { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); }
 .rollup-headline { font-family: var(--font-serif); font-size: 17px; font-weight: 500; line-height: 1.3; margin-bottom: 12px; }
-.rollup-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px; }
+.rollup-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
 .rollup-col { background: var(--card); border-radius: 8px; padding: 10px 12px; }
 .rollup-col-label { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; }
 .rollup-col.shipped .rollup-col-label { color: #0F6E56; }
 .rollup-col.slipped .rollup-col-label { color: var(--red); }
 .rollup-col.focus .rollup-col-label { color: var(--ink-navy, #1A3A5C); }
-.rollup-item { font-size: 12px; line-height: 1.4; margin-bottom: 5px; }
-.rollup-item-sub { font-size: 10px; color: var(--text-3); font-style: italic; margin-top: 1px; }
+.rollup-item { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 3px 0; line-height: 1.3; margin-bottom: 0; }
+.rollup-item-sub { display: none; }
 .rollup-note { font-family: var(--font-serif); font-style: italic; font-size: 12px; color: var(--text-2); border-top: 0.5px solid var(--border); padding-top: 10px; margin-top: 8px; }
 /* CmdK */
 .cmdk-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 10000; align-items: flex-start; justify-content: center; padding-top: 15vh; }
@@ -2602,7 +2602,7 @@ body.dark {
 }
 
 /* Bite 27 hotfix: ensure right rail tabs panel has actual height + tab panels can scroll */
-.col-right .right-col-inner { display: flex; flex-direction: column; min-height: 100vh; }
+.col-right .right-col-inner { display: flex; flex-direction: column; height: calc(100vh - 56px); overflow-y: auto; }
 .col-right .tab-panels-area { min-height: 360px !important; flex: 1 1 auto; overflow-y: auto; }
 .col-right .tab-panel.active { display: block; min-height: 240px; }
 /* Bite 27: ensure cockpit row hover chips are actually clickable + above siblings */
@@ -5451,15 +5451,26 @@ function _snoozeTask(x){
 }
 
 function renderTasks(){
-  // [Bite 28] Overdue-first sort + cap at 20
-  const today = new Date().toISOString().slice(0,10);
-  const _isOverdue = x => x.overdue || x.chip_class === 'blocked' || (x.due && x.due < today && x.status !== 'done');
+  // [Fix 5] Smart default filter: overdue + next 7 days + high priority upfront, backlog collapsed
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayStr = today.toISOString().slice(0,10);
+  const weekEnd = new Date(today); weekEnd.setDate(weekEnd.getDate()+7);
+  const _isOverdue = x => x.overdue || x.chip_class === 'blocked' || (x.due && x.due < todayStr && x.status !== 'done');
+  const _isWithin7d = x => { if(!x.due) return false; const d = new Date(x.due); return !isNaN(d) && d >= today && d <= weekEnd; };
+  const _isHigh = x => String(x.priority||'').toLowerCase().match(/high|red/);
   const rawTasks = DD.tasks || [];
-  const t = [...rawTasks].sort((a, b) => {
-    const ao = _isOverdue(a) ? 1 : 0;
-    const bo = _isOverdue(b) ? 1 : 0;
-    return bo - ao;
+  // Priority list: overdue OR within 7 days OR high priority
+  const tPriority = rawTasks.filter(x => _isOverdue(x) || _isWithin7d(x) || _isHigh(x));
+  const tBacklog  = rawTasks.filter(x => !_isOverdue(x) && !_isWithin7d(x) && !_isHigh(x));
+  // Sort priority: overdue first, then by due date
+  tPriority.sort((a, b) => {
+    const ao = _isOverdue(a) ? 2 : (_isWithin7d(a) ? 1 : 0);
+    const bo = _isOverdue(b) ? 2 : (_isWithin7d(b) ? 1 : 0);
+    if(bo !== ao) return bo - ao;
+    const da = a.due ? new Date(a.due) : new Date('9999'); const db = b.due ? new Date(b.due) : new Date('9999');
+    return da - db;
   });
+  const t = tPriority; // used below for TASK_CAP
   const TASK_CAP = 20;
   const tVisible = t.slice(0, TASK_CAP);
   const tRemaining = t.length - TASK_CAP;
@@ -5480,7 +5491,36 @@ function renderTasks(){
         ${x.overdue?'<div class="chip overdue">overdue</div>':''}
       </div>
     </div>`;
-  }).join('') + (tRemaining > 0 ? `<div class="brief-row-more" style="font-size:11px;color:var(--text-3);padding:6px 4px;cursor:pointer;text-align:center" onclick="window.__showAllTasks && window.__showAllTasks()">Show all ${t.length} tasks →</div>` : '') || '<div class="empty-state">No tasks</div>';
+  }).join('') || '<div class="empty-state">No tasks</div>';
+  // Append backlog section
+  const backlogVisible = tBacklog.slice(0, 20);
+  const backlogMore = tBacklog.length - 20;
+  if(tBacklog.length > 0){
+    const bhtml = backlogVisible.map((x, i) => {
+      const k = 'task::bl::' + i; window.__TASKS[k] = x;
+      const avColor = x.avatar_color || avatarClassFor(x.owner||x.title);
+      const chipCls = x.chip_class || x.status || 'todo';
+      const ent = _normEntity(x.entity || x.owner || '');
+      return `<div class="right-row" data-entity="${esc(ent)}" data-k="${k}">
+      <div class="avatar ${avColor}">${esc(initials(x.owner||x.title))}</div>
+      <div class="right-row-body">
+        <div class="right-row-title">${esc(x.title||'')}</div>
+        <div class="right-row-sub">${esc(x.sub||x.due||'')}</div>
+      </div>
+      <div class="right-row-end">
+        <div class="chip ${chipCls}">${esc(x.chip_label||x.status||'todo')}</div>
+      </div>
+    </div>`;
+    }).join('') + (backlogMore > 0 ? `<div style="font-size:11px;color:var(--text-3);padding:4px;text-align:center">+${backlogMore} more</div>` : '');
+    const bl = document.createElement('details');
+    bl.style.cssText = 'margin-top:8px;';
+    bl.innerHTML = `<summary style="font-size:11px;color:var(--text-3);cursor:pointer;padding:4px 0;list-style:none;user-select:none">▸ Backlog (${tBacklog.length} more)</summary><div id="backlog-items">${bhtml}</div>`;
+    $('tasks-body').appendChild(bl);
+    bl.querySelectorAll('.right-row').forEach(el => el.addEventListener('click', () => {
+      const x = window.__TASKS[el.dataset.k]; if(!x) return;
+      if(typeof openTaskDrawer === 'function') openTaskDrawer(x);
+    }));
+  }
   window.__showAllTasks = function() {
     window.__TASKS = {};
     $('tasks-body').innerHTML = t.map((x, i) => {
@@ -5697,9 +5737,8 @@ async function _fetchSnapshot(forceRollup){
         const fillCol = (id, items, subKey) => {
           const el = document.getElementById(id); if(!el) return;
           if(!items || !items.length){ el.innerHTML = '<div class="rollup-item" style="opacity:0.45">—</div>'; return; }
-          el.innerHTML = items.slice(0, 5).map(it => {
-            const sub = esc(it[subKey] || '');
-            return '<div class="rollup-item">' + esc(it.title || '') + (sub ? '<div class="rollup-item-sub">' + sub + '</div>' : '') + '</div>';
+          el.innerHTML = items.slice(0, 3).map(it => {
+            return '<div class="rollup-item">' + esc(it.title || '') + '</div>';
           }).join('');
         };
         fillCol('rollup-shipped', r.rollup.shipped || [], 'entity');
@@ -5921,12 +5960,11 @@ async function _fetchWeeklyRollup(force){
       if(!el) return;
       if(!items || !items.length){ el.innerHTML = '<div class="copilot-item-empty">nothing here</div>'; return; }
       window.__ROLLUP_ITEMS = window.__ROLLUP_ITEMS || {};
-      el.innerHTML = items.slice(0, 4).map((it, i) => {
+      el.innerHTML = items.slice(0, 3).map((it, i) => {
         const k = id + '::' + i;
         window.__ROLLUP_ITEMS[k] = it;
         const title = esc(it.title || '');
-        const meta  = esc((it[subKey] || it.entity || '').slice(0, 24));
-        return '<div class="rollup-row" data-k="' + esc(k) + '"><span class="rollup-row-icon">' + iconFor(id) + '</span><span class="rollup-row-text">' + title + '</span>' + (meta ? '<span class="rollup-row-meta">' + meta + '</span>' : '') + '</div>';
+        return '<div class="rollup-row" data-k="' + esc(k) + '"><span class="rollup-row-icon">' + iconFor(id) + '</span><span class="rollup-row-text">' + title + '</span></div>';
       }).join('');
       el.querySelectorAll('.rollup-row').forEach(row => {
         row.addEventListener('click', () => openDrill(id, window.__ROLLUP_ITEMS[row.dataset.k]));

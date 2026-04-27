@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-24T18:16:31.688503Z ts=53-tz-auto -->
+<!-- cache-buster: 2026-04-27T23:05:00.000Z ts=pass-a-brain-cards -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -2479,6 +2479,55 @@ body.dark {
 .cockpit-card .right-row .row-actions, .cockpit-card .project-row .row-actions { z-index: 5; }
 .cockpit-card .right-row, .cockpit-card .project-row { overflow: visible !important; }
 </style>
+<!-- Pass A: brain-aware card styles (added 2026-04-27) -->
+<style id="pass-a-brain-styles">
+  .rr-card.rr-brain-status, .rr-card.rr-cross-entity, .rr-card.rr-entity-health {
+    margin-bottom: 8px;
+  }
+  .rr-card.rr-brain-status .rr-card-body { font-size: 11px; line-height: 1.45; }
+  .pass-a-pulse {
+    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+    margin-right: 6px; vertical-align: middle;
+  }
+  .pass-a-pulse.ok    { background: #16a34a; box-shadow: 0 0 0 0 rgba(22,163,74,0.55); animation: pass-a-pulse 2s infinite; }
+  .pass-a-pulse.idle  { background: #d97706; }
+  .pass-a-pulse.dead  { background: #dc2626; }
+  @keyframes pass-a-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(22,163,74,0.55); }
+    70%  { box-shadow: 0 0 0 7px rgba(22,163,74,0); }
+    100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); }
+  }
+  .pass-a-meta { color: var(--text-3); font-size: 10px; margin-top: 3px; }
+  .pass-a-badge {
+    display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 0.06em;
+    padding: 1px 5px; border-radius: 3px; margin-left: 5px;
+    background: var(--card-2); color: var(--text-2);
+  }
+  .pass-a-badge.dryrun { background: #fef3c7; color: #92400e; }
+  .pass-a-hidden { display: none !important; }
+
+  .ce-row { padding: 6px 0; border-top: 0.5px dotted var(--border); }
+  .ce-row:first-child { border-top: 0; padding-top: 0; }
+  .ce-entities { font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 2px; }
+  .ce-summary { font-size: 11px; line-height: 1.4; }
+  .ce-suggestion { font-size: 10px; color: var(--text-3); font-style: italic; margin-top: 2px; }
+
+  .eh-row {
+    display: flex; align-items: center; gap: 6px; padding: 5px 0;
+    border-top: 0.5px dotted var(--border); cursor: pointer;
+    font-size: 11px;
+  }
+  .eh-row:first-child { border-top: 0; }
+  .eh-row:hover { background: var(--card-2); }
+  .eh-glyph { width: 14px; text-align: center; }
+  .eh-glyph.ok    { color: #16a34a; }
+  .eh-glyph.idle  { color: #d97706; }
+  .eh-glyph.warn  { color: #d97706; }
+  .eh-glyph.red   { color: #dc2626; }
+  .eh-name { font-weight: 600; flex: 0 0 60px; }
+  .eh-detail { flex: 1; text-align: right; color: var(--text-3); font-size: 10px; }
+  .eh-detail .urgent { color: #dc2626; font-weight: 700; }
+</style>
 </head>
 <body>
 
@@ -2736,6 +2785,26 @@ body.dark {
     <div class="right-col-inner">
       <!-- [Bite 32] Right-rail consolidation: weather + markets + news + signal tiles -->
       <div class="rr-peripheral" id="rr-peripheral">
+        <!-- Pass A: brain-aware cards (added 2026-04-27) -->
+        <div class="rr-card rr-brain-status pass-a-hidden" id="brain-status-card">
+          <div class="rr-card-head"><span class="rr-card-title">Brain</span></div>
+          <div class="rr-card-body">
+            <div>
+              <span class="pass-a-pulse" id="brain-pulse"></span>
+              <span id="brain-status-msg">Checking…</span>
+              <span class="pass-a-badge dryrun pass-a-hidden" id="brain-dryrun-badge">DRY RUN</span>
+            </div>
+            <div class="pass-a-meta" id="brain-meta">—</div>
+          </div>
+        </div>
+        <div class="rr-card rr-cross-entity pass-a-hidden" id="cross-entity-card">
+          <div class="rr-card-head"><span class="rr-card-title">Cross-entity</span></div>
+          <div class="rr-card-body" id="cross-entity-body"></div>
+        </div>
+        <div class="rr-card rr-entity-health pass-a-hidden" id="entity-health-card">
+          <div class="rr-card-head"><span class="rr-card-title">Entity health</span></div>
+          <div class="rr-card-body" id="entity-health-body"></div>
+        </div>
         <div class="weather-instrument rr-weather" id="weather-instrument"></div>
         <div class="rr-card rr-markets">
           <div class="rr-card-head"><span class="rr-card-title">Markets</span><button class="rr-card-refresh" onclick="cosAction('refresh_markets', this)" title="Refresh markets">&#x21bb;</button></div>
@@ -7062,5 +7131,74 @@ window._copilotAskSafe = function(){
   </div>
 </div>
 <button class="mobile-rail-toggle" id="mobile-rail-toggle" onclick="document.querySelector('.col-right').classList.toggle('mobile-open')" title="Schedule + Signals">☰</button>
+<!-- Pass A: brain-aware card polling (added 2026-04-27) -->
+<script id="pass-a-brain-script">
+(function () {
+  function fmtTime(iso){ if(!iso) return '—'; try { const d=new Date(iso); return d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); } catch(_){ return '—'; } }
+  function fmtAge(iso){ if(!iso) return '—'; const ms=Date.now()-new Date(iso).getTime(); if(isNaN(ms)) return '—'; const m=Math.round(ms/60000); if(m<60) return m+'m ago'; if(m<1440) return Math.round(m/60)+'h ago'; return Math.round(m/1440)+'d ago'; }
+
+  async function refreshBrainStatus(){
+    const card = document.getElementById('brain-status-card');
+    if(!card) return;
+    const r = await postSync({action:'brain_status'});
+    if(!r || r.error){ card.classList.add('pass-a-hidden'); return; }
+    card.classList.remove('pass-a-hidden');
+    const pulse = document.getElementById('brain-pulse');
+    const msg = document.getElementById('brain-status-msg');
+    const dry = document.getElementById('brain-dryrun-badge');
+    const meta = document.getElementById('brain-meta');
+    pulse.className = 'pass-a-pulse ' + (r.health || 'dead');
+    msg.textContent = ({
+      ok: 'Active — last tick ' + fmtTime(r.last_tick_at),
+      idle: 'Alive, no new signals — ' + fmtTime(r.last_tick_at),
+      dead: 'No tick in ' + (r.last_tick_age_seconds ? Math.round(r.last_tick_age_seconds/60) + 'm' : 'a while')
+    }[r.health] || 'Status unknown');
+    dry.classList.toggle('pass-a-hidden', !r.dry_run);
+    const dec = r.latest_decision || {};
+    const items = (dec.items_processed != null) ? dec.items_processed + ' items' : '—';
+    const model = dec.model_used || '—';
+    const procAge = r.last_processed_at ? ('processed ' + fmtAge(r.last_processed_at)) : 'no work yet';
+    meta.textContent = items + ' · ' + model + ' · ' + procAge;
+  }
+
+  async function refreshCrossEntity(){
+    const card = document.getElementById('cross-entity-card');
+    const body = document.getElementById('cross-entity-body');
+    if(!card || !body) return;
+    const r = await postSync({action:'cross_entity_refresh'});
+    const items = (r && Array.isArray(r.items)) ? r.items : [];
+    if(!items.length){ card.classList.add('pass-a-hidden'); return; }
+    card.classList.remove('pass-a-hidden');
+    body.innerHTML = items.map(it => {
+      const ents = (it.entities || []).join(' &harr; ');
+      const sug = it.suggestion ? '<div class="ce-suggestion">' + it.suggestion + '</div>' : '';
+      return '<div class="ce-row"><div class="ce-entities">' + ents + '</div><div class="ce-summary">' + (it.summary || '') + '</div>' + sug + '</div>';
+    }).join('');
+  }
+
+  async function refreshEntityHealth(){
+    const card = document.getElementById('entity-health-card');
+    const body = document.getElementById('entity-health-body');
+    if(!card || !body) return;
+    const r = await postSync({action:'entity_health_refresh'});
+    const ents = (r && Array.isArray(r.entities)) ? r.entities : [];
+    if(!ents.length){ card.classList.add('pass-a-hidden'); return; }
+    card.classList.remove('pass-a-hidden');
+    body.innerHTML = ents.map(e => {
+      const glyph = ({ok:'✓', warn:'⚠', red:'●', idle:'⚠'}[e.health] || '·');
+      const cls = ({ok:'ok', warn:'warn', red:'red', idle:'idle'}[e.health] || 'ok');
+      const urgent = (e.urgent || 0) > 0 ? '<span class="urgent">' + e.urgent + ' urgent</span> &middot; ' : '';
+      return '<div class="eh-row" data-entity="' + (e.name || '') + '"><span class="eh-glyph ' + cls + '">' + glyph + '</span><span class="eh-name">' + (e.name || '') + '</span><span class="eh-detail">' + urgent + (e.open_tasks || 0) + ' open &middot; ' + fmtAge(e.last_signal_at) + '</span></div>';
+    }).join('');
+  }
+
+  function start(){
+    refreshBrainStatus();   setInterval(refreshBrainStatus,  60 * 1000);
+    refreshEntityHealth();  setInterval(refreshEntityHealth, 90 * 1000);
+    refreshCrossEntity();   setInterval(refreshCrossEntity,  5 * 60 * 1000);
+  }
+  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', start); } else { start(); }
+})();
+</script>
 </body>
 </html>

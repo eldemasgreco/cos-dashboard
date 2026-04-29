@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- cache-buster: 2026-04-27T23:05:00.000Z ts=pass-a-brain-cards -->
+<!-- cache-buster: 2026-04-28T12:00:00.000Z ts=magazine-restructure -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -2528,6 +2528,255 @@ body.dark {
   .eh-detail { flex: 1; text-align: right; color: var(--text-3); font-size: 10px; }
   .eh-detail .urgent { color: #dc2626; font-weight: 700; }
 </style>
+
+<style id="magazine-styles">
+/* ============================================================
+   MAGAZINE LAYOUT (Pattern 2: sidebar + main, 9-chapter pane)
+   ============================================================ */
+.mag-shell {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  height: 100vh;
+  padding-top: var(--hdr-h);
+}
+@media (max-width: 900px) {
+  .mag-shell { grid-template-columns: 1fr; }
+}
+
+/* ── SIDEBAR ── */
+.mag-sidebar {
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow-y: auto; overflow-x: hidden;
+  padding: 14px 12px 16px;
+}
+.mag-sidebar::-webkit-scrollbar { width: 3px; }
+.mag-sidebar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius: 3px; }
+@media (max-width: 900px) {
+  .mag-sidebar { display: none; }
+  .mag-sidebar.mobile-open { display: flex; position: fixed; top: var(--hdr-h); left: 0; bottom: 0; width: 240px; z-index: 200; box-shadow: 0 8px 24px rgba(0,0,0,0.18); }
+}
+
+.mag-brief-stamp {
+  font-family: var(--font-serif);
+  font-size: 17px; line-height: 1.15;
+  color: var(--text);
+  padding: 6px 4px 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+.mag-brief-stamp .mag-stamp-eyebrow {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--green);
+  margin-bottom: 3px;
+}
+.mag-brief-stamp .mag-stamp-date {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px; color: var(--text-3); margin-top: 2px;
+}
+
+.mag-nav { display: flex; flex-direction: column; gap: 1px; padding: 4px 0; }
+.mag-nav-section {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-3);
+  padding: 12px 6px 4px;
+}
+.mag-nav-item {
+  display: block;
+  padding: 7px 10px;
+  font-size: 12px; font-weight: 500;
+  color: var(--text-2);
+  text-decoration: none;
+  border-radius: var(--radius-xs);
+  letter-spacing: -0.1px;
+  transition: background 0.15s var(--ease), color 0.15s var(--ease);
+}
+.mag-nav-item:hover { background: var(--card-2); color: var(--text); }
+.mag-nav-item.active {
+  background: var(--green-bg);
+  color: var(--green);
+  font-weight: 600;
+}
+.mag-nav-item .mag-nav-glyph { display: inline-block; width: 14px; opacity: 0.55; margin-right: 4px; }
+
+.mag-sidebar-bottom {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.mag-sidebar-bottom .rr-card { margin-bottom: 6px; padding: 8px 10px; background: var(--card-2); border-radius: var(--radius-xs); }
+.mag-sidebar-bottom .rr-card-head { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); margin-bottom: 4px; }
+
+.mag-sidebar-tools {
+  display: flex; gap: 6px; margin-top: 8px;
+}
+.mag-sidebar-tools button {
+  flex: 1; font-size: 10px; padding: 6px 4px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-xs); cursor: pointer;
+  color: var(--text-2);
+}
+.mag-sidebar-tools button:hover { border-color: var(--green); color: var(--green); }
+
+/* ── MAIN PANE ── */
+.mag-main {
+  overflow-y: auto; overflow-x: hidden;
+  padding: 0 28px 80px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.08) transparent;
+}
+.mag-main::-webkit-scrollbar { width: 4px; }
+.mag-main::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius: 4px; }
+@media (max-width: 720px) { .mag-main { padding: 0 14px 80px; } }
+
+.mag-critical-ribbon {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 11px; padding: 8px 14px;
+  margin: 12px 0 4px;
+  background: var(--red-bg);
+  border: 1px solid var(--red-mid);
+  border-radius: var(--radius-sm);
+  color: var(--red);
+}
+.mag-critical-ribbon .mag-rib-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 0 0 rgba(181,58,24,0.55);
+  animation: pass-a-pulse 2s infinite;
+  flex-shrink: 0;
+}
+.mag-critical-ribbon.empty { display: none; }
+.mag-critical-ribbon .mag-rib-label { font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; font-size: 10px; }
+.mag-critical-ribbon .mag-rib-msg { color: var(--text); flex: 1; }
+
+/* ── CHAPTER PANE ── */
+.chapter-pane { display: none; padding-top: 14px; }
+.chapter-pane.chapter-active { display: block; }
+
+.mag-chapter-eyebrow {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 10px;
+}
+.mag-lead {
+  font-family: var(--font-serif);
+  font-size: 30px; line-height: 1.18;
+  color: var(--text);
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  margin-bottom: 12px;
+}
+@media (max-width: 720px) { .mag-lead { font-size: 24px; } }
+.mag-lede {
+  font-family: var(--font-serif);
+  font-size: 16px; line-height: 1.55;
+  color: var(--text-2);
+  font-style: italic;
+  max-width: 680px;
+  margin-bottom: 14px;
+}
+.mag-byline {
+  font-size: 11px; color: var(--text-3);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 22px;
+  letter-spacing: 0.02em;
+}
+.mag-byline strong { color: var(--green); font-weight: 600; }
+
+.mag-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 900px) { .mag-grid { grid-template-columns: 1fr; } }
+
+.mag-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  min-height: 80px;
+}
+.mag-card.span-2 { grid-column: 1 / -1; }
+.mag-card-eyebrow {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 10px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.mag-card-eyebrow .mag-card-action {
+  font-size: 10px; font-weight: 500; letter-spacing: 0; text-transform: none;
+  color: var(--green); cursor: pointer; text-decoration: none;
+}
+.mag-card-eyebrow .mag-card-action:hover { text-decoration: underline; }
+.mag-card .empty-state-mag {
+  font-size: 12px; color: var(--text-3); padding: 14px 0;
+  font-family: var(--font-serif); font-style: italic;
+}
+
+/* When existing components are placed inside a mag-card, dial back their
+   own framing so we don't double-card. */
+.mag-card .copilot-hero,
+.mag-card .cockpit-schedule,
+.mag-card .cockpit-mid,
+.mag-card .signals-rail,
+.mag-card .rollup-card,
+.mag-card .rr-card,
+.mag-card .tw-section,
+.mag-card .schedule-card {
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+.mag-card #signal-tiles,
+.mag-card #rr-markets-body,
+.mag-card #rr-news-body { font-size: 12px; }
+
+/* Cockpit-mid (Projects+Tasks) inside a single mag-card spans both cols. */
+.mag-card .cockpit-mid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 720px) { .mag-card .cockpit-mid { grid-template-columns: 1fr; } }
+
+/* The Brain Status card lives in the sidebar bottom -- compact form. */
+.mag-sidebar-bottom #brain-status-card { background: var(--card-2); border: 1px solid var(--border); }
+.mag-sidebar-bottom #brain-status-card .rr-card-body { font-size: 10px; line-height: 1.4; }
+.mag-sidebar-bottom .pass-a-meta { font-size: 9px; }
+
+/* Chapter placeholder list (used by entity/lateral chapters until
+   chapter_* polling fills them). */
+.chapter-placeholder-list { display: flex; flex-direction: column; gap: 6px; }
+.chapter-placeholder-row {
+  font-size: 12px; padding: 6px 0;
+  border-bottom: 0.5px dotted var(--border);
+  color: var(--text-2);
+}
+.chapter-placeholder-row:last-child { border-bottom: 0; }
+.chapter-placeholder-row .cpr-meta { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+
+/* Single-column "magazine article" style for #week. */
+.mag-article-pane { max-width: 760px; }
+.mag-article-pane .mag-grid { grid-template-columns: 1fr; }
+
+/* Hide the legacy news-banner placeholder unconditionally inside mag layout
+   (the actual markets/news cards live in the chapter panes now). */
+.mag-shell ~ .news-banner { display: none !important; }
+</style>
+
 </head>
 <body>
 
@@ -2604,22 +2853,90 @@ body.dark {
   <div class="banner-row"><div class="banner-ticker-viewport"><div class="banner-ticker-track" id="banner-ticker-external"></div></div></div>
 </div>
 
-<div class="layout">
+<div class="mag-shell" id="mag-shell">
 
-  <!-- [Bite 32] Left column blanked — weather/signals/markets moved to right rail consolidation. Aside kept (hidden via CSS) so layout grid math works. -->
-  <aside class="col col-left" id="col-left-blank">
-    <div id="weather-instrument-legacy" style="display:none;"></div>
-    <div id="signal-tiles-legacy" style="display:none;"></div>
-    <div id="markets-grid" style="display:none;"></div>
-    <div id="ag-rows" style="display:none;"></div>
-    <div id="news-body" style="display:none;"></div>
-  </aside>
+<aside class="mag-sidebar" id="mag-sidebar">
+  <div class="mag-brief-stamp">
+    <span class="mag-stamp-eyebrow">Elly's Brief</span>
+    <span id="mag-stamp-line">—</span>
+    <span class="mag-stamp-date" id="mag-stamp-date">—</span>
+  </div>
+  <nav class="mag-nav" id="mag-nav">
+    <div class="mag-nav-section">Today</div>
+    <a href="#today" class="mag-nav-item" data-route="#today"><span class="mag-nav-glyph">▸</span>Front</a>
 
-  <!-- ═══ CENTER COLUMN ═══ -->
-  <main class="col col-center">
+    <div class="mag-nav-section">Entities</div>
+    <a href="#personal" class="mag-nav-item" data-route="#personal"><span class="mag-nav-glyph">👤</span>Personal</a>
+    <a href="#afsh" class="mag-nav-item" data-route="#afsh"><span class="mag-nav-glyph">🐄</span>AFSH</a>
+    <a href="#illume" class="mag-nav-item" data-route="#illume"><span class="mag-nav-glyph">🫒</span>Illume</a>
+    <a href="#spade" class="mag-nav-item" data-route="#spade"><span class="mag-nav-glyph">⚙️</span>Spade</a>
+    <a href="#logos" class="mag-nav-item" data-route="#logos"><span class="mag-nav-glyph">🏛</span>Logos</a>
 
-    <!-- [Bite 17] Elly's Brief hero — Sonnet-powered decision set, bullet-first, icon-coded -->
-    <section class="copilot-hero elly-hero" id="copilot-hero">
+    <div class="mag-nav-section">Lateral</div>
+    <a href="#travel" class="mag-nav-item" data-route="#travel"><span class="mag-nav-glyph">✈</span>Travel</a>
+    <a href="#finance" class="mag-nav-item" data-route="#finance"><span class="mag-nav-glyph">$</span>Finance</a>
+    <a href="#people" class="mag-nav-item" data-route="#people"><span class="mag-nav-glyph">◉</span>People</a>
+    <a href="#week" class="mag-nav-item" data-route="#week"><span class="mag-nav-glyph">▤</span>Week</a>
+  </nav>
+
+  <div class="mag-sidebar-bottom">
+    <div class="rr-card rr-brain-status pass-a-hidden" id="brain-status-card">
+          <div class="rr-card-head"><span class="rr-card-title">Brain</span></div>
+          <div class="rr-card-body">
+            <div>
+              <span class="pass-a-pulse" id="brain-pulse"></span>
+              <span id="brain-status-msg">Checking…</span>
+              <span class="pass-a-badge dryrun pass-a-hidden" id="brain-dryrun-badge">DRY RUN</span>
+            </div>
+            <div class="pass-a-meta" id="brain-meta">—</div>
+          </div>
+        </div>
+    <div class="quick-capture" id="quick-capture">
+        <select class="qc-entity" id="qc-entity" title="Entity">
+          <option value="Personal">👤</option>
+          <option value="AFSH">🐄</option>
+          <option value="Illume">🫒</option>
+          <option value="Spade">⚙️</option>
+          <option value="Logos">🏛</option>
+        </select>
+        <div class="qc-mode" id="qc-mode" role="radiogroup" aria-label="Capture mode">
+          <button type="button" class="qc-mode-btn active" data-mode="note" onclick="setQcMode('note')" title="Save as Note">📝</button>
+          <button type="button" class="qc-mode-btn" data-mode="task" onclick="setQcMode('task')" title="Save as Task">✅</button>
+          <button type="button" class="qc-mode-btn qc-memory-btn" onclick="openMemoryDrawer()" title="Open Elly's memory drawer">🧠</button>
+        </div>
+        <input class="qc-input" id="qc-input" type="text"
+               placeholder="Jot a thought… (Enter to save)"
+               onkeydown="if(event.key==='Enter')submitQuickCapture()">
+        <button class="qc-btn" onclick="submitQuickCapture()" title="Save to Notes (Quick Capture)">+</button>
+      </div>
+    <div class="mag-sidebar-tools">
+      <button onclick="openMemoryDrawer()" title="Memory">🧠 Memory</button>
+      <button onclick="toggleElly()" title="Ask Elly">✨ Ask</button>
+    </div>
+  </div>
+
+  <!-- legacy left-column targets kept off-screen for compatibility -->
+  <div style="display:none;" id="mag-legacy-compat-left"><div id="weather-instrument-legacy" style="display:none;"></div><div id="signal-tiles-legacy" style="display:none;"></div><div id="markets-grid" style="display:none;"></div><div id="ag-rows" style="display:none;"></div><div id="news-body" style="display:none;"></div></div>
+</aside>
+<main class="mag-main" id="mag-main">
+  <div class="mag-critical-ribbon empty" id="mag-critical-ribbon">
+    <span class="mag-rib-dot"></span>
+    <span class="mag-rib-label">Critical Queue</span>
+    <span class="mag-rib-msg" id="mag-critical-ribbon-msg">No red alerts</span>
+    <span class="mag-rib-count" id="mag-critical-ribbon-count" style="margin-left:auto;font-size:10px;color:var(--text-3);">0</span>
+  </div>
+
+  
+<section class="chapter-pane chapter-active" data-route="#today" data-chapter="today" id="chapter-today">
+  <div class="mag-chapter-eyebrow">Today &middot; <span id="chapter-today-eyebrow-date">—</span></div>
+  <h1 class="mag-lead" id="chapter-today-lead">Loading your decision set…</h1>
+  <p class="mag-lede" id="chapter-today-lede"></p>
+  <div class="mag-byline">By <strong>Elly</strong> · <span id="chapter-today-time">—</span></div>
+
+  <div class="mag-grid">
+    <div class="mag-card span-2">
+      <div class="mag-card-eyebrow">Critical &middot; today</div>
+      <section class="copilot-hero elly-hero" id="copilot-hero">
       <div class="copilot-head">
         <span class="copilot-eyebrow"><span class="elly-pulse"></span>Elly &middot; your Brief</span>
         <span class="copilot-meta" id="copilot-meta">reading your day&hellip;</span>
@@ -2638,50 +2955,10 @@ body.dark {
         <button class="copilot-ask-send" onclick="_copilotAskSafe()" title="Send to Elly (or press Enter)" type="button">Send &rarr;</button>
       </div>
     </section>
-
-    <!-- Legacy sections — hidden, preserved for rollback. New Copilot hero above replaces them. -->
-    <div class="status-line green" id="status-line" style="display:none;">
-      <span class="status-line-dot"></span>
-      <span class="status-line-lbl" id="status-line-lbl">On track</span>
-      <span class="status-line-msg" id="status-line-msg" onclick="openTopPriority()"></span>
     </div>
-    <div class="top-priority-pill" id="top-priority-pill" onclick="openTopPriority()" style="display:none;"></div>
-    <div class="center-hero" id="hero-brief" onclick="toggleHero()" style="display:none;">
-      <div class="hero-eyebrow" id="brief-eyebrow">Morning Brief</div>
-      <div class="hero-title" id="brief-title">Loading…</div>
-      <div class="hero-lead" id="brief-lead"></div>
-      <div class="hero-actions" id="brief-actions"></div>
-      <div class="hero-body-ext"><div class="hero-ext-text" id="brief-ext-text"></div></div>
-      <div class="hero-expand-hint" id="hero-hint">tap to expand</div>
-    </div>
-    <div id="metrics-row" class="metrics-mini-row" style="display:none;"></div>
-
-    
-
-        <!-- [session 54 Bite 8] Cockpit B2 mid row: Projects + Tasks peers, center column -->
-    <section class="cockpit-mid" id="cockpit-mid">
-      <div class="cockpit-card" id="cockpit-projects">
-        <div class="cockpit-card-head">
-          <span class="cockpit-card-title">Projects</span>
-          <span class="cockpit-card-sub" id="cockpit-projects-sub">—</span>
-        </div>
-        <div class="cockpit-card-body" id="cockpit-projects-body">
-          <div class="empty-state" style="font-size:11px; color:var(--text-3); padding:8px 4px;">Loading projects…</div>
-        </div>
-      </div>
-      <div class="cockpit-card" id="cockpit-tasks">
-        <div class="cockpit-card-head">
-          <span class="cockpit-card-title">Tasks</span>
-          <span class="cockpit-card-sub" id="cockpit-tasks-sub">—</span>
-        </div>
-        <div class="cockpit-card-body" id="cockpit-tasks-body">
-          <div class="empty-state" style="font-size:11px; color:var(--text-3); padding:8px 4px;">Loading tasks…</div>
-        </div>
-      </div>
-    </section>
-
-        <!-- [Bite 19] Schedule moved from right rail to center column. Keeps schedule-body id stable so renderSchedule needs no change. -->
-        <section class="cockpit-schedule elly-schedule" id="cockpit-schedule">
+    <div class="mag-card">
+      <div class="mag-card-eyebrow">Schedule</div>
+      <section class="cockpit-schedule elly-schedule" id="cockpit-schedule">
           <div class="cockpit-schedule-head">
             <span class="cockpit-schedule-title">Schedule</span>
             <span class="cockpit-schedule-sub" id="cockpit-schedule-sub"></span>
@@ -2711,12 +2988,72 @@ body.dark {
           <div id="schedule-body"></div>
         </div>
         </section>
-
-        
-
-
-
-    <div class="tw-section" id="tw-section">
+    </div>
+    <div class="mag-card">
+      <div class="mag-card-eyebrow">Markets</div>
+      <div class="rr-card rr-markets">
+          <div class="rr-card-head"><span class="rr-card-title">Markets</span><button class="rr-card-refresh" onclick="cosAction('refresh_markets', this)" title="Refresh markets">&#x21bb;</button></div>
+          <div class="rr-card-body" id="rr-markets-body"></div>
+        </div>
+    </div>
+    <div class="mag-card span-2">
+      <div class="mag-card-eyebrow">Cockpit &middot; tasks + projects</div>
+      <section class="cockpit-mid" id="cockpit-mid">
+      <div class="cockpit-card" id="cockpit-projects">
+        <div class="cockpit-card-head">
+          <span class="cockpit-card-title">Projects</span>
+          <span class="cockpit-card-sub" id="cockpit-projects-sub">—</span>
+        </div>
+        <div class="cockpit-card-body" id="cockpit-projects-body">
+          <div class="empty-state" style="font-size:11px; color:var(--text-3); padding:8px 4px;">Loading projects…</div>
+        </div>
+      </div>
+      <div class="cockpit-card" id="cockpit-tasks">
+        <div class="cockpit-card-head">
+          <span class="cockpit-card-title">Tasks</span>
+          <span class="cockpit-card-sub" id="cockpit-tasks-sub">—</span>
+        </div>
+        <div class="cockpit-card-body" id="cockpit-tasks-body">
+          <div class="empty-state" style="font-size:11px; color:var(--text-3); padding:8px 4px;">Loading tasks…</div>
+        </div>
+      </div>
+    </section>
+    </div>
+    <div class="mag-card">
+      <div class="mag-card-eyebrow">Brain noticed &middot; cross-entity</div>
+      <div class="rr-card rr-cross-entity pass-a-hidden" id="cross-entity-card">
+          <div class="rr-card-head"><span class="rr-card-title">Cross-entity</span></div>
+          <div class="rr-card-body" id="cross-entity-body"></div>
+        </div>
+    </div>
+    <div class="mag-card">
+      <div class="mag-card-eyebrow">Entity health</div>
+      <div class="rr-card rr-entity-health pass-a-hidden" id="entity-health-card">
+          <div class="rr-card-head"><span class="rr-card-title">Entity health</span></div>
+          <div class="rr-card-body" id="entity-health-body"></div>
+        </div>
+    </div>
+    <div class="mag-card">
+      <div class="mag-card-eyebrow">Signals</div>
+      <div class="rr-card rr-signal-tiles">
+          <div class="rr-card-head"><span class="rr-card-title">Signals</span></div>
+          <div class="rr-card-body" id="signal-tiles"></div>
+        </div>
+    </div>
+    <div class="mag-card">
+      <div class="mag-card-eyebrow">Breaking</div>
+      <div class="rr-card rr-news">
+          <div class="rr-card-head"><span class="rr-card-title">Breaking</span><button class="rr-card-refresh" onclick="cosAction('refresh_news', this)" title="Refresh news">&#x21bb;</button></div>
+          <div class="rr-card-body rr-news-body" id="rr-news-body"></div>
+        </div>
+    </div>
+    <div class="mag-card">
+      <div class="mag-card-eyebrow">Weather &middot; travel</div>
+      <div class="weather-instrument rr-weather" id="weather-instrument"></div>
+    </div>
+    <div class="mag-card span-2">
+      <div class="mag-card-eyebrow">This week</div>
+      <div class="tw-section" id="tw-section">
       <div class="tw-header">
         <span class="tw-title">This Week</span>
         <div class="tw-chips">
@@ -2729,136 +3066,9 @@ body.dark {
       </div>
       <div id="tw-body"></div>
     </div>
-
-    <div class="dz-pills">
-      <span class="dz-pill" onclick="openDzDrawer('markets')">📊 Markets</span>
-      <span class="dz-pill" onclick="openDzDrawer('news')">📰 News</span>
-      <span class="dz-pill" onclick="openDzDrawer('weather')">🌤 Weather</span>
-      <span class="dz-pill" onclick="openDzDrawer('alerts')">⚠️ Alerts</span>
-      <span class="dz-pill" onclick="openDzDrawer('signals')">🔔 Signals</span>
     </div>
-
-
-    <!-- Alerts cluster -->
-    <div class="center-section" id="alerts-section"></div>
-
-    <!-- Priorities -->
-    <div class="center-section">
-      <div class="sec-hdr"><span class="sec-label">Priorities</span><span class="sec-action" onclick="cosAction('full_refresh', this)">Refresh</span></div>
-      <div id="priorities-body"></div>
-    </div>
-
-    <!-- Schedule -->
-    <div class="center-section">
-      <div class="sec-hdr">
-        <span class="sec-label">Schedule</span>
-        <span class="sec-action" id="sched-view-toggle" onclick="cycleScheduleView()">Today</span>
-      </div>
-      <div class="schedule-card" id="schedule-card">
-        <div class="schedule-hdr">
-          <div class="sch-hdr-l" id="sch-hdr-l">Today</div>
-          <div class="sch-next" id="sch-next"></div>
-        </div>
-        <div class="timeline" id="sched-timeline"></div>
-      </div>
-    </div>
-
-    <!-- Suggested tasks -->
-    <div class="center-section" id="suggested-tasks-card">
-      <div class="sec-hdr">
-        <span class="sec-label">Suggested</span>
-        <span class="sec-action" id="suggested-count">0</span>
-      </div>
-      <div id="suggested-body"></div>
-    </div>
-
-    <!-- System status (condensed) -->
-    <div class="center-section">
-      <div class="sec-hdr"><span class="sec-label">System</span></div>
-      <div id="sys-scenarios"></div>
-    </div>
-
-  </main>
-
-  <!-- ═══ RIGHT COLUMN (rail tabs) ═══ -->
-  <aside class="col col-right">
-    <div class="right-col-inner">
-      <!-- [Bite 32] Right-rail consolidation: weather + markets + news + signal tiles -->
-      <div class="rr-peripheral" id="rr-peripheral">
-        <!-- Pass A: brain-aware cards (added 2026-04-27) -->
-        <div class="rr-card rr-brain-status pass-a-hidden" id="brain-status-card">
-          <div class="rr-card-head"><span class="rr-card-title">Brain</span></div>
-          <div class="rr-card-body">
-            <div>
-              <span class="pass-a-pulse" id="brain-pulse"></span>
-              <span id="brain-status-msg">Checking…</span>
-              <span class="pass-a-badge dryrun pass-a-hidden" id="brain-dryrun-badge">DRY RUN</span>
-            </div>
-            <div class="pass-a-meta" id="brain-meta">—</div>
-          </div>
-        </div>
-        <div class="rr-card rr-cross-entity pass-a-hidden" id="cross-entity-card">
-          <div class="rr-card-head"><span class="rr-card-title">Cross-entity</span></div>
-          <div class="rr-card-body" id="cross-entity-body"></div>
-        </div>
-        <div class="rr-card rr-entity-health pass-a-hidden" id="entity-health-card">
-          <div class="rr-card-head"><span class="rr-card-title">Entity health</span></div>
-          <div class="rr-card-body" id="entity-health-body"></div>
-        </div>
-        <div class="weather-instrument rr-weather" id="weather-instrument"></div>
-        <div class="rr-card rr-markets">
-          <div class="rr-card-head"><span class="rr-card-title">Markets</span><button class="rr-card-refresh" onclick="cosAction('refresh_markets', this)" title="Refresh markets">&#x21bb;</button></div>
-          <div class="rr-card-body" id="rr-markets-body"></div>
-        </div>
-        <div class="rr-card rr-news">
-          <div class="rr-card-head"><span class="rr-card-title">Breaking</span><button class="rr-card-refresh" onclick="cosAction('refresh_news', this)" title="Refresh news">&#x21bb;</button></div>
-          <div class="rr-card-body rr-news-body" id="rr-news-body"></div>
-        </div>
-        <div class="rr-card rr-signal-tiles">
-          <div class="rr-card-head"><span class="rr-card-title">Signals</span></div>
-          <div class="rr-card-body" id="signal-tiles"></div>
-        </div>
-      </div>
-
-      <!-- Quick Capture: lands in Notes DB as category=Quick Capture -->
-      <div class="quick-capture" id="quick-capture">
-        <select class="qc-entity" id="qc-entity" title="Entity">
-          <option value="Personal">👤</option>
-          <option value="AFSH">🐄</option>
-          <option value="Illume">🫒</option>
-          <option value="Spade">⚙️</option>
-          <option value="Logos">🏛</option>
-        </select>
-        <div class="qc-mode" id="qc-mode" role="radiogroup" aria-label="Capture mode">
-          <button type="button" class="qc-mode-btn active" data-mode="note" onclick="setQcMode('note')" title="Save as Note">📝</button>
-          <button type="button" class="qc-mode-btn" data-mode="task" onclick="setQcMode('task')" title="Save as Task">✅</button>
-          <button type="button" class="qc-mode-btn qc-memory-btn" onclick="openMemoryDrawer()" title="Open Elly's memory drawer">🧠</button>
-        </div>
-        <input class="qc-input" id="qc-input" type="text"
-               placeholder="Jot a thought… (Enter to save)"
-               onkeydown="if(event.key==='Enter')submitQuickCapture()">
-        <button class="qc-btn" onclick="submitQuickCapture()" title="Save to Notes (Quick Capture)">+</button>
-      </div>
-      
-      <section class="rollup-card elly-rollup" id="rollup-card">
-      <div class="rollup-head">
-        <span class="rollup-eyebrow"><span class="elly-pulse"></span>Elly&rsquo;s Week</span>
-        <span class="rollup-eyebrow" id="rollup-meta" style="opacity:0.65;"></span>
-      </div>
-      <div class="rollup-says" id="rollup-says"></div>
-      <div class="rollup-headline" id="rollup-headline">Loading&hellip;</div>
-      <div class="rollup-grid">
-        <div class="rollup-col shipped"><div class="rollup-col-label">Shipped &middot; last 7d</div><div id="rollup-shipped"></div></div>
-        <div class="rollup-col slipped"><div class="rollup-col-label">Slipped</div><div id="rollup-slipped"></div></div>
-        <div class="rollup-col focus"><div class="rollup-col-label">Focus &middot; next 7d</div><div id="rollup-focus"></div></div>
-      </div>
-      <div class="rollup-note" id="rollup-note"></div>
-      <div class="rollup-actions">
-        <button class="rollup-actions-btn primary" onclick="_fetchWeeklyRollup(true)" title="Force a fresh Sonnet pass">Refresh</button>
-        <button class="rollup-actions-btn" onclick="_openRollupRaw()" title="See the raw data feeding this">Raw data</button>
-        <span class="rollup-actions-meta" id="rollup-actions-meta"></span>
-      </div>
-    </section>
+    <div class="mag-card span-2">
+      <div class="mag-card-eyebrow">Tasks · projects · comms · waiting</div>
       <div class="tabs-hdr">
         <button class="tab-btn" data-tab="schedule" onclick="switchTab('schedule', this)" style="display:none">
           Schedule <span class="tab-unread" id="sched-badge" style="display:none">0</span>
@@ -2890,8 +3100,9 @@ body.dark {
         <div class="tab-panel" id="tab-comms"><div id="comms-body"></div></div>
         <div class="tab-panel" id="tab-waiting"><div id="waiting-body"></div></div>
       </div>
-
-      <!-- [session 54 Bite 2] Unified Signals card — always visible below tab area -->
+    </div>
+    <div class="mag-card span-2">
+      <div class="mag-card-eyebrow">Signals feed</div>
       <div class="signals-rail" id="signals-rail">
         <div class="signals-rail-head">
           <span class="signals-rail-title">Signals · <span id="signals-count">0</span></span>
@@ -2902,7 +3113,236 @@ body.dark {
         </div>
       </div>
     </div>
-  </aside>
+  </div>
+
+  <!-- Hidden legacy / compat blocks: kept inside #today so the existing
+       renderers (renderAll, _fetchSchedule, copilot, etc) all find their
+       target IDs without modification. -->
+  <div style="display:none;" id="mag-legacy-compat-today">
+    <div class="status-line green" id="status-line" style="display:none;">
+      <span class="status-line-dot"></span>
+      <span class="status-line-lbl" id="status-line-lbl">On track</span>
+      <span class="status-line-msg" id="status-line-msg" onclick="openTopPriority()"></span>
+    </div>
+    <div class="top-priority-pill" id="top-priority-pill" onclick="openTopPriority()" style="display:none;"></div>
+    <div class="center-hero" id="hero-brief" onclick="toggleHero()" style="display:none;">
+      <div class="hero-eyebrow" id="brief-eyebrow">Morning Brief</div>
+      <div class="hero-title" id="brief-title">Loading…</div>
+      <div class="hero-lead" id="brief-lead"></div>
+      <div class="hero-actions" id="brief-actions"></div>
+      <div class="hero-body-ext"><div class="hero-ext-text" id="brief-ext-text"></div></div>
+      <div class="hero-expand-hint" id="hero-hint">tap to expand</div>
+    </div>
+    <div id="metrics-row" class="metrics-mini-row" style="display:none;"></div>
+    <div class="dz-pills">
+      <span class="dz-pill" onclick="openDzDrawer('markets')">📊 Markets</span>
+      <span class="dz-pill" onclick="openDzDrawer('news')">📰 News</span>
+      <span class="dz-pill" onclick="openDzDrawer('weather')">🌤 Weather</span>
+      <span class="dz-pill" onclick="openDzDrawer('alerts')">⚠️ Alerts</span>
+      <span class="dz-pill" onclick="openDzDrawer('signals')">🔔 Signals</span>
+    </div>
+    <div class="center-section" id="alerts-section"></div>
+    <!-- Priorities -->
+    <div class="center-section">
+      <div class="sec-hdr"><span class="sec-label">Priorities</span><span class="sec-action" onclick="cosAction('full_refresh', this)">Refresh</span></div>
+      <div id="priorities-body"></div>
+    </div>
+    <!-- Schedule -->
+    <div class="center-section">
+      <div class="sec-hdr">
+        <span class="sec-label">Schedule</span>
+        <span class="sec-action" id="sched-view-toggle" onclick="cycleScheduleView()">Today</span>
+      </div>
+      <div class="schedule-card" id="schedule-card">
+        <div class="schedule-hdr">
+          <div class="sch-hdr-l" id="sch-hdr-l">Today</div>
+          <div class="sch-next" id="sch-next"></div>
+        </div>
+        <div class="timeline" id="sched-timeline"></div>
+      </div>
+    </div>
+    <div class="center-section" id="suggested-tasks-card">
+      <div class="sec-hdr">
+        <span class="sec-label">Suggested</span>
+        <span class="sec-action" id="suggested-count">0</span>
+      </div>
+      <div id="suggested-body"></div>
+    </div>
+    <!-- System status (condensed) -->
+    <div class="center-section">
+      <div class="sec-hdr"><span class="sec-label">System</span></div>
+      <div id="sys-scenarios"></div>
+    </div>
+  </div>
+</section>
+
+
+  
+<section class="chapter-pane" data-route="#personal" data-chapter="entity" data-entity="Personal" id="chapter-personal">
+  <div class="mag-chapter-eyebrow">Personal <span id="chapter-personal-eyebrow-date"></span></div>
+  <h1 class="mag-lead" id="chapter-personal-lead">Loading Personal —</h1>
+  <p class="mag-lede" id="chapter-personal-lede"></p>
+  <div class="mag-byline">By <strong>Elly</strong> · <span id="chapter-personal-time">—</span></div>
+  <div class="mag-grid">
+    <div class="mag-card"><div class="mag-card-eyebrow">Critical</div><div id="chapter-personal-critical" class="chapter-placeholder-list"><div class="empty-state-mag">Loading critical…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Schedule</div><div id="chapter-personal-schedule" class="chapter-placeholder-list"><div class="empty-state-mag">Loading schedule…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Cockpit — Tasks + Projects</div><div id="chapter-personal-cockpit" class="chapter-placeholder-list"><div class="empty-state-mag">Loading cockpit — tasks + projects…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Active threads</div><div id="chapter-personal-threads" class="chapter-placeholder-list"><div class="empty-state-mag">Loading active threads…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Projects</div><div id="chapter-personal-projects" class="chapter-placeholder-list"><div class="empty-state-mag">Loading projects…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Financials</div><div id="chapter-personal-financials" class="chapter-placeholder-list"><div class="empty-state-mag">Loading financials…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Markets / data</div><div id="chapter-personal-markets" class="chapter-placeholder-list"><div class="empty-state-mag">Loading markets / data…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Waiting on</div><div id="chapter-personal-waiting" class="chapter-placeholder-list"><div class="empty-state-mag">Loading waiting on…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Brain noticed</div><div id="chapter-personal-noticed" class="chapter-placeholder-list"><div class="empty-state-mag">Loading brain noticed…</div></div></div>
+  </div>
+</section>
+
+<section class="chapter-pane" data-route="#afsh" data-chapter="entity" data-entity="AFSH" id="chapter-afsh">
+  <div class="mag-chapter-eyebrow">AFSH <span id="chapter-afsh-eyebrow-date"></span></div>
+  <h1 class="mag-lead" id="chapter-afsh-lead">Loading AFSH —</h1>
+  <p class="mag-lede" id="chapter-afsh-lede"></p>
+  <div class="mag-byline">By <strong>Elly</strong> · <span id="chapter-afsh-time">—</span></div>
+  <div class="mag-grid">
+    <div class="mag-card"><div class="mag-card-eyebrow">Critical</div><div id="chapter-afsh-critical" class="chapter-placeholder-list"><div class="empty-state-mag">Loading critical…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Schedule</div><div id="chapter-afsh-schedule" class="chapter-placeholder-list"><div class="empty-state-mag">Loading schedule…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Cockpit — Tasks + Projects</div><div id="chapter-afsh-cockpit" class="chapter-placeholder-list"><div class="empty-state-mag">Loading cockpit — tasks + projects…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Active threads</div><div id="chapter-afsh-threads" class="chapter-placeholder-list"><div class="empty-state-mag">Loading active threads…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Projects</div><div id="chapter-afsh-projects" class="chapter-placeholder-list"><div class="empty-state-mag">Loading projects…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Financials</div><div id="chapter-afsh-financials" class="chapter-placeholder-list"><div class="empty-state-mag">Loading financials…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Markets / data</div><div id="chapter-afsh-markets" class="chapter-placeholder-list"><div class="empty-state-mag">Loading markets / data…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Waiting on</div><div id="chapter-afsh-waiting" class="chapter-placeholder-list"><div class="empty-state-mag">Loading waiting on…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Brain noticed</div><div id="chapter-afsh-noticed" class="chapter-placeholder-list"><div class="empty-state-mag">Loading brain noticed…</div></div></div>
+  </div>
+</section>
+
+<section class="chapter-pane" data-route="#illume" data-chapter="entity" data-entity="Illume" id="chapter-illume">
+  <div class="mag-chapter-eyebrow">Illume <span id="chapter-illume-eyebrow-date"></span></div>
+  <h1 class="mag-lead" id="chapter-illume-lead">Loading Illume —</h1>
+  <p class="mag-lede" id="chapter-illume-lede"></p>
+  <div class="mag-byline">By <strong>Elly</strong> · <span id="chapter-illume-time">—</span></div>
+  <div class="mag-grid">
+    <div class="mag-card"><div class="mag-card-eyebrow">Critical</div><div id="chapter-illume-critical" class="chapter-placeholder-list"><div class="empty-state-mag">Loading critical…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Schedule</div><div id="chapter-illume-schedule" class="chapter-placeholder-list"><div class="empty-state-mag">Loading schedule…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Cockpit — Tasks + Projects</div><div id="chapter-illume-cockpit" class="chapter-placeholder-list"><div class="empty-state-mag">Loading cockpit — tasks + projects…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Active threads</div><div id="chapter-illume-threads" class="chapter-placeholder-list"><div class="empty-state-mag">Loading active threads…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Projects</div><div id="chapter-illume-projects" class="chapter-placeholder-list"><div class="empty-state-mag">Loading projects…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Financials</div><div id="chapter-illume-financials" class="chapter-placeholder-list"><div class="empty-state-mag">Loading financials…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Markets / data</div><div id="chapter-illume-markets" class="chapter-placeholder-list"><div class="empty-state-mag">Loading markets / data…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Waiting on</div><div id="chapter-illume-waiting" class="chapter-placeholder-list"><div class="empty-state-mag">Loading waiting on…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Brain noticed</div><div id="chapter-illume-noticed" class="chapter-placeholder-list"><div class="empty-state-mag">Loading brain noticed…</div></div></div>
+  </div>
+</section>
+
+<section class="chapter-pane" data-route="#spade" data-chapter="entity" data-entity="Spade" id="chapter-spade">
+  <div class="mag-chapter-eyebrow">Spade <span id="chapter-spade-eyebrow-date"></span></div>
+  <h1 class="mag-lead" id="chapter-spade-lead">Loading Spade —</h1>
+  <p class="mag-lede" id="chapter-spade-lede"></p>
+  <div class="mag-byline">By <strong>Elly</strong> · <span id="chapter-spade-time">—</span></div>
+  <div class="mag-grid">
+    <div class="mag-card"><div class="mag-card-eyebrow">Critical</div><div id="chapter-spade-critical" class="chapter-placeholder-list"><div class="empty-state-mag">Loading critical…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Schedule</div><div id="chapter-spade-schedule" class="chapter-placeholder-list"><div class="empty-state-mag">Loading schedule…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Cockpit — Tasks + Projects</div><div id="chapter-spade-cockpit" class="chapter-placeholder-list"><div class="empty-state-mag">Loading cockpit — tasks + projects…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Active threads</div><div id="chapter-spade-threads" class="chapter-placeholder-list"><div class="empty-state-mag">Loading active threads…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Projects</div><div id="chapter-spade-projects" class="chapter-placeholder-list"><div class="empty-state-mag">Loading projects…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Financials</div><div id="chapter-spade-financials" class="chapter-placeholder-list"><div class="empty-state-mag">Loading financials…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Markets / data</div><div id="chapter-spade-markets" class="chapter-placeholder-list"><div class="empty-state-mag">Loading markets / data…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Waiting on</div><div id="chapter-spade-waiting" class="chapter-placeholder-list"><div class="empty-state-mag">Loading waiting on…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Brain noticed</div><div id="chapter-spade-noticed" class="chapter-placeholder-list"><div class="empty-state-mag">Loading brain noticed…</div></div></div>
+  </div>
+</section>
+
+<section class="chapter-pane" data-route="#logos" data-chapter="entity" data-entity="Logos" id="chapter-logos">
+  <div class="mag-chapter-eyebrow">Logos <span id="chapter-logos-eyebrow-date"></span></div>
+  <h1 class="mag-lead" id="chapter-logos-lead">Loading Logos —</h1>
+  <p class="mag-lede" id="chapter-logos-lede"></p>
+  <div class="mag-byline">By <strong>Elly</strong> · <span id="chapter-logos-time">—</span></div>
+  <div class="mag-grid">
+    <div class="mag-card"><div class="mag-card-eyebrow">Critical</div><div id="chapter-logos-critical" class="chapter-placeholder-list"><div class="empty-state-mag">Loading critical…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Schedule</div><div id="chapter-logos-schedule" class="chapter-placeholder-list"><div class="empty-state-mag">Loading schedule…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Cockpit — Tasks + Projects</div><div id="chapter-logos-cockpit" class="chapter-placeholder-list"><div class="empty-state-mag">Loading cockpit — tasks + projects…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Active threads</div><div id="chapter-logos-threads" class="chapter-placeholder-list"><div class="empty-state-mag">Loading active threads…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Projects</div><div id="chapter-logos-projects" class="chapter-placeholder-list"><div class="empty-state-mag">Loading projects…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Financials</div><div id="chapter-logos-financials" class="chapter-placeholder-list"><div class="empty-state-mag">Loading financials…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Markets / data</div><div id="chapter-logos-markets" class="chapter-placeholder-list"><div class="empty-state-mag">Loading markets / data…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Waiting on</div><div id="chapter-logos-waiting" class="chapter-placeholder-list"><div class="empty-state-mag">Loading waiting on…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Brain noticed</div><div id="chapter-logos-noticed" class="chapter-placeholder-list"><div class="empty-state-mag">Loading brain noticed…</div></div></div>
+  </div>
+</section>
+
+  
+<section class="chapter-pane" data-route="#travel" data-chapter="lateral" data-lateral="travel" id="chapter-travel">
+  <div class="mag-chapter-eyebrow">Travel <span id="chapter-travel-eyebrow-date"></span></div>
+  <h1 class="mag-lead" id="chapter-travel-lead">Loading Travel —</h1>
+  <p class="mag-lede" id="chapter-travel-lede"></p>
+  <div class="mag-byline">By <strong>Elly</strong> · <span id="chapter-travel-time">—</span></div>
+  <div class="mag-grid">
+    <div class="mag-card"><div class="mag-card-eyebrow">Trips</div><div id="chapter-travel-trips" class="chapter-placeholder-list"><div class="empty-state-mag">Loading trips…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Logistics queue</div><div id="chapter-travel-logistics" class="chapter-placeholder-list"><div class="empty-state-mag">Loading logistics queue…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Receipts</div><div id="chapter-travel-receipts" class="chapter-placeholder-list"><div class="empty-state-mag">Loading receipts…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">FX</div><div id="chapter-travel-fx" class="chapter-placeholder-list"><div class="empty-state-mag">Loading fx…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Brain noticed</div><div id="chapter-travel-noticed" class="chapter-placeholder-list"><div class="empty-state-mag">Loading brain noticed…</div></div></div>
+  </div>
+</section>
+  
+<section class="chapter-pane" data-route="#finance" data-chapter="lateral" data-lateral="finance" id="chapter-finance">
+  <div class="mag-chapter-eyebrow">Finance <span id="chapter-finance-eyebrow-date"></span></div>
+  <h1 class="mag-lead" id="chapter-finance-lead">Loading Finance —</h1>
+  <p class="mag-lede" id="chapter-finance-lede"></p>
+  <div class="mag-byline">By <strong>Elly</strong> · <span id="chapter-finance-time">—</span></div>
+  <div class="mag-grid">
+    <div class="mag-card"><div class="mag-card-eyebrow">Banking</div><div id="chapter-finance-banking" class="chapter-placeholder-list"><div class="empty-state-mag">Loading banking…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Open tasks</div><div id="chapter-finance-tasks" class="chapter-placeholder-list"><div class="empty-state-mag">Loading open tasks…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Subscriptions</div><div id="chapter-finance-subscriptions" class="chapter-placeholder-list"><div class="empty-state-mag">Loading subscriptions…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">FX</div><div id="chapter-finance-fx" class="chapter-placeholder-list"><div class="empty-state-mag">Loading fx…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Tax</div><div id="chapter-finance-tax" class="chapter-placeholder-list"><div class="empty-state-mag">Loading tax…</div></div></div>
+  </div>
+</section>
+  
+<section class="chapter-pane" data-route="#people" data-chapter="lateral" data-lateral="people" id="chapter-people">
+  <div class="mag-chapter-eyebrow">People <span id="chapter-people-eyebrow-date"></span></div>
+  <h1 class="mag-lead" id="chapter-people-lead">Loading People —</h1>
+  <p class="mag-lede" id="chapter-people-lede"></p>
+  <div class="mag-byline">By <strong>Elly</strong> · <span id="chapter-people-time">—</span></div>
+  <div class="mag-grid">
+    <div class="mag-card"><div class="mag-card-eyebrow">Active relationships</div><div id="chapter-people-active" class="chapter-placeholder-list"><div class="empty-state-mag">Loading active relationships…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Waiting on</div><div id="chapter-people-waiting" class="chapter-placeholder-list"><div class="empty-state-mag">Loading waiting on…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Recent meetings</div><div id="chapter-people-meetings" class="chapter-placeholder-list"><div class="empty-state-mag">Loading recent meetings…</div></div></div>
+    <div class="mag-card"><div class="mag-card-eyebrow">Brain noticed</div><div id="chapter-people-noticed" class="chapter-placeholder-list"><div class="empty-state-mag">Loading brain noticed…</div></div></div>
+  </div>
+</section>
+
+  
+<section class="chapter-pane mag-article-pane" data-route="#week" data-chapter="lateral" data-lateral="week" id="chapter-week">
+  <div class="mag-chapter-eyebrow">Week in review</div>
+  <h1 class="mag-lead" id="chapter-week-lead">This week, in your words</h1>
+  <p class="mag-lede" id="chapter-week-lede">Shipped, slipped, and what's next — Elly's weekly rollup.</p>
+  <div class="mag-byline">By <strong>Elly</strong> · <span id="chapter-week-time">—</span></div>
+  <div class="mag-grid">
+    <div class="mag-card">
+      <div class="mag-card-eyebrow">Weekly rollup</div>
+      <section class="rollup-card elly-rollup" id="rollup-card">
+      <div class="rollup-head">
+        <span class="rollup-eyebrow"><span class="elly-pulse"></span>Elly&rsquo;s Week</span>
+        <span class="rollup-eyebrow" id="rollup-meta" style="opacity:0.65;"></span>
+      </div>
+      <div class="rollup-says" id="rollup-says"></div>
+      <div class="rollup-headline" id="rollup-headline">Loading&hellip;</div>
+      <div class="rollup-grid">
+        <div class="rollup-col shipped"><div class="rollup-col-label">Shipped &middot; last 7d</div><div id="rollup-shipped"></div></div>
+        <div class="rollup-col slipped"><div class="rollup-col-label">Slipped</div><div id="rollup-slipped"></div></div>
+        <div class="rollup-col focus"><div class="rollup-col-label">Focus &middot; next 7d</div><div id="rollup-focus"></div></div>
+      </div>
+      <div class="rollup-note" id="rollup-note"></div>
+      <div class="rollup-actions">
+        <button class="rollup-actions-btn primary" onclick="_fetchWeeklyRollup(true)" title="Force a fresh Sonnet pass">Refresh</button>
+        <button class="rollup-actions-btn" onclick="_openRollupRaw()" title="See the raw data feeding this">Raw data</button>
+        <span class="rollup-actions-meta" id="rollup-actions-meta"></span>
+      </div>
+    </section>
+    </div>
+  </div>
+</section>
+
+</main>
 </div>
 
 <!-- ── Compat-only hidden containers (renderers reference these but dashboard_data may target them directly) ── -->
@@ -7131,6 +7571,252 @@ window._copilotAskSafe = function(){
   </div>
 </div>
 <button class="mobile-rail-toggle" id="mobile-rail-toggle" onclick="document.querySelector('.col-right').classList.toggle('mobile-open')" title="Schedule + Signals">☰</button>
+
+<!-- Magazine: hash router + chapter polling -->
+<script id="magazine-router-script">
+(function () {
+  'use strict';
+
+  var ROUTES = ['#today','#personal','#afsh','#illume','#spade','#logos','#travel','#finance','#people','#week'];
+  var ENTITY_ROUTES = ['#personal','#afsh','#illume','#spade','#logos'];
+  var LATERAL_ROUTES = ['#travel','#finance','#people','#week'];
+
+  var ENTITY_LABEL = {
+    '#personal': 'Personal',
+    '#afsh': 'AFSH',
+    '#illume': 'Illume',
+    '#spade': 'Spade',
+    '#logos': 'Logos'
+  };
+  var LATERAL_LABEL = {
+    '#travel': 'travel',
+    '#finance': 'finance',
+    '#people': 'people',
+    '#week': 'week'
+  };
+
+  function currentRoute(){
+    var h = (window.location.hash || '').toLowerCase();
+    return ROUTES.indexOf(h) !== -1 ? h : '#today';
+  }
+
+  function applyRoute(route){
+    var panes = document.querySelectorAll('.chapter-pane');
+    for (var i=0;i<panes.length;i++){
+      var p = panes[i];
+      if (p.getAttribute('data-route') === route) p.classList.add('chapter-active');
+      else p.classList.remove('chapter-active');
+    }
+    var nav = document.querySelectorAll('.mag-nav-item');
+    for (var j=0;j<nav.length;j++){
+      var n = nav[j];
+      if (n.getAttribute('data-route') === route) n.classList.add('active');
+      else n.classList.remove('active');
+    }
+    // Scroll main pane to top so each chapter feels like a fresh page.
+    var main = document.getElementById('mag-main');
+    if (main) main.scrollTop = 0;
+    // Fire chapter polling for the new route immediately.
+    refreshForRoute(route);
+  }
+
+  function onHashChange(){ applyRoute(currentRoute()); }
+
+  function ensureDefaultHash(){
+    if (!window.location.hash) {
+      // setting hash without reload via history.replaceState
+      try { history.replaceState(null, '', '#today'); } catch(_) { window.location.hash = '#today'; }
+    }
+  }
+
+  // Sidebar brief stamp + chapter eyebrow date strings.
+  function fmtToday(){
+    try {
+      var d = new Date();
+      var weekday = d.toLocaleDateString([], {weekday:'short'});
+      var datestr = d.toLocaleDateString([], {month:'short', day:'numeric'});
+      return weekday.toUpperCase() + ' · ' + datestr.toUpperCase();
+    } catch(_){ return '—'; }
+  }
+  function fmtDay(){
+    try {
+      var d = new Date();
+      var weekday = d.toLocaleDateString([], {weekday:'short'});
+      var day = d.getDate();
+      var month = d.toLocaleDateString([], {month:'short'});
+      return weekday + ' ' + day + ' ' + month;
+    } catch(_){ return '—'; }
+  }
+  function setStamp(){
+    var s = document.getElementById('mag-stamp-line');
+    if (s) s.textContent = fmtDay();
+    var d = document.getElementById('mag-stamp-date');
+    if (d) d.textContent = (new Date()).toLocaleDateString([], {year:'numeric', month:'long', day:'numeric'});
+    // Eyebrow date for #today
+    var eb = document.getElementById('chapter-today-eyebrow-date');
+    if (eb) eb.textContent = fmtToday();
+    // Eyebrow dates for entity / lateral chapters
+    var slugs = ['personal','afsh','illume','spade','logos','travel','finance','people','week'];
+    for (var i=0;i<slugs.length;i++){
+      var el = document.getElementById('chapter-' + slugs[i] + '-eyebrow-date');
+      if (el) el.textContent = '· ' + fmtToday();
+    }
+  }
+
+  // ── Critical-queue ribbon ────────────────────────────────────────
+  // Lightweight derivation from already-polled state populated by
+  // critical_refresh + signals_refresh. We read from the DD payload
+  // header.critical_count (set on every full refresh) and update on
+  // a 30s tick, parallel to the main critical_refresh polling.
+  function refreshCriticalRibbon(){
+    try {
+      var rib = document.getElementById('mag-critical-ribbon');
+      if (!rib) return;
+      var count = 0; var msg = '';
+      var DD = window.DASHBOARD_DATA || {};
+      if (DD && DD.header) {
+        count = Number(DD.header.critical_count || 0);
+        msg = DD.header.critical_detail || '';
+      }
+      var msgEl = document.getElementById('mag-critical-ribbon-msg');
+      var cntEl = document.getElementById('mag-critical-ribbon-count');
+      if (msgEl) msgEl.textContent = msg || (count + ' critical item(s)');
+      if (cntEl) cntEl.textContent = count > 0 ? (count + ' open') : '';
+      if (count > 0) rib.classList.remove('empty');
+      else rib.classList.add('empty');
+    } catch(_){}
+  }
+
+  // ── Chapter content polling ──────────────────────────────────────
+  // chapter_today        — when on #today (every 60s)
+  // chapter_entity       — when on #personal/#afsh/etc (every 60s)
+  // chapter_lateral      — when on #travel/#finance/#people/#week (every 90s)
+  //
+  // These actions are placeholders for the backend-side chapter renderer.
+  // Until the backend exists they will return null/error and we just leave
+  // the placeholder text in place. Once the backend lands, this will
+  // populate lead/lede/section cards.
+
+  var CHAPTER_POLLERS = {}; // route -> {id, intervalMs}
+
+  function fillChapter(route, payload){
+    if (!payload) return;
+    var slug;
+    if (route === '#today') slug = 'today';
+    else slug = route.replace('#','');
+
+    if (payload.lead) {
+      var leadEl = document.getElementById('chapter-' + slug + '-lead');
+      if (leadEl) leadEl.textContent = payload.lead;
+    }
+    if (payload.lede) {
+      var ledeEl = document.getElementById('chapter-' + slug + '-lede');
+      if (ledeEl) ledeEl.textContent = payload.lede;
+    }
+    if (payload.byline_time) {
+      var tEl = document.getElementById('chapter-' + slug + '-time');
+      if (tEl) tEl.textContent = payload.byline_time;
+    }
+    // Sections: payload.sections is a map from slot suffix -> html or items.
+    if (payload.sections && typeof payload.sections === 'object') {
+      Object.keys(payload.sections).forEach(function(key){
+        var slotId = 'chapter-' + slug + '-' + key;
+        var slot = document.getElementById(slotId);
+        if (!slot) return;
+        var v = payload.sections[key];
+        if (typeof v === 'string') {
+          slot.innerHTML = v;
+        } else if (Array.isArray(v)) {
+          slot.innerHTML = v.map(function(row){
+            if (typeof row === 'string') return '<div class="chapter-placeholder-row">' + row + '</div>';
+            var title = row.title || row.text || '';
+            var meta = row.meta || row.detail || '';
+            return '<div class="chapter-placeholder-row">' + title +
+              (meta ? '<div class="cpr-meta">' + meta + '</div>' : '') + '</div>';
+          }).join('');
+        } else if (v && v.html) {
+          slot.innerHTML = v.html;
+        }
+      });
+    }
+  }
+
+  async function pollChapterToday(){
+    if (typeof postSync !== 'function') return;
+    try {
+      var r = await postSync({action: 'chapter_today'});
+      fillChapter('#today', r);
+    } catch(_){}
+  }
+  async function pollChapterEntity(route){
+    if (typeof postSync !== 'function') return;
+    try {
+      var r = await postSync({action: 'chapter_entity', entity: ENTITY_LABEL[route]});
+      fillChapter(route, r);
+    } catch(_){}
+  }
+  async function pollChapterLateral(route){
+    if (typeof postSync !== 'function') return;
+    try {
+      var r = await postSync({action: 'chapter_lateral', chapter: LATERAL_LABEL[route]});
+      fillChapter(route, r);
+    } catch(_){}
+  }
+
+  function clearChapterPollers(){
+    Object.keys(CHAPTER_POLLERS).forEach(function(k){
+      try { clearInterval(CHAPTER_POLLERS[k]); } catch(_){}
+      delete CHAPTER_POLLERS[k];
+    });
+  }
+
+  function refreshForRoute(route){
+    clearChapterPollers();
+    if (route === '#today') {
+      pollChapterToday();
+      CHAPTER_POLLERS[route] = setInterval(pollChapterToday, 60 * 1000);
+    } else if (ENTITY_ROUTES.indexOf(route) !== -1) {
+      pollChapterEntity(route);
+      CHAPTER_POLLERS[route] = setInterval(function(){ pollChapterEntity(route); }, 60 * 1000);
+    } else if (LATERAL_ROUTES.indexOf(route) !== -1) {
+      pollChapterLateral(route);
+      CHAPTER_POLLERS[route] = setInterval(function(){ pollChapterLateral(route); }, 90 * 1000);
+    }
+  }
+
+  // Mobile sidebar toggle.
+  function bindMobileToggle(){
+    var btn = document.getElementById('mobile-rail-toggle');
+    if (!btn) return;
+    btn.title = 'Toggle navigation';
+    btn.onclick = function(){
+      var sb = document.getElementById('mag-sidebar');
+      if (sb) sb.classList.toggle('mobile-open');
+    };
+  }
+
+  function start(){
+    ensureDefaultHash();
+    setStamp();
+    setInterval(setStamp, 60 * 1000);
+    bindMobileToggle();
+    window.addEventListener('hashchange', onHashChange);
+    applyRoute(currentRoute());
+    refreshCriticalRibbon();
+    setInterval(refreshCriticalRibbon, 30 * 1000);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+
+  // Expose for debugging
+  window.COS_MAG = { applyRoute: applyRoute, currentRoute: currentRoute };
+})();
+</script>
+
 <!-- Pass A: brain-aware card polling (added 2026-04-27) -->
 <script id="pass-a-brain-script">
 (function () {
